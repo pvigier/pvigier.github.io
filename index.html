@@ -5,7 +5,7 @@ tab: blog
 ---
 <div class="row">
     <div class="col-sm-8 blog-main">
-        {% for post in site.posts %}
+        {% for post in paginator.posts %}
             <div class="blog-post">
                 <h2 class="blog-post-title">{{ post.title }}</h2>
                 <p class="blog-post-meta">{{ post.date | date_to_string }} by <a href="#">{{ post.author }}</a></p>
@@ -15,8 +15,16 @@ tab: blog
         {% endfor %}
         <nav>
             <ul class="pager">
-                <li><a href="#">Previous</a></li>
-                <li><a href="#">Next</a></li>
+                {% if paginator.previous_page %}
+                <li><a href="{{ paginator.previous_page_path }}">Previous</a></li>
+                {% else %}
+                <li><span>Previous</span></li>
+                {% endif %}
+                {% if paginator.next_page %}
+                <li><a href="{{ paginator.next_page_path }}">Next</a></li>
+                {% else %}
+                <li><span>Next</span></li>
+                {% endif %}
             </ul>
         </nav>
 
