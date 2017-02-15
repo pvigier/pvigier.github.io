@@ -1,6 +1,11 @@
 name: Pierre Vigier
 markdown: kramdown
 future: true
-gems: [jekyll-paginate]
+gems: [jekyll-paginate, jekyll-archives]
 paginate: 5
 paginate_path: "/:num/"
+jekyll-archives:
+    enabled: ['month']
+    layout: 'archive'
+    permalinks:
+        month: '/:year/:month/'
