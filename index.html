@@ -1,33 +1,27 @@
 ---
-layout: default
+layout: blog
 title: Blog - pvigier's blog
 tab: blog
 ---
-<div class="row">
-    <div class="col-sm-8 blog-main">
-        {% for post in paginator.posts %}
-            <div class="blog-post">
-                <h2 class="blog-post-title">{{ post.title }}</h2>
-                <p class="blog-post-meta">{{ post.date | date_to_string }} by <a href="#">{{ post.author }}</a></p>
-                {{ post.excerpt }}
-                <p><a href="{{ post.url }}">Read more ...</a></p>
-            </div>
-        {% endfor %}
-        <nav>
-            <ul class="pager">
-                {% if paginator.previous_page %}
-                <li><a href="{{ paginator.previous_page_path }}">Previous</a></li>
-                {% else %}
-                <li><span>Previous</span></li>
-                {% endif %}
-                {% if paginator.next_page %}
-                <li><a href="{{ paginator.next_page_path }}">Next</a></li>
-                {% else %}
-                <li><span>Next</span></li>
-                {% endif %}
-            </ul>
-        </nav>
-
-    </div><!-- /.blog-main -->
-    {% include sidebar.html %}
-</div><!-- /.row -->
+{% for post in paginator.posts %}
+    <div class="blog-post">
+        <h2 class="blog-post-title">{{ post.title }}</h2>
+        <p class="blog-post-meta">{{ post.date | date_to_string }} by <a href="#">{{ post.author }}</a></p>
+        {{ post.excerpt }}
+        <p><a href="{{ post.url }}">Read more ...</a></p>
+    </div>
+{% endfor %}
+<nav>
+    <ul class="pager">
+        {% if paginator.previous_page %}
+        <li><a href="{{ paginator.previous_page_path }}">Previous</a></li>
+        {% else %}
+        <li><span>Previous</span></li>
+        {% endif %}
+        {% if paginator.next_page %}
+        <li><a href="{{ paginator.next_page_path }}">Next</a></li>
+        {% else %}
+        <li><span>Next</span></li>
+        {% endif %}
+    </ul>
+</nav>

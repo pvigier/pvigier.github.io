@@ -1,9 +1,8 @@
 ---
-layout: default
+layout: common
 ---
 <h1>Archive of posts from {{ page.date | date: "%B %Y" }}</h1>
-
-<ul class="posts">
+<ul>
 {% for post in page.posts %}
   <li>
     <span class="post-date">{{ post.date | date: "%b %-d, %Y" }}</span>
