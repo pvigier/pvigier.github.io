@@ -1,0 +1,529 @@
+<?xml version="1.0" encoding="iso-8859-1" standalone="no"?> 
+<?xml-stylesheet href="graph_with_cost.css" type="text/css"?> 
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="676.50009pt" height="136.50009pt" viewBox="854.24995 -150.75005 676.50009 136.50009 "> 
+<g transform="translate(0, -14.24995 ) scale(1,-1) translate(0,150.75005 )"> 
+<g>
+ <g stroke="rgb(0.0%,0.0%,0.0%)">
+ <g fill="rgb(0.0%,0.0%,0.0%)">
+ <g stroke-width="0.4pt">
+ <g>
+ <g stroke="rgb(0.0%,0.0%,0.0%)">
+ <g fill="rgb(100.0%,100.0%,100.0%)">
+ <g fill="rgb(97.6471%,81.95953%,81.95953%)">
+ <path d=" M  900.0 -127.5 C  900.0 -139.92656 889.92656 -150.0 877.5 -150.0 C  865.07344 -150.0 855.0 -139.92656 855.0 -127.5 C  855.0 -115.07344 865.07344 -105.0 877.5 -105.0 C  889.92656 -105.0 900.0 -115.07344 900.0 -127.5 Z M  877.5 -127.5  " style="stroke:none"/>
+ <g stroke-width="1.50009pt">
+ <g stroke-dasharray="none" stroke-dashoffset="0.0pt">
+ <g stroke-dasharray="none" stroke-dashoffset="0.0pt">
+ <g stroke="rgb(0.0%,0.0%,0.0%)">
+ <path d=" M  900.0 -127.5 C  900.0 -139.92656 889.92656 -150.0 877.5 -150.0 C  865.07344 -150.0 855.0 -139.92656 855.0 -127.5 C  855.0 -115.07344 865.07344 -105.0 877.5 -105.0 C  889.92656 -105.0 900.0 -115.07344 900.0 -127.5 Z M  877.5 -127.5  " style="fill:none"/>
+ <g fill="rgb(84.70459%,89.80255%,89.80255%)">
+ <path d=" M  990.0 -127.5 C  990.0 -139.92656 979.92656 -150.0 967.5 -150.0 C  955.07344 -150.0 945.0 -139.92656 945.0 -127.5 C  945.0 -115.07344 955.07344 -105.0 967.5 -105.0 C  979.92656 -105.0 990.0 -115.07344 990.0 -127.5 Z M  967.5 -127.5  " style="stroke:none"/>
+ <g stroke-width="1.50009pt">
+ <g stroke-dasharray="none" stroke-dashoffset="0.0pt">
+ <g stroke-dasharray="none" stroke-dashoffset="0.0pt">
+ <g stroke="rgb(0.0%,0.0%,0.0%)">
+ <path d=" M  990.0 -127.5 C  990.0 -139.92656 979.92656 -150.0 967.5 -150.0 C  955.07344 -150.0 945.0 -139.92656 945.0 -127.5 C  945.0 -115.07344 955.07344 -105.0 967.5 -105.0 C  979.92656 -105.0 990.0 -115.07344 990.0 -127.5 Z M  967.5 -127.5  " style="fill:none"/>
+ <g fill="rgb(84.70459%,89.80255%,89.80255%)">
+ <path d=" M  1080.0 -127.5 C  1080.0 -139.92656 1069.92656 -150.0 1057.5 -150.0 C  1045.07344 -150.0 1035.0 -139.92656 1035.0 -127.5 C  1035.0 -115.07344 1045.07344 -105.0 1057.5 -105.0 C  1069.92656 -105.0 1080.0 -115.07344 1080.0 -127.5 Z M  1057.5 -127.5  " style="stroke:none"/>
+ <g stroke-width="1.50009pt">
+ <g stroke-dasharray="none" stroke-dashoffset="0.0pt">
+ <g stroke-dasharray="none" stroke-dashoffset="0.0pt">
+ <g stroke="rgb(0.0%,0.0%,0.0%)">
+ <path d=" M  1080.0 -127.5 C  1080.0 -139.92656 1069.92656 -150.0 1057.5 -150.0 C  1045.07344 -150.0 1035.0 -139.92656 1035.0 -127.5 C  1035.0 -115.07344 1045.07344 -105.0 1057.5 -105.0 C  1069.92656 -105.0 1080.0 -115.07344 1080.0 -127.5 Z M  1057.5 -127.5  " style="fill:none"/>
+ <g fill="rgb(84.70459%,89.80255%,89.80255%)">
+ <path d=" M  1170.0 -127.5 C  1170.0 -139.92656 1159.92656 -150.0 1147.5 -150.0 C  1135.07344 -150.0 1125.0 -139.92656 1125.0 -127.5 C  1125.0 -115.07344 1135.07344 -105.0 1147.5 -105.0 C  1159.92656 -105.0 1170.0 -115.07344 1170.0 -127.5 Z M  1147.5 -127.5  " style="stroke:none"/>
+ <g stroke-width="1.50009pt">
+ <g stroke-dasharray="none" stroke-dashoffset="0.0pt">
+ <g stroke-dasharray="none" stroke-dashoffset="0.0pt">
+ <g stroke="rgb(0.0%,0.0%,0.0%)">
+ <path d=" M  1170.0 -127.5 C  1170.0 -139.92656 1159.92656 -150.0 1147.5 -150.0 C  1135.07344 -150.0 1125.0 -139.92656 1125.0 -127.5 C  1125.0 -115.07344 1135.07344 -105.0 1147.5 -105.0 C  1159.92656 -105.0 1170.0 -115.07344 1170.0 -127.5 Z M  1147.5 -127.5  " style="fill:none"/>
+ <g fill="rgb(84.70459%,89.80255%,89.80255%)">
+ <path d=" M  1260.0 -127.5 C  1260.0 -139.92656 1249.92656 -150.0 1237.5 -150.0 C  1225.07344 -150.0 1215.0 -139.92656 1215.0 -127.5 C  1215.0 -115.07344 1225.07344 -105.0 1237.5 -105.0 C  1249.92656 -105.0 1260.0 -115.07344 1260.0 -127.5 Z M  1237.5 -127.5  " style="stroke:none"/>
+ <g stroke-width="1.50009pt">
+ <g stroke-dasharray="none" stroke-dashoffset="0.0pt">
+ <g stroke-dasharray="none" stroke-dashoffset="0.0pt">
+ <g stroke="rgb(0.0%,0.0%,0.0%)">
+ <path d=" M  1260.0 -127.5 C  1260.0 -139.92656 1249.92656 -150.0 1237.5 -150.0 C  1225.07344 -150.0 1215.0 -139.92656 1215.0 -127.5 C  1215.0 -115.07344 1225.07344 -105.0 1237.5 -105.0 C  1249.92656 -105.0 1260.0 -115.07344 1260.0 -127.5 Z M  1237.5 -127.5  " style="fill:none"/>
+ <g stroke-width="1.50009pt">
+ <g stroke-dasharray="none" stroke-dashoffset="0.0pt">
+ <g stroke-dasharray="none" stroke-dashoffset="0.0pt">
+ <g stroke-linecap="butt">
+ <g fill="rgb(0.0%,0.0%,0.0%)">
+ <g stroke="rgb(0.0%,0.0%,0.0%)">
+ <path d=" M  900.75256 -127.5 L  937.6772 -127.5  " style="fill:none"/>
+ <g>
+ <g transform="matrix(1.0,0.0,0.0,1.0,937.6772,-127.5)">
+ <g>
+ <path d=" M  6.57024 0.0 C  4.62346 0.365 1.46005 1.46005 -0.73003 2.7376 L  -0.73003 -2.7376 C  1.46005 -1.46005 4.62346 -0.365 6.57024 0.0  " style="stroke:none"/>
+ </g>
+  </g>
+ </g>
+ <g stroke-width="1.50009pt">
+ <g stroke-dasharray="none" stroke-dashoffset="0.0pt">
+ <g stroke-dasharray="none" stroke-dashoffset="0.0pt">
+ <g stroke-linecap="butt">
+ <g fill="rgb(0.0%,0.0%,0.0%)">
+ <g stroke="rgb(0.0%,0.0%,0.0%)">
+ <path d=" M  990.75256 -127.5 L  1027.6772 -127.5  " style="fill:none"/>
+ <g>
+ <g transform="matrix(1.0,0.0,0.0,1.0,1027.6772,-127.5)">
+ <g>
+ <path d=" M  6.57024 0.0 C  4.62346 0.365 1.46005 1.46005 -0.73003 2.7376 L  -0.73003 -2.7376 C  1.46005 -1.46005 4.62346 -0.365 6.57024 0.0  " style="stroke:none"/>
+ </g>
+  </g>
+ </g>
+ <g stroke-width="1.50009pt">
+ <g stroke-dasharray="none" stroke-dashoffset="0.0pt">
+ <g stroke-dasharray="none" stroke-dashoffset="0.0pt">
+ <g stroke-linecap="butt">
+ <g fill="rgb(0.0%,0.0%,0.0%)">
+ <g stroke="rgb(0.0%,0.0%,0.0%)">
+ <path d=" M  1080.75256 -127.5 L  1117.6772 -127.5  " style="fill:none"/>
+ <g>
+ <g transform="matrix(1.0,0.0,0.0,1.0,1117.6772,-127.5)">
+ <g>
+ <path d=" M  6.57024 0.0 C  4.62346 0.365 1.46005 1.46005 -0.73003 2.7376 L  -0.73003 -2.7376 C  1.46005 -1.46005 4.62346 -0.365 6.57024 0.0  " style="stroke:none"/>
+ </g>
+  </g>
+ </g>
+ <g stroke-width="1.50009pt">
+ <g stroke-dasharray="none" stroke-dashoffset="0.0pt">
+ <g stroke-dasharray="none" stroke-dashoffset="0.0pt">
+ <g stroke-linecap="butt">
+ <g fill="rgb(0.0%,0.0%,0.0%)">
+ <g stroke="rgb(0.0%,0.0%,0.0%)">
+ <path d=" M  1170.75256 -127.5 L  1207.6772 -127.5  " style="fill:none"/>
+ <g>
+ <g transform="matrix(1.0,0.0,0.0,1.0,1207.6772,-127.5)">
+ <g>
+ <path d=" M  6.57024 0.0 C  4.62346 0.365 1.46005 1.46005 -0.73003 2.7376 L  -0.73003 -2.7376 C  1.46005 -1.46005 4.62346 -0.365 6.57024 0.0  " style="stroke:none"/>
+ </g>
+  </g>
+ </g>
+ <g stroke-width="1.50009pt">
+ <g stroke-dasharray="none" stroke-dashoffset="0.0pt">
+ <g stroke-dasharray="none" stroke-dashoffset="0.0pt">
+ <g stroke-linecap="butt">
+ <g fill="rgb(0.0%,0.0%,0.0%)">
+ <g stroke="rgb(0.0%,0.0%,0.0%)">
+ <path d=" M  1258.29712 -117.10144 L  1300.80286 -95.84853  " style="fill:none"/>
+ <g>
+ <g transform="matrix(0.898,0.44899,-0.44899,0.898,1300.80284,-95.84853)">
+ <g>
+ <path d=" M  6.57024 0.0 C  4.62346 0.365 1.46005 1.46005 -0.73003 2.7376 L  -0.73003 -2.7376 C  1.46005 -1.46005 4.62346 -0.365 6.57024 0.0  " style="stroke:none"/>
+ </g>
+  </g>
+ </g>
+ <g stroke="rgb(0.0%,0.0%,0.0%)">
+ <g>
+ <g>
+ <g transform="matrix(1.0,0.0,0.0,1.0,874.64236,-132.99033)">
+ <g fill="rgb(0.0%,0.0%,0.0%)">
+ <text style="stroke:none" transform="scale(1,-1) translate(2.85764,0)" text-anchor="middle"  font-size="10"> 
+<tspan font-family="cmmi" font-size="10">x</tspan></text> 
+</g>
+ </g>
+ </g>
+ </g>
+ <g stroke="rgb(0.0%,0.0%,0.0%)">
+ <g>
+ <g>
+ <g transform="matrix(1.0,0.0,0.0,1.0,963.6111,-133.33755)">
+ <g fill="rgb(0.0%,0.0%,0.0%)">
+ <text style="stroke:none" transform="scale(1,-1) translate(3.8889,0)" text-anchor="middle"  font-size="10"> 
+<tspan font-family="cmsy" font-size="10">&#x00D7;</tspan></text> 
+</g>
+ </g>
+ </g>
+ </g>
+ <g stroke="rgb(0.0%,0.0%,0.0%)">
+ <g>
+ <g>
+ <g transform="matrix(1.0,0.0,0.0,1.0,1046.66666,-134.30977)">
+ <g fill="rgb(0.0%,0.0%,0.0%)">
+ <text style="stroke:none" transform="scale(1,-1) translate(10.83334,0)" text-anchor="middle"  font-size="10"> 
+ tanh</text> 
+</g>
+ </g>
+ </g>
+ </g>
+ <g stroke="rgb(0.0%,0.0%,0.0%)">
+ <g>
+ <g>
+ <g transform="matrix(1.0,0.0,0.0,1.0,1143.6111,-133.33755)">
+ <g fill="rgb(0.0%,0.0%,0.0%)">
+ <text style="stroke:none" transform="scale(1,-1) translate(3.8889,0)" text-anchor="middle"  font-size="10"> 
+<tspan font-family="cmsy" font-size="10">&#x00D7;</tspan></text> 
+</g>
+ </g>
+ </g>
+ </g>
+ <g stroke="rgb(0.0%,0.0%,0.0%)">
+ <g>
+ <g>
+ <g transform="matrix(1.0,0.0,0.0,1.0,1234.46355,-132.99033)">
+ <g fill="rgb(0.0%,0.0%,0.0%)">
+ <text style="stroke:none" transform="scale(1,-1) translate(3.03645,0)" text-anchor="middle"  font-size="10"> 
+<tspan font-family="cmmi" font-size="10">&#x03C3;</tspan></text> 
+</g>
+ </g>
+ </g>
+ </g>
+ <g fill="rgb(88.23547%,96.86127%,81.56738%)">
+ <path d=" M  990.0 -37.5 C  990.0 -49.92656 979.92656 -60.0 967.5 -60.0 C  955.07344 -60.0 945.0 -49.92656 945.0 -37.5 C  945.0 -25.07344 955.07344 -15.0 967.5 -15.0 C  979.92656 -15.0 990.0 -25.07344 990.0 -37.5 Z M  967.5 -37.5  " style="stroke:none"/>
+ <g stroke-width="1.50009pt">
+ <g stroke-dasharray="none" stroke-dashoffset="0.0pt">
+ <g stroke-dasharray="none" stroke-dashoffset="0.0pt">
+ <g stroke="rgb(0.0%,0.0%,0.0%)">
+ <path d=" M  990.0 -37.5 C  990.0 -49.92656 979.92656 -60.0 967.5 -60.0 C  955.07344 -60.0 945.0 -49.92656 945.0 -37.5 C  945.0 -25.07344 955.07344 -15.0 967.5 -15.0 C  979.92656 -15.0 990.0 -25.07344 990.0 -37.5 Z M  967.5 -37.5  " style="fill:none"/>
+ <g fill="rgb(88.23547%,96.86127%,81.56738%)">
+ <path d=" M  1170.0 -37.5 C  1170.0 -49.92656 1159.92656 -60.0 1147.5 -60.0 C  1135.07344 -60.0 1125.0 -49.92656 1125.0 -37.5 C  1125.0 -25.07344 1135.07344 -15.0 1147.5 -15.0 C  1159.92656 -15.0 1170.0 -25.07344 1170.0 -37.5 Z M  1147.5 -37.5  " style="stroke:none"/>
+ <g stroke-width="1.50009pt">
+ <g stroke-dasharray="none" stroke-dashoffset="0.0pt">
+ <g stroke-dasharray="none" stroke-dashoffset="0.0pt">
+ <g stroke="rgb(0.0%,0.0%,0.0%)">
+ <path d=" M  1170.0 -37.5 C  1170.0 -49.92656 1159.92656 -60.0 1147.5 -60.0 C  1135.07344 -60.0 1125.0 -49.92656 1125.0 -37.5 C  1125.0 -25.07344 1135.07344 -15.0 1147.5 -15.0 C  1159.92656 -15.0 1170.0 -25.07344 1170.0 -37.5 Z M  1147.5 -37.5  " style="fill:none"/>
+ <g stroke-width="1.50009pt">
+ <g stroke-dasharray="none" stroke-dashoffset="0.0pt">
+ <g stroke-dasharray="none" stroke-dashoffset="0.0pt">
+ <g stroke-linecap="butt">
+ <g fill="rgb(0.0%,0.0%,0.0%)">
+ <g stroke="rgb(0.0%,0.0%,0.0%)">
+ <path d=" M  967.5 -60.75256 L  967.5 -97.6772  " style="fill:none"/>
+ <g>
+ <g transform="matrix(0.0,-1.0,1.0,0.0,967.5,-97.6772)">
+ <g>
+ <path d=" M  6.57024 0.0 C  4.62346 0.365 1.46005 1.46005 -0.73003 2.7376 L  -0.73003 -2.7376 C  1.46005 -1.46005 4.62346 -0.365 6.57024 0.0  " style="stroke:none"/>
+ </g>
+  </g>
+ </g>
+ <g stroke-width="1.50009pt">
+ <g stroke-dasharray="none" stroke-dashoffset="0.0pt">
+ <g stroke-dasharray="none" stroke-dashoffset="0.0pt">
+ <g stroke-linecap="butt">
+ <g fill="rgb(0.0%,0.0%,0.0%)">
+ <g stroke="rgb(0.0%,0.0%,0.0%)">
+ <path d=" M  1147.5 -60.75256 L  1147.5 -97.6772  " style="fill:none"/>
+ <g>
+ <g transform="matrix(0.0,-1.0,1.0,0.0,1147.5,-97.6772)">
+ <g>
+ <path d=" M  6.57024 0.0 C  4.62346 0.365 1.46005 1.46005 -0.73003 2.7376 L  -0.73003 -2.7376 C  1.46005 -1.46005 4.62346 -0.365 6.57024 0.0  " style="stroke:none"/>
+ </g>
+  </g>
+ </g>
+ <g stroke="rgb(0.0%,0.0%,0.0%)">
+ <g>
+ <g>
+ <g transform="matrix(1.0,0.0,0.0,1.0,959.84027,-43.50423)">
+ <g fill="rgb(0.0%,0.0%,0.0%)">
+ <text style="stroke:none" transform="scale(1,-1) translate(7.65973,0)" text-anchor="middle"  font-size="10"> 
+<tspan font-family="cmmi" font-size="10">W</tspan><tspan baseline-shift="sub"><tspan font-family="cmr" font-size="7">1</tspan> </tspan></text> 
+</g>
+ </g>
+ </g>
+ </g>
+ <g stroke="rgb(0.0%,0.0%,0.0%)">
+ <g>
+ <g>
+ <g transform="matrix(1.0,0.0,0.0,1.0,1139.84027,-43.50423)">
+ <g fill="rgb(0.0%,0.0%,0.0%)">
+ <text style="stroke:none" transform="scale(1,-1) translate(7.65973,0)" text-anchor="middle"  font-size="10"> 
+<tspan font-family="cmmi" font-size="10">W</tspan><tspan baseline-shift="sub"><tspan font-family="cmr" font-size="7">2</tspan> </tspan></text> 
+</g>
+ </g>
+ </g>
+ </g>
+ <g fill="rgb(97.6471%,81.95953%,81.95953%)">
+ <path d=" M  1260.0 -37.5 C  1260.0 -49.92656 1249.92656 -60.0 1237.5 -60.0 C  1225.07344 -60.0 1215.0 -49.92656 1215.0 -37.5 C  1215.0 -25.07344 1225.07344 -15.0 1237.5 -15.0 C  1249.92656 -15.0 1260.0 -25.07344 1260.0 -37.5 Z M  1237.5 -37.5  " style="stroke:none"/>
+ <g stroke-width="1.50009pt">
+ <g stroke-dasharray="none" stroke-dashoffset="0.0pt">
+ <g stroke-dasharray="none" stroke-dashoffset="0.0pt">
+ <g stroke="rgb(0.0%,0.0%,0.0%)">
+ <path d=" M  1260.0 -37.5 C  1260.0 -49.92656 1249.92656 -60.0 1237.5 -60.0 C  1225.07344 -60.0 1215.0 -49.92656 1215.0 -37.5 C  1215.0 -25.07344 1225.07344 -15.0 1237.5 -15.0 C  1249.92656 -15.0 1260.0 -25.07344 1260.0 -37.5 Z M  1237.5 -37.5  " style="fill:none"/>
+ <g stroke="rgb(0.0%,0.0%,0.0%)">
+ <g>
+ <g>
+ <g transform="matrix(1.0,0.0,0.0,1.0,1234.8692,-42.01811)">
+ <g fill="rgb(0.0%,0.0%,0.0%)">
+ <text style="stroke:none" transform="scale(1,-1) translate(2.6308,0)" text-anchor="middle"  font-size="10"> 
+<tspan font-family="cmmi" font-size="10">y</tspan></text> 
+</g>
+ </g>
+ </g>
+ </g>
+ <g fill="rgb(84.70459%,89.80255%,89.80255%)">
+ <path d=" M  1350.0 -82.5 C  1350.0 -94.92656 1339.92656 -105.0 1327.5 -105.0 C  1315.07344 -105.0 1305.0 -94.92656 1305.0 -82.5 C  1305.0 -70.07344 1315.07344 -60.0 1327.5 -60.0 C  1339.92656 -60.0 1350.0 -70.07344 1350.0 -82.5 Z M  1327.5 -82.5  " style="stroke:none"/>
+ <g stroke-width="1.50009pt">
+ <g stroke-dasharray="none" stroke-dashoffset="0.0pt">
+ <g stroke-dasharray="none" stroke-dashoffset="0.0pt">
+ <g stroke="rgb(0.0%,0.0%,0.0%)">
+ <path d=" M  1350.0 -82.5 C  1350.0 -94.92656 1339.92656 -105.0 1327.5 -105.0 C  1315.07344 -105.0 1305.0 -94.92656 1305.0 -82.5 C  1305.0 -70.07344 1315.07344 -60.0 1327.5 -60.0 C  1339.92656 -60.0 1350.0 -70.07344 1350.0 -82.5 Z M  1327.5 -82.5  " style="fill:none"/>
+ <g stroke-width="1.50009pt">
+ <g stroke-dasharray="none" stroke-dashoffset="0.0pt">
+ <g stroke-dasharray="none" stroke-dashoffset="0.0pt">
+ <g stroke-linecap="butt">
+ <g fill="rgb(0.0%,0.0%,0.0%)">
+ <g stroke="rgb(0.0%,0.0%,0.0%)">
+ <path d=" M  1258.29712 -47.89856 L  1300.80286 -69.15147  " style="fill:none"/>
+ <g>
+ <g transform="matrix(0.898,-0.44899,0.44899,0.898,1300.80284,-69.15147)">
+ <g>
+ <path d=" M  6.57024 0.0 C  4.62346 0.365 1.46005 1.46005 -0.73003 2.7376 L  -0.73003 -2.7376 C  1.46005 -1.46005 4.62346 -0.365 6.57024 0.0  " style="stroke:none"/>
+ </g>
+  </g>
+ </g>
+ <g fill="rgb(84.70459%,89.80255%,89.80255%)">
+ <path d=" M  1440.0 -82.5 C  1440.0 -94.92656 1429.92656 -105.0 1417.5 -105.0 C  1405.07344 -105.0 1395.0 -94.92656 1395.0 -82.5 C  1395.0 -70.07344 1405.07344 -60.0 1417.5 -60.0 C  1429.92656 -60.0 1440.0 -70.07344 1440.0 -82.5 Z M  1417.5 -82.5  " style="stroke:none"/>
+ <g stroke-width="1.50009pt">
+ <g stroke-dasharray="none" stroke-dashoffset="0.0pt">
+ <g stroke-dasharray="none" stroke-dashoffset="0.0pt">
+ <g stroke="rgb(0.0%,0.0%,0.0%)">
+ <path d=" M  1440.0 -82.5 C  1440.0 -94.92656 1429.92656 -105.0 1417.5 -105.0 C  1405.07344 -105.0 1395.0 -94.92656 1395.0 -82.5 C  1395.0 -70.07344 1405.07344 -60.0 1417.5 -60.0 C  1429.92656 -60.0 1440.0 -70.07344 1440.0 -82.5 Z M  1417.5 -82.5  " style="fill:none"/>
+ <g stroke-width="1.50009pt">
+ <g stroke-dasharray="none" stroke-dashoffset="0.0pt">
+ <g stroke-dasharray="none" stroke-dashoffset="0.0pt">
+ <g stroke-linecap="butt">
+ <g fill="rgb(0.0%,0.0%,0.0%)">
+ <g stroke="rgb(0.0%,0.0%,0.0%)">
+ <path d=" M  1350.75256 -82.5 L  1387.6772 -82.5  " style="fill:none"/>
+ <g>
+ <g transform="matrix(1.0,0.0,0.0,1.0,1387.6772,-82.5)">
+ <g>
+ <path d=" M  6.57024 0.0 C  4.62346 0.365 1.46005 1.46005 -0.73003 2.7376 L  -0.73003 -2.7376 C  1.46005 -1.46005 4.62346 -0.365 6.57024 0.0  " style="stroke:none"/>
+ </g>
+  </g>
+ </g>
+ <g stroke-width="1.50009pt">
+ <g stroke-dasharray="none" stroke-dashoffset="0.0pt">
+ <g stroke-dasharray="none" stroke-dashoffset="0.0pt">
+ <g stroke-linecap="butt">
+ <g fill="rgb(0.0%,0.0%,0.0%)">
+ <g stroke="rgb(0.0%,0.0%,0.0%)">
+ <path d=" M  1440.0 -82.5 L  1476.92464 -82.5  " style="fill:none"/>
+ <g>
+ <g transform="matrix(1.0,0.0,0.0,1.0,1476.92464,-82.5)">
+ <g>
+ <path d=" M  6.57024 0.0 C  4.62346 0.365 1.46005 1.46005 -0.73003 2.7376 L  -0.73003 -2.7376 C  1.46005 -1.46005 4.62346 -0.365 6.57024 0.0  " style="stroke:none"/>
+ </g>
+  </g>
+ </g>
+ <g stroke="rgb(0.0%,0.0%,0.0%)">
+ <g>
+ <g>
+ <g transform="matrix(1.0,0.0,0.0,1.0,1325.0,-87.99033)">
+ <g fill="rgb(0.0%,0.0%,0.0%)">
+ <text style="stroke:none" transform="scale(1,-1) translate(2.5,0)" text-anchor="middle"  font-size="10"> 
+&#8211;</text> 
+</g>
+ </g>
+ </g>
+ </g>
+ <g stroke="rgb(0.0%,0.0%,0.0%)">
+ <g>
+ <g>
+ <g transform="matrix(1.0,0.0,0.0,1.0,1411.1111,-88.33755)">
+ <g fill="rgb(0.0%,0.0%,0.0%)">
+ <text style="stroke:none" transform="scale(1,-1) translate(6.3889,0)" text-anchor="middle"  font-size="10"> 
+<tspan font-family="cmsy" font-size="10">&#x2225;</tspan><tspan font-family="cmmi" font-size="10">.</tspan><tspan font-family="cmsy" font-size="10">&#x2225;</tspan></text> 
+</g>
+ </g>
+ </g>
+ </g>
+ <g>
+ <g>
+ <g transform="matrix(1.0,0.0,0.0,1.0,1422.75694,-82.40756)">
+ <g fill="rgb(0.0%,0.0%,0.0%)">
+ <text style="stroke:none" transform="scale(1,-1) translate(2.24306,0)" text-anchor="middle"  font-size="10"> 
+<tspan baseline-shift="sub"><tspan font-family="cmr" font-size="7">2</tspan> </tspan></text> 
+</g>
+ </g>
+ </g>
+ </g>
+ <g>
+ <g>
+ <g transform="matrix(1.0,0.0,0.0,1.0,1422.75694,-89.90756)">
+ <g fill="rgb(0.0%,0.0%,0.0%)">
+ <text style="stroke:none" transform="scale(1,-1) translate(2.24306,0)" text-anchor="middle"  font-size="10"> 
+<tspan baseline-shift="sub"><tspan font-family="cmr" font-size="7">2</tspan> </tspan></text> 
+</g>
+ </g>
+ </g>
+ </g>
+ <g stroke="rgb(0.0%,0.0%,0.0%)">
+ <g>
+ <g>
+ <g transform="matrix(1.0,0.0,0.0,1.0,1449.36105,-78.413)">
+ <g fill="rgb(0.0%,0.0%,0.0%)">
+ <text style="stroke:none" transform="scale(1,-1) translate(8.6389,0)" text-anchor="middle"  font-size="10"> 
+cost</text> 
+</g>
+ </g>
+ </g>
+ </g>
+ <g stroke="rgb(0.0%,0.0%,0.0%)">
+ <g>
+ <g>
+ <g transform="matrix(1.0,0.0,0.0,1.0,1284.14241,-122.49037)">
+ <g fill="rgb(0.0%,0.0%,0.0%)">
+ <text style="stroke:none" transform="scale(1,-1) translate(2.85764,0)" text-anchor="middle"  font-size="10"> 
+<tspan font-family="cmmi" font-size="10">&#x0177;</tspan></text> 
+</g>
+ </g>
+ </g>
+ </g>
+ <g fill="rgb(96.07849%,93.33344%,61.17554%)">
+ <path d=" M  1530.0 -82.5 C  1530.0 -94.92656 1519.92656 -105.0 1507.5 -105.0 C  1495.07344 -105.0 1485.0 -94.92656 1485.0 -82.5 C  1485.0 -70.07344 1495.07344 -60.0 1507.5 -60.0 C  1519.92656 -60.0 1530.0 -70.07344 1530.0 -82.5 Z M  1507.5 -82.5  " style="stroke:none"/>
+ <g stroke-width="1.50009pt">
+ <g stroke-dasharray="none" stroke-dashoffset="0.0pt">
+ <g stroke-dasharray="none" stroke-dashoffset="0.0pt">
+ <g stroke="rgb(0.0%,0.0%,0.0%)">
+ <path d=" M  1530.0 -82.5 C  1530.0 -94.92656 1519.92656 -105.0 1507.5 -105.0 C  1495.07344 -105.0 1485.0 -94.92656 1485.0 -82.5 C  1485.0 -70.07344 1495.07344 -60.0 1507.5 -60.0 C  1519.92656 -60.0 1530.0 -70.07344 1530.0 -82.5 Z M  1507.5 -82.5  " style="fill:none"/>
+ <g stroke="rgb(0.0%,0.0%,0.0%)">
+ <g>
+ <g>
+ <g transform="matrix(1.0,0.0,0.0,1.0,1503.33333,-89.25421)">
+ <g fill="rgb(0.0%,0.0%,0.0%)">
+ <text style="stroke:none" transform="scale(1,-1) translate(4.16667,0)" text-anchor="middle"  font-size="10"> 
+<tspan font-family="cmsy" font-size="10">&#x2207;</tspan></text> 
+</g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ 
+                                                                                         </g> 
+</svg> 

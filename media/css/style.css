@@ -167,7 +167,6 @@ body > .container {
 	color: #999;
 }
 
-
 /*
  * Footer
  */
@@ -185,4 +184,13 @@ body > .container {
 }
 .blog-footer p:last-child {
 	margin-bottom: 0;
+}
+
+/*
+ * Extra
+ */
+.center-image {
+    margin: 0 auto;
+    display: block;
+    max-width: 100%;
 }
