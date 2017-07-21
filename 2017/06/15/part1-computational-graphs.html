@@ -134,6 +134,8 @@
 
 <p><img src="/media/img/part1/gradient_descent.gif" alt="Gradient descent in action" class="center-image" /></p>
 
+<p>You can get the code of these two simulations <a href="https://github.com/pvigier/gradient-descent">here</a>.</p>
+
 <p>I stop there for the brief introduction to machine learning. We will now see how to model some parametric functions and how they relate to neural networks.</p>
 
 <h1 id="computational-graphs">Computational graphs</h1>
@@ -191,6 +193,8 @@
 
 <p><img src="/media/img/part1/uml_diagram.svg" alt="UML diagram of the library" class="center-image" /></p>
 
+<p>And before, I forget you can retrieve the full code for this chapter <a href="https://github.com/pvigier/pychain-part1">here</a>.</p>
+
 <h1 id="node-class">Node class</h1>
 
 <p>A node have several inputs and several outputs. During the propagation, a node uses its inputs to compute its ouputs as depicted below.</p>
@@ -238,6 +242,7 @@
 
     <span class="k">def</span> <span class="nf">set_parents</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parents</span><span class="p">):</span>
         <span class="c"># Fill self.parents</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parents</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">i_input</span><span class="p">,</span> <span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="n">i_parent_output</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">parents</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">parents</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">parent</span><span class="p">,</span> <span class="n">i_parent_output</span><span class="p">))</span>
             <span class="n">parent</span><span class="o">.</span><span class="n">add_child</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i_input</span><span class="p">,</span> <span class="n">i_parent_output</span><span class="p">)</span>
@@ -319,33 +324,28 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span>
 
     <span class="k">def</span> <span class="nf">compute_gradient</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dJdy</span></code></pre></figure>
+        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">dJdy</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span></code></pre></figure>
 
 <h2 id="parameter-nodes">Parameter nodes</h2>
 
-<p>The class <code class="highlighter-rouge">ParameterNode</code> has two new parameters <code class="highlighter-rouge">w</code> and <code class="highlighter-rouge">acc_dJdw</code>. We use the letter <code class="highlighter-rouge">w</code> to refer to the weights, like in neural networks. <code class="highlighter-rouge">acc_dJdw</code> represents an accumulator of the derivative of the cost with respect to the weights <code class="highlighter-rouge">w</code> over several backpropagations. Sometimes it is useful to average the gradient over several batches before using gradient descent.</p>
+<p>The class <code class="highlighter-rouge">ParameterNode</code> has a new parameter <code class="highlighter-rouge">w</code>. We use the letter <code class="highlighter-rouge">w</code> to refer to the weights, like in neural networks.</p>
 
 <p>The output of the node is simply the weight.</p>
-
-<p>In the method <code class="highlighter-rouge">compute_gradient</code>, the accumulator is updated before returning the gradient.</p>
-
-<p>There is also a method, <code class="highlighter-rouge">reset_accumulator</code> to reset the accumulator.</p>
 
 <figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">class</span> <span class="nc">ParameterNode</span><span class="p">(</span><span class="n">Node</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">w</span><span class="p">):</span>
         <span class="n">Node</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">w</span> <span class="o">=</span> <span class="n">w</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">acc_dJdw</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">w</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">compute_output</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">w</span><span class="p">]</span>
 
     <span class="k">def</span> <span class="nf">compute_gradient</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">acc_dJdw</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dJdy</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dJdy</span>
+        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">dJdy</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span></code></pre></figure>
 
-    <span class="k">def</span> <span class="nf">reset_accumulator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">acc_dJdw</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span></code></pre></figure>
+<p>This class is very simple. The only issue is that the constructor expect an initial value for the weights. There are several thumb rules regarding the initialization of the weights. The general idea is to sample from a zero mean distribution with a small standard deviation. You can see more details about initialization in <a href="yann.lecun.com/exdb/publis/pdf/lecun-98b.pdf">Efficient BackProp</a>.</p>
+
+<p>You will see several examples of initialization later in the tutorial.</p>
 
 <h2 id="operation-nodes">Operation nodes</h2>
 
@@ -410,20 +410,20 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">parameter_nodes</span> <span class="o">=</span> <span class="n">parameter_nodes</span>
 
         <span class="c"># Create a gradient node</span>
-        <span class="n">GradientNode</span><span class="p">([</span><span class="n">cost_node</span><span class="p">])</span>
+        <span class="n">GradientNode</span><span class="p">([(</span><span class="n">cost_node</span><span class="p">,</span> <span class="mi">0</span><span class="p">)])</span>
 
     <span class="k">def</span> <span class="nf">propagate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">reset_memoization</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">node</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_nodes</span><span class="p">):</span>
             <span class="n">node</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-        <span class="k">return</span> <span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">get_output</span><span class="p">()</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_nodes</span><span class="p">]</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">get_output</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_nodes</span><span class="p">]</span>
 
     <span class="k">def</span> <span class="nf">backpropagate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">Y</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">y</span><span class="p">,</span> <span class="n">node</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">Y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">expected_output_nodes</span><span class="p">):</span>
             <span class="n">node</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
-        <span class="n">cost</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cost_node</span><span class="o">.</span><span class="n">get_output</span><span class="p">()</span>
+        <span class="n">cost</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cost_node</span><span class="o">.</span><span class="n">get_output</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameter_nodes</span><span class="p">:</span>
-            <span class="n">node</span><span class="o">.</span><span class="n">get_gradient</span><span class="p">()</span>
+            <span class="n">node</span><span class="o">.</span><span class="n">get_gradient</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">cost</span>
 
     <span class="k">def</span> <span class="nf">reset_memoization</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -464,16 +464,11 @@
 
     <span class="k">def</span> <span class="nf">optimize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">node</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parameter_nodes</span><span class="p">):</span>
-            <span class="n">direction</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_direction</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">node</span><span class="o">.</span><span class="n">acc_dJdw</span> <span class="o">/</span> <span class="n">batch_size</span><span class="p">)</span>
+            <span class="n">direction</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_direction</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">node</span><span class="o">.</span><span class="n">get_gradient</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">/</span> <span class="n">batch_size</span><span class="p">)</span>
             <span class="n">node</span><span class="o">.</span><span class="n">w</span> <span class="o">-=</span> <span class="bp">self</span><span class="o">.</span><span class="n">learning_rate</span> <span class="o">*</span> <span class="n">direction</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">reset_accumulators</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">compute_direction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">grad</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="nb">NotImplementedError</span><span class="p">()</span>
-
-    <span class="k">def</span> <span class="nf">reset_accumulators</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameter_nodes</span><span class="p">:</span>
-            <span class="n">node</span><span class="o">.</span><span class="n">reset_accumulator</span><span class="p">()</span></code></pre></figure>
+        <span class="k">raise</span> <span class="nb">NotImplementedError</span><span class="p">()</span></code></pre></figure>
 
 <p>For gradient descent as explained before, we simply have <script type="math/tex">v_t = \frac{\partial J}{\partial \theta}(\theta_t)</script>.</p>
 
