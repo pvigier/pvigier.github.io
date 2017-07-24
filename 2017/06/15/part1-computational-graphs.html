@@ -487,7 +487,7 @@
 
 <p>We will use the function <code class="highlighter-rouge">fully_connected</code> which takes as input a list of the sizes of the layers and returns a computational graph which represents such a network.</p>
 
-<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">fully_connected</span><span class="p">(</span><span class="n">layers</span><span class="p">):</span>
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">create_fully_connected_network</span><span class="p">(</span><span class="n">layers</span><span class="p">):</span>
     <span class="n">nodes</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">parameter_nodes</span> <span class="o">=</span> <span class="p">[]</span>
 
@@ -520,16 +520,18 @@
     <span class="c"># Expected output</span>
     <span class="n">expected_output_node</span> <span class="o">=</span> <span class="n">InputNode</span><span class="p">()</span>
     <span class="c"># Cost function</span>
-    <span class="n">cost_node</span> <span class="o">=</span> <span class="n">SigmoidCrossEntropyNode</span><span class="p">([(</span><span class="n">expected_output_node</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="n">cur_input_node</span><span class="p">,</span> <span class="mi">0</span><span class="p">)])</span>
+    <span class="n">cost_node</span> <span class="o">=</span> <span class="n">BinaryCrossEntropyNode</span><span class="p">([(</span><span class="n">expected_output_node</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="n">cur_input_node</span><span class="p">,</span> <span class="mi">0</span><span class="p">)])</span>
 
     <span class="n">nodes</span> <span class="o">+=</span> <span class="p">[</span><span class="n">expected_output_node</span><span class="p">,</span> <span class="n">cost_node</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">Graph</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="p">[</span><span class="n">input_node</span><span class="p">],</span> <span class="p">[</span><span class="n">cur_input_node</span><span class="p">],</span> <span class="p">[</span><span class="n">expected_output_node</span><span class="p">],</span> <span class="n">cost_node</span><span class="p">,</span> <span class="n">parameter_nodes</span><span class="p">)</span></code></pre></figure>
 
-<p>The function is a bit long but simple, we simply create nodes and connect them. First, we create an input node. Then, for each layer, we create a bias node, a parameter node, a multiplication node and an activation node. These nodes models the operation <script type="math/tex">x \mapsto f((1 \mid x)W)</script> where <script type="math/tex">(1 \mid x)</script> denotes the matrice <script type="math/tex">x</script> to which we have added a column of 1 at the beginning, <script type="math/tex">W</script> the weights of the parameter node and <script type="math/tex">f</script> the activation function.</p>
+<p>The function is a bit long but simple, we simply create nodes and connect them. First, we create an input node. Then, for each layer, we create a bias node, a parameter node, a multiplication node and an activation node. These nodes model the operation <script type="math/tex">x \mapsto f((1 \mid x)W)</script> where <script type="math/tex">(1 \mid x)</script> denotes the matrice <script type="math/tex">x</script> to which we have added a column of 1 at the beginning, <script type="math/tex">W</script> the weights of the parameter node and <script type="math/tex">f</script> the activation function.</p>
 
 <p>We use two different activation functions : <script type="math/tex">\tanh</script> and <script type="math/tex">\sigma</script>. <script type="math/tex">\tanh</script> is used in the hidden layers, it is a non linear function which maps <script type="math/tex">\mathbb{R}</script> to <script type="math/tex">]-1, 1[</script>. It is very important that activation functions are non linear otherwise the multilayer neural network is equivalent to a one layer neural network.</p>
 
-<p>We use the sigmoid function as activation function for the output layer because it maps <script type="math/tex">\mathbb{R}</script> to <script type="math/tex">[0,1]</script> and consequently the output of the network can be interpreted as a probability, for example <script type="math/tex">p(y=1 \mid x)</script>.</p>
+<p>We use the sigmoid function as activation function for the output layer because it maps <script type="math/tex">\mathbb{R}</script> to <script type="math/tex">]0,1[</script> and consequently the output of the network can be interpreted as a probability, usually <script type="math/tex">p(y=1 \mid x)</script>.</p>
+
+<p>For the cost function, we choose the binary cross entropy. If you want to know more about the output functions and the cost functions, you can read the appendix.</p>
 
 <h2 id="xor">XOR</h2>
 
@@ -539,7 +541,7 @@
 
 <figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="c"># Create the graph and initialize the optimization algorithm</span>
 <span class="n">layers</span> <span class="o">=</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
-<span class="n">graph</span> <span class="o">=</span> <span class="n">fully_connected</span><span class="p">(</span><span class="n">layers</span><span class="p">)</span>
+<span class="n">graph</span> <span class="o">=</span> <span class="n">create_fully_connected_network</span><span class="p">(</span><span class="n">layers</span><span class="p">)</span>
 <span class="n">sgd</span> <span class="o">=</span> <span class="n">GradientDescent</span><span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">get_parameter_nodes</span><span class="p">(),</span> <span class="mf">0.1</span><span class="p">)</span>
 <span class="c"># Train</span>
 <span class="n">t</span> <span class="o">=</span> <span class="p">[]</span>
