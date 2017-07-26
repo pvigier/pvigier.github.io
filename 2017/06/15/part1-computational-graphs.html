@@ -14,6 +14,7 @@
         <!-- My themes -->
         <link href="/media/css/style.css" rel="stylesheet">
         <link href="/media/css/syntax.css" rel="stylesheet">
+        <link href="/media/css/modal.css" rel="stylesheet">
     </head>
     <body>
         <div class="blog-masthead">
@@ -116,7 +117,7 @@
 
 <p>Let’s visualize what this formula means and how it can be useful to find a good direction. The generalization of the tangent, which is a line, in a vector space is an hyperplane. In a 2D space it corresponds to a plane.</p>
 
-<p><img src="/media/img/part1/tangent_space.png" alt="Taylor's theorem visualization" class="center-image" /></p>
+<p><img src="/media/img/part1/tangent_space.png" alt="Taylor's theorem visualization" class="center-image modal-image" /></p>
 
 <p>The plane in blue is the approximation given by Taylor’s theorem. The points in orange are the outputs of <script type="math/tex">f</script> for all points at a same distance <script type="math/tex">d</script> to <script type="math/tex">x_0</script>. In green, it’s the output of the point at distance <script type="math/tex">d</script> of <script type="math/tex">x_0</script> in the direction of the gradient and in blue, it’s the output of the point at distance $d$ in the opposite direction of the gradient.</p>
 
@@ -132,7 +133,7 @@
 
 <p>You can see gradient descent in action, in the animation below.</p>
 
-<p><img src="/media/img/part1/gradient_descent.gif" alt="Gradient descent in action" class="center-image" /></p>
+<p><img src="/media/img/part1/gradient_descent.gif" alt="Gradient descent in action" class="center-image modal-image" /></p>
 
 <p>You can get the code of these two simulations <a href="https://github.com/pvigier/gradient-descent">here</a>.</p>
 
@@ -146,15 +147,15 @@
 
 <p>Imagine, you want to fit very simple data like in the figure below.</p>
 
-<p><img src="/media/img/part1/linear_regression.png" alt="Linear regression" class="center-image" /></p>
+<p><img src="/media/img/part1/linear_regression.png" alt="Linear regression" class="center-image modal-image" /></p>
 
 <p>The natural idea is to use a function like this one <script type="math/tex">f_{\theta} : x \mapsto ax + b</script> where <script type="math/tex">\theta = (a, b)</script> is the parameter of the function. This function can be represented with the following computational graph.</p>
 
-<p><img src="/media/img/part1/linear_regression_graph.svg" alt="Computational grah for the linear regression" class="center-image" /></p>
+<p><img src="/media/img/part1/linear_regression_graph.svg" alt="Computational grah for the linear regression" class="center-image modal-image" /></p>
 
 <p>Now, imagine you have to solve a more difficult problem and you want to use a neural network, like the one below.</p>
 
-<p><img src="/media/img/part1/network_3_5_3.svg" alt="Neural networks 3-5-3" class="center-image" /></p>
+<p><img src="/media/img/part1/network_3_5_3.svg" alt="Neural networks 3-5-3" class="center-image modal-image" /></p>
 
 <p>It has two layers, the hidden layer uses <script type="math/tex">\tanh</script> as activation function and the output layer uses the sigmoid <script type="math/tex">\sigma : t \mapsto \frac{1}{1 + \exp(-t)}</script>.</p>
 
@@ -162,7 +163,7 @@
 
 <p>The following computational graph corresponds to the neural network depicted above.</p>
 
-<p><img src="/media/img/part1/graph_3_5_3.svg" alt="Computational graph for the neural networks" class="center-image" /></p>
+<p><img src="/media/img/part1/graph_3_5_3.svg" alt="Computational graph for the neural networks" class="center-image modal-image" /></p>
 
 <p>We can see several things from these examples. Firstly there are differents nodes :</p>
 <ul>
@@ -191,7 +192,7 @@
 
 <p>The UML diagram below gives a global view of the classes and their interactions.</p>
 
-<p><img src="/media/img/part1/uml_diagram.svg" alt="UML diagram of the library" class="center-image" /></p>
+<p><img src="/media/img/part1/uml_diagram.svg" alt="UML diagram of the library" class="center-image modal-image" /></p>
 
 <p>And before, I forget you can retrieve the full code for this chapter <a href="https://github.com/pvigier/pychain-part1">here</a>.</p>
 
@@ -199,11 +200,11 @@
 
 <p>A node have several inputs and several outputs. During the propagation, a node uses its inputs to compute its ouputs as depicted below.</p>
 
-<p><img src="/media/img/part1/node_propagation.svg" alt="Propagation in a node" class="center-image" /></p>
+<p><img src="/media/img/part1/node_propagation.svg" alt="Propagation in a node" class="center-image modal-image" /></p>
 
 <p>The goal of the backpropagation is to compute the derivative of the cost with respect to the parameters to use the gradient descent algorithm. To do that, we are going to use the <em>chain rule</em>, a lot. Indeed, thanks to the chain rule, it is possible to express the derivative of the cost with respect to an input of a node with the derivatives of the cost with respect to the outputs of the same node.</p>
 
-<p><img src="/media/img/part1/node_backpropagation.svg" alt="Backpropagation in a node" class="center-image" /></p>
+<p><img src="/media/img/part1/node_backpropagation.svg" alt="Backpropagation in a node" class="center-image modal-image" /></p>
 
 <p>Precisely, if a node have <script type="math/tex">m</script> inputs and <script type="math/tex">n</script> outputs, we have :</p>
 
@@ -215,7 +216,7 @@
 
 <p>An illustration with the neural networks shown before :</p>
 
-<p><img src="/media/img/part1/graph_backpropagation.svg" alt="Backpropagation in a graph" class="center-image" /></p>
+<p><img src="/media/img/part1/graph_backpropagation.svg" alt="Backpropagation in a graph" class="center-image modal-image" /></p>
 
 <h2 id="base-class">Base class</h2>
 
@@ -256,7 +257,7 @@
 
 <p>OK, it is a bit hard to follow. Hopefully a diagram will make it crystal clear!</p>
 
-<p><img src="/media/img/part1/node_links.svg" alt="Node links" class="center-image" /></p>
+<p><img src="/media/img/part1/node_links.svg" alt="Node links" class="center-image modal-image" /></p>
 
 <p>We can set the parents during the initialization or later by using <code class="highlighter-rouge">set_parents</code>. We have not to manually set the children.</p>
 
@@ -392,7 +393,7 @@
 
 <p>Consider the graph representing the neural networks described above. If we had an input node <script type="math/tex">y</script> to represent the expected output and we choose the squared error as cost function, we obtain this new graph:</p>
 
-<p><img src="/media/img/part1/graph_with_cost.svg" alt="A graph with cost inside it" class="center-image" /></p>
+<p><img src="/media/img/part1/graph_with_cost.svg" alt="A graph with cost inside it" class="center-image modal-image" /></p>
 
 <p>The yellow node at the end is a gradient node which always returns 1 as gradient.</p>
 
@@ -570,8 +571,8 @@
   </thead>
   <tbody>
     <tr>
-      <td style="text-align: center"><img src="/media/img/part1/xor_4_4_1_tanh.png" alt="XOR with tanh as activation function" class="center-image" /></td>
-      <td style="text-align: center"><img src="/media/img/part1/xor_4_4_1_relu.png" alt="XOR with ReLU as activation function" class="center-image" /></td>
+      <td style="text-align: center"><img src="/media/img/part1/xor_4_4_1_tanh.png" alt="XOR with tanh as activation function" class="center-image modal-image" /></td>
+      <td style="text-align: center"><img src="/media/img/part1/xor_4_4_1_relu.png" alt="XOR with ReLU as activation function" class="center-image modal-image" /></td>
     </tr>
   </tbody>
 </table>
@@ -593,8 +594,8 @@
   </thead>
   <tbody>
     <tr>
-      <td style="text-align: center"><img src="/media/img/part1/disk_4_4_1_tanh.png" alt="XOR with tanh as activation function" class="center-image" /></td>
-      <td style="text-align: center"><img src="/media/img/part1/disk_4_4_1_relu.png" alt="XOR with ReLU as activation function" class="center-image" /></td>
+      <td style="text-align: center"><img src="/media/img/part1/disk_4_4_1_tanh.png" alt="XOR with tanh as activation function" class="center-image modal-image" /></td>
+      <td style="text-align: center"><img src="/media/img/part1/disk_4_4_1_relu.png" alt="XOR with ReLU as activation function" class="center-image modal-image" /></td>
     </tr>
   </tbody>
 </table>
@@ -714,5 +715,7 @@ s.setAttribute('data-timestamp', +new Date());
         ga('create', 'UA-30902264-4', 'auto');
         ga('send', 'pageview');
         </script>
+        <!-- Modal images -->
+        <script src="/media/js/modal.js"></script>
     </body>
 </html>
