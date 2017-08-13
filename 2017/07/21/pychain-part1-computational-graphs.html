@@ -37,7 +37,7 @@
             <div class="col-sm-8 blog-main">
 <div class="blog-post">
     <h2 class="blog-post-title">Part 1 - Computational graphs</h2>
-    <p class="blog-post-meta">15 Jun 2017 by <a href="/">pierre</a></p>
+    <p class="blog-post-meta">21 Jul 2017 by <a href="/">pierre</a></p>
     <h1 id="introduction">Introduction</h1>
 
 <p>Welcome in this big tutorial on neural networks!</p>
@@ -81,13 +81,13 @@
 
 <h2 id="the-learning-problem">The learning problem</h2>
 
-<p>Let’s speak a bit of machine learning, more precisely of supervised learning. In supervised learning, there is an unknown function <script type="math/tex">g : \mathcal{X} \rightarrow \mathcal{Y}</script> and we have a dataset of examples <script type="math/tex">D = ((x_1, y_1), ..., (x_N, y_N))</script> such that <script type="math/tex">\forall (x, y) \in D, y = g(x)</script>. The goal is to use the dataset <script type="math/tex">D</script> to reconstruct <script type="math/tex">g</script>. In other words, we want to find a function <script type="math/tex">f</script> such that :</p>
+<p>Let’s speak a bit of machine learning, more precisely of supervised learning. In supervised learning, there is an unknown function <script type="math/tex">g : \mathcal{X} \rightarrow \mathcal{Y}</script> and we have a dataset of examples <script type="math/tex">D = ((x_1, y_1), ..., (x_N, y_N))</script> such that <script type="math/tex">\forall (x, y) \in D, y = g(x)</script>. The goal is to use the dataset <script type="math/tex">D</script> to reconstruct <script type="math/tex">g</script>. In other words, we want to find a function <script type="math/tex">f</script> such that:</p>
 
 <script type="math/tex; mode=display">\forall x \in \mathcal{X}, f(x) \approx g(x)</script>
 
 <p>To go further we have two issues to tackle. The first one is that we have not access to the value of <script type="math/tex">g</script> for all <script type="math/tex">x</script> in <script type="math/tex">\mathcal{X}</script>, only those in <script type="math/tex">D</script>. Consequently, we will use a method called <em>empirical risk minimization</em> (ERM). Intuitively, we will try to have <script type="math/tex">\forall (x, y) \in D, y \approx f(x)</script> and hope that it works well for the other values.</p>
 
-<p>Then we need to formalize a bit the approximation symbol <script type="math/tex">\approx</script>. To do that, we will use a cost function, we will note it <script type="math/tex">J</script>. There are a variety of different cost functions, a famous one is the quadratic cost :</p>
+<p>Then we need to formalize a bit the approximation symbol <script type="math/tex">\approx</script>. To do that, we will use a cost function, we will note it <script type="math/tex">J</script>. There are a variety of different cost functions, a famous one is the quadratic cost:</p>
 
 <script type="math/tex; mode=display">J(f, D) = \sum_{(x, y) \in D}{||y - f(x)||_2^2}</script>
 
@@ -95,9 +95,9 @@
 
 <p>Now that we have a cost function, our goal is to find a function <script type="math/tex">f</script> such that <script type="math/tex">J(f, D)</script> is small.</p>
 
-<p>We still have a big problem. What is <script type="math/tex">f</script>? We could try to find the best <script type="math/tex">f</script> in the whole space function but it is not a good idea because there is an infinity of functions which have a cost equal to zero and most of them generalize very badly. We will instead restrict ourselves to a specific class of smoother functions and for that we are going to use, like I said before, parametric functions. A parametric function is simply a function <script type="math/tex">f_{\theta}</script> that depends on a parameter <script type="math/tex">\theta</script>.</p>
+<p>We still have a big problem. What is <script type="math/tex">f</script>? We could try to find the best <script type="math/tex">f</script> in the whole space of functions but it is not a good idea because there is an infinity of functions which have a cost equal to zero and most of them generalize very badly. We will instead restrict ourselves to a specific class of smoother functions and for that we are going to use, like I said before, parametric functions. A parametric function is simply a function <script type="math/tex">f_{\theta}</script> that depends on a parameter <script type="math/tex">\theta</script>.</p>
 
-<p>The problem is now to find the best possible <script type="math/tex">\theta</script> to fit our data. Formally, we will try to solve the following problem :</p>
+<p>The problem is now to find the best possible <script type="math/tex">\theta</script> to fit our data. Formally, we will try to solve the following problem:</p>
 
 <script type="math/tex; mode=display">\theta^* = \underset{\theta}{argmin}J(f_{\theta}, D))</script>
 
@@ -151,7 +151,7 @@
 
 <p>The natural idea is to use a function like this one <script type="math/tex">f_{\theta} : x \mapsto ax + b</script> where <script type="math/tex">\theta = (a, b)</script> is the parameter of the function. This function can be represented with the following computational graph.</p>
 
-<p><img src="/media/img/part1/linear_regression_graph.svg" alt="Computational grah for the linear regression" class="center-image modal-image" /></p>
+<p><img src="/media/img/part1/linear_regression_graph.svg" alt="Computational graph for the linear regression" class="center-image modal-image" /></p>
 
 <p>Now, imagine you have to solve a more difficult problem and you want to use a neural network, like the one below.</p>
 
@@ -165,11 +165,11 @@
 
 <p><img src="/media/img/part1/graph_3_5_3.svg" alt="Computational graph for the neural networks" class="center-image modal-image" /></p>
 
-<p>We can see several things from these examples. Firstly there are differents nodes :</p>
+<p>We can see several things from these examples. Firstly there are differents nodes:</p>
 <ul>
-  <li>Input nodes (in rose) : they represent the inputs of the function. In our examples, they are the <script type="math/tex">x</script> nodes.</li>
-  <li>Operation nodes (in blue) : they are nodes that represent operations. They take inputs, make a computation and give ouputs. In our examples, the <script type="math/tex">\sigma</script>, <script type="math/tex">\tanh</script>, <script type="math/tex">\times</script>, <script type="math/tex">+</script> nodes are operation nodes.</li>
-  <li>Parameter nodes (in green) : they represent the parameters of the function. In our example, they are <script type="math/tex">a</script>, <script type="math/tex">b</script>, <script type="math/tex">W_1</script> and <script type="math/tex">W_2</script>.</li>
+  <li>Input nodes (in rose): they represent the inputs of the function. In our examples, they are the <script type="math/tex">x</script> nodes.</li>
+  <li>Operation nodes (in blue): they are nodes that represent operations. They take inputs, make a computation and give ouputs. In our examples, the <script type="math/tex">\sigma</script>, <script type="math/tex">\tanh</script>, <script type="math/tex">\times</script>, <script type="math/tex">+</script> nodes are operation nodes.</li>
+  <li>Parameter nodes (in green): they represent the parameters of the function. In our example, they are <script type="math/tex">a</script>, <script type="math/tex">b</script>, <script type="math/tex">W_1</script> and <script type="math/tex">W_2</script>.</li>
 </ul>
 
 <p>Secondly, it allows a more compact notation, instead of drawing lots of neurons, we can only draw few nodes to represent a whole network.</p>
@@ -182,7 +182,7 @@
 
 <p>First, I am going to present the architecture of the library. Then we are going to explain the code.</p>
 
-<p>There are three main classes that we are going to code in this part : the Node class, the Graph class and the OptimizationAlgorithm class.</p>
+<p>There are three main classes that we are going to code in this part: the Node class, the Graph class and the OptimizationAlgorithm class.</p>
 
 <p>The Node class contains most of the logic of the library. It’s the hard part.</p>
 
@@ -206,7 +206,7 @@
 
 <p><img src="/media/img/part1/node_backpropagation.svg" alt="Backpropagation in a node" class="center-image modal-image" /></p>
 
-<p>Precisely, if a node have <script type="math/tex">m</script> inputs and <script type="math/tex">n</script> outputs, we have :</p>
+<p>Precisely, if a node have <script type="math/tex">m</script> inputs and <script type="math/tex">n</script> outputs, we have:</p>
 
 <script type="math/tex; mode=display">\forall i \in \{1, ..., m\}, \frac{\partial J}{\partial x_i} = \sum_{j=1}^{n}{\frac{\partial y_j}{\partial x_i}\frac{\partial J}{\partial y_j}}</script>
 
@@ -214,7 +214,7 @@
 
 <p>Consequently, we are going to backpropagate the derivatives from the “end” of the graph to the parameter nodes.</p>
 
-<p>An illustration with the neural networks shown before :</p>
+<p>An illustration with the neural networks shown before:</p>
 
 <p><img src="/media/img/part1/graph_backpropagation.svg" alt="Backpropagation in a graph" class="center-image modal-image" /></p>
 
@@ -434,12 +434,12 @@
     <span class="k">def</span> <span class="nf">get_parameter_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameter_nodes</span></code></pre></figure>
 
-<p>It takes the list of all the nodes in the graph. In addition, it needs to know the function of several nodes in the graph : the inputs, the ouputs, the expected outputs and the cost.</p>
+<p>It takes the list of all the nodes in the graph. In addition, it needs to know the function of several nodes in the graph: the inputs, the ouputs, the expected outputs and the cost.</p>
 
-<p>There are also two useful functions :</p>
+<p>There are also two useful functions:</p>
 <ul>
-  <li><code class="highlighter-rouge">propagate</code> : to compute the outputs of the graph ;</li>
-  <li><code class="highlighter-rouge">backpropagate</code> : to accumulate the gradient of the cost with respect to the parameters.</li>
+  <li><code class="highlighter-rouge">propagate</code>: to compute the outputs of the graph ;</li>
+  <li><code class="highlighter-rouge">backpropagate</code>: to accumulate the gradient of the cost with respect to the parameters.</li>
 </ul>
 
 <p>Finally, the method <code class="highlighter-rouge">reset_memoization</code> resets the flags for all the nodes and <code class="highlighter-rouge">get_parameter_nodes</code> returns the parameter nodes. The latter method is useful to give to the optimization algorithm the nodes for which it has to optimize the weights.</p>
@@ -450,7 +450,7 @@
 
 <p>The class is a generic template for all first-order iterative optimization algorithms such as gradient descent.</p>
 
-<p>For this kind of algorithm at each step <script type="math/tex">t</script>, we compute a direction <script type="math/tex">v_t</script> toward which we should move the parameter <script type="math/tex">\theta_t</script>. We have :</p>
+<p>For this kind of algorithm at each step <script type="math/tex">t</script>, we compute a direction <script type="math/tex">v_t</script> toward which we should move the parameter <script type="math/tex">\theta_t</script>. We have:</p>
 
 <script type="math/tex; mode=display">\theta_{t+1} = \theta_t - \eta v_t</script>
 
@@ -528,7 +528,7 @@
 
 <p>The function is a bit long but simple, we simply create nodes and connect them. First, we create an input node. Then, for each layer, we create a bias node, a parameter node, a multiplication node and an activation node. These nodes model the operation <script type="math/tex">x \mapsto f((1 \mid x)W)</script> where <script type="math/tex">(1 \mid x)</script> denotes the matrice <script type="math/tex">x</script> to which we have added a column of 1 at the beginning, <script type="math/tex">W</script> the weights of the parameter node and <script type="math/tex">f</script> the activation function.</p>
 
-<p>We use two different activation functions : <script type="math/tex">\tanh</script> and <script type="math/tex">\sigma</script>. <script type="math/tex">\tanh</script> is used in the hidden layers, it is a non linear function which maps <script type="math/tex">\mathbb{R}</script> to <script type="math/tex">]-1, 1[</script>. It is very important that activation functions are non linear otherwise the multilayer neural network is equivalent to a one layer neural network.</p>
+<p>We use two different activation functions: <script type="math/tex">\tanh</script> and <script type="math/tex">\sigma</script>. <script type="math/tex">\tanh</script> is used in the hidden layers, it is a non linear function which maps <script type="math/tex">\mathbb{R}</script> to <script type="math/tex">]-1, 1[</script>. It is very important that activation functions are non linear otherwise the multilayer neural network is equivalent to a one layer neural network.</p>
 
 <p>We use the sigmoid function as activation function for the output layer because it maps <script type="math/tex">\mathbb{R}</script> to <script type="math/tex">]0,1[</script> and consequently the output of the network can be interpreted as a probability, usually <script type="math/tex">p(y=1 \mid x)</script>.</p>
 
@@ -668,7 +668,13 @@ s.setAttribute('data-timestamp', +new Date());
         
             
             
-            <li id="yJune 2017"><a href="/2017/06">June 2017</a></li>
+            <li id="yAugust 2017"><a href="/2017/08">August 2017</a></li>
+             
+            
+        
+            
+            
+            <li id="yJuly 2017"><a href="/2017/07">July 2017</a></li>
              
             
         
