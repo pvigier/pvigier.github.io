@@ -3,7 +3,7 @@
 	<title>pvigier's blog</title>
 	<link href="http://pvigier.github.io/rss.xml" rel="self"/>
 	<link href="http://pvigier.github.io"/>
-	<updated>2017-08-13T15:18:39+02:00</updated>
+	<updated>2017-08-14T22:39:07+02:00</updated>
 	<id>http://pvigier.github.io</id>
 	<author>
 		<name>Pierre Viger</name>
@@ -15,13 +15,13 @@
 			<link href="http://pvigier.github.io/2017/08/13/pychain-part2-mnist.html"/>
 			<updated>2017-08-13T00:00:00+02:00</updated>
 			<id>http://pvigier.github.io/2017/08/13/pychain-part2-mnist</id>
-			<content type="html">&lt;p&gt;In &lt;a href=&quot;/2017/07/21/pychain-part1-computational-graphs.html&quot;&gt;part 1&lt;/a&gt;, we have create a fully functional library which is able to create and train neural networks using computational. We used on very simple examples. Today, we are going to try it on a more serious problem: character recognition.&lt;/p&gt;
+			<content type="html">&lt;p&gt;In &lt;a href=&quot;/2017/07/21/pychain-part1-computational-graphs.html&quot;&gt;part 1&lt;/a&gt;, we have created a fully functional library which is able to create and train neural networks using computational graphs. We used them on very simple examples. Today, we are going to try it on a more serious problem: character recognition.&lt;/p&gt;
 
-&lt;p&gt;We are going to use a well-known database in the machine learning and deep learning world named MNIST. The database is available on &lt;a href=&quot;http://yann.lecun.com/exdb/mnist/&quot;&gt;Yann LeCun’s website&lt;/a&gt;. If you read a bit about neural networks before you should have already seen his name. He is a French scientist who is one of the pioneers of neural networks and inventors of convolutional neural networks and he is now the director of AI at Facebook.&lt;/p&gt;
+&lt;p&gt;We are going to use a well-known database in the machine learning and deep learning world named MNIST. The database is available on &lt;a href=&quot;http://yann.lecun.com/exdb/mnist/&quot;&gt;Yann LeCun’s website&lt;/a&gt;. If you have read a bit about neural networks before you should have already seen his name. He is a French scientist who is one of the pioneers of neural networks and inventors of convolutional neural networks and he is now the director of AI at Facebook.&lt;/p&gt;
 
 &lt;p&gt;Character recognition is an emblematic problem for two reasons. Firstly, it is one of the first successes and industrial applications of neural networks. It was used since the 90’s to read checks. Secondly, computer vision has always been a leading application domain for neural networks.&lt;/p&gt;
 
-&lt;p&gt;In this part, we are going to briefly discover the MNIST database then, we are going to train some networks on it and finally, we are going to explore a bit how a neural network works.&lt;/p&gt;
+&lt;p&gt;In this part, we are going to briefly discover the MNIST database. Then, we are going to train some networks on it and finally, we are going to explore a bit how a neural network works.&lt;/p&gt;
 
 </content>
 		</entry>
