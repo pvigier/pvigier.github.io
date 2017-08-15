@@ -3,7 +3,7 @@
 	<title>pvigier's blog</title>
 	<link href="http://pvigier.github.io/rss.xml" rel="self"/>
 	<link href="http://pvigier.github.io"/>
-	<updated>2017-08-14T22:39:07+02:00</updated>
+	<updated>2017-08-15T10:24:54+02:00</updated>
 	<id>http://pvigier.github.io</id>
 	<author>
 		<name>Pierre Viger</name>
@@ -31,9 +31,7 @@
 			<link href="http://pvigier.github.io/2017/07/21/pychain-part1-computational-graphs.html"/>
 			<updated>2017-07-21T00:00:00+02:00</updated>
 			<id>http://pvigier.github.io/2017/07/21/pychain-part1-computational-graphs</id>
-			<content type="html">&lt;h1 id=&quot;introduction&quot;&gt;Introduction&lt;/h1&gt;
-
-&lt;p&gt;Welcome in this big tutorial on neural networks!&lt;/p&gt;
+			<content type="html">&lt;p&gt;Welcome in this big tutorial on neural networks!&lt;/p&gt;
 
 &lt;p&gt;Our goal is to write our own deep learning framework like TensorFlow or Torch. We are going to learn in-depth how neural networks work, all the mechanics behind them.&lt;/p&gt;
 
