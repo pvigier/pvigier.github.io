@@ -340,7 +340,7 @@
     <span class="k">def</span> <span class="nf">compute_gradient</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">dJdy</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span></code></pre></figure>
 
-<p>This class is very simple. The only issue is that the constructor expect an initial value for the weights. There are several thumb rules regarding the initialization of the weights. The general idea is to sample from a zero mean distribution with a small standard deviation. You can see more details about initialization in <a href="yann.lecun.com/exdb/publis/pdf/lecun-98b.pdf">Efficient BackProp</a>.</p>
+<p>This class is very simple. The only issue is that the constructor expect an initial value for the weights. There are several thumb rules regarding the initialization of the weights. The general idea is to sample from a zero mean distribution with a small standard deviation. You can see more details about initialization in <a href="http://yann.lecun.com/exdb/publis/pdf/lecun-98b.pdf">Efficient BackProp</a>.</p>
 
 <p>You will see several examples of initialization later in the tutorial.</p>
 
