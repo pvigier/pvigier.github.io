@@ -3,12 +3,34 @@
 	<title>pvigier's blog</title>
 	<link href="http://pvigier.github.io/rss.xml" rel="self"/>
 	<link href="http://pvigier.github.io"/>
-	<updated>2017-12-17T18:14:16+01:00</updated>
+	<updated>2018-02-09T18:24:57+01:00</updated>
 	<id>http://pvigier.github.io</id>
 	<author>
 		<name>Pierre Vigier</name>
 		<email>pierre.vigier@ymail.com</email>
 	</author>
+	
+		<entry>
+			<title>Circular dependencies in C++</title>
+			<link href="http://pvigier.github.io/2018/02/09/dependency-graph.html"/>
+			<updated>2018-02-09T00:00:00+01:00</updated>
+			<id>http://pvigier.github.io/2018/02/09/dependency-graph</id>
+			<content type="html">&lt;p&gt;Hi guys, it has been a while since the last post.&lt;/p&gt;
+
+&lt;p&gt;I write this short post to tell you about a small script I coded recently. You can find it &lt;a href=&quot;https://github.com/pvigier/dependency-graph&quot;&gt;here&lt;/a&gt; on my github account.&lt;/p&gt;
+
+&lt;p&gt;Its goal is to draw the “include” dependencies between classes in a C++ project. In particular, it allows to detect circular dependencies very easily or to check the architecture of a project.&lt;/p&gt;
+
+&lt;p&gt;You can see the output of the script on a project of mine:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://github.com/pvigier/dependency-graph/raw/master/examples/example1.png&quot; alt=&quot;Dependency graph&quot; class=&quot;center-image modal-image&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;I really like this visual representation which allows to see how classes interact.&lt;/p&gt;
+
+&lt;p&gt;However, the true reason why I created this tool is not because I like to see beautiful graphs but because I hate circular dependencies (note that there is none in the graph above). I consider circular dependencies as design flaws. But sometimes in a large project, it could happen that accidentally I create circular dependencies …&lt;/p&gt;
+
+</content>
+		</entry>
 	
 		<entry>
 			<title>Part 2 - Application: MNIST</title>
