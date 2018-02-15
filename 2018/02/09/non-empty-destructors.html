@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="">
+        <meta name="author" content="Pierre Vigier">
+
+        <title>Non empty destructors in C++ - pvigier's blog</title>
+        <link rel="shortcut icon" href="/media/img/favicon.png">
+        <!-- Bootstrap -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+        <!-- My themes -->
+        <link href="/media/css/style.css" rel="stylesheet">
+        <link href="/media/css/syntax.css" rel="stylesheet">
+        <link href="/media/css/modal.css" rel="stylesheet">
+    </head>
+    <body>
+        <div class="blog-masthead">
+            <div class="container">
+                <nav class="blog-nav">
+                    <a class="blog-nav-item active" href="/">Blog</a>
+                    <a class="blog-nav-item" href="/articles">Articles</a>
+                    <a class="blog-nav-item" href="/games">Games</a>
+                    <a class="blog-nav-item" href="/best-resources">Best Resources</a>
+                    <a class="blog-nav-item" href="/resume">Resume</a>
+                    <a class="blog-nav-item" href="/about">About</a>
+                </nav>
+            </div>
+        </div>
+        <div class="container">
+            <div class="blog-header">
+                <h1 class="blog-title">pvigier's blog</h1>
+                <p class="lead blog-description">computer science, programming and other ideas</p>
+            </div>
+            <div class="row">
+            <div class="col-sm-8 blog-main">
+<div class="blog-post">
+    <h2 class="blog-post-title">Non empty destructors in C++</h2>
+    <p class="blog-post-meta">09 Feb 2018 by <a href="/">pierre</a></p>
+    <p>Have you already faced problems with non trivial destructors?</p>
+
+<p>I face one recently which was really annoying. In this article, I want to share with you my knowledge of this problem and the solutions I use to address it.</p>
+
+<h1 id="the-problem">The problem</h1>
+
+<p>The problem is not really that the destructor is not empty but that the destructor is non trivial: there is a release of memory or some states are changed in another part of the app.</p>
+
+<p>Let us take a very simple example with a class that does dynamic allocation to explain the problem:</p>
+
+<div class="language-cpp highlighter-rouge"><pre class="highlight"><code><span class="k">class</span> <span class="nc">A</span>
+<span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+	<span class="n">A</span><span class="p">()</span> <span class="o">:</span> <span class="n">mPointer</span><span class="p">(</span><span class="k">new</span> <span class="kt">int</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+	<span class="p">{</span>
+
+	<span class="p">}</span>
+
+	<span class="o">~</span><span class="n">A</span><span class="p">()</span>
+	<span class="p">{</span>
+		<span class="k">delete</span> <span class="n">mPointer</span><span class="p">;</span>
+	<span class="p">}</span>
+
+<span class="k">private</span><span class="o">:</span>
+	<span class="kt">int</span><span class="o">*</span> <span class="n">mPointer</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<p>As we allocate an integer in the constructor, the natural solution for memory management is to free it in the destructor. However, this will have terrible consequences.</p>
+
+<p>For instance, if we do this:</p>
+
+<div class="language-cpp highlighter-rouge"><pre class="highlight"><code><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+	<span class="n">A</span> <span class="n">a</span><span class="p">;</span>
+	<span class="n">A</span> <span class="n">anotherA</span><span class="p">(</span><span class="n">a</span><span class="p">);</span>
+
+	<span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<p>A <code class="highlighter-rouge">Segmentation fault</code> will occur.</p>
+
+<p>Why?</p>
+
+<p>Because when we the <code class="highlighter-rouge">main</code> function ends, the destructor of <code class="highlighter-rouge">A</code> is called to delete <code class="highlighter-rouge">a</code> and <code class="highlighter-rouge">anotherA</code>. When <code class="highlighter-rouge">a</code> is destroyed the memory cell to which <code class="highlighter-rouge">a</code>’s <code class="highlighter-rouge">mPointer</code> points to is freed. Then, when <code class="highlighter-rouge">anotherA</code> is destroyed, we try to free the memory to which <code class="highlighter-rouge">anotherA</code>’s <code class="highlighter-rouge">mPointer</code> points to. But as <code class="highlighter-rouge">anotherA</code> is a copy of <code class="highlighter-rouge">a</code>, its <code class="highlighter-rouge">mPointer</code> points to the same memory cell as <code class="highlighter-rouge">a</code>’s <code class="highlighter-rouge">mPointer</code>. Thus we try to free twice the same memory cell which causes the <code class="highlighter-rouge">Segmentation fault</code>.</p>
+
+<p>So the problem is that because of copy the destructor is called twice on the same attributes.</p>
+
+<p>Note that the copy or move constructor are often called when we use containers. For instance, there is a copy or a move when the <code class="highlighter-rouge">std::vector</code>’s <code class="highlighter-rouge">push_back</code> is called.</p>
+
+<!--more-->
+
+<h1 id="first-solution-rule-of-three">First solution: rule of three</h1>
+
+<p>Firstly, this rule has nothing to do with Star Wars’ <a href="http://starwars.wikia.com/wiki/Rule_of_Two">Rule of two</a>.</p>
+
+<p>The <a href="https://en.wikipedia.org/wiki/Rule_of_three_(C%2B%2B_programming)">rule of three</a> is a design rule that say that if one of the following is defined then the two others should also be defined:</p>
+
+<ul>
+  <li>destructor</li>
+  <li>copy constructor</li>
+  <li>copy assignment operator</li>
+</ul>
+
+<p>In particular, if the destructor is non empty then we should define the copy constructor and the copy assignment operator.</p>
+
+<p>So for our previous class <code class="highlighter-rouge">A</code>, we would do the following:</p>
+
+<div class="language-cpp highlighter-rouge"><pre class="highlight"><code><span class="k">class</span> <span class="nc">A</span>
+<span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+	<span class="n">A</span><span class="p">()</span> <span class="o">:</span> <span class="n">mPointer</span><span class="p">(</span><span class="k">new</span> <span class="kt">int</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+	<span class="p">{</span>
+
+	<span class="p">}</span>
+
+	<span class="c1">// Copy constructor
+</span>    <span class="n">A</span> <span class="p">(</span><span class="k">const</span> <span class="n">A</span><span class="o">&amp;</span> <span class="n">other</span><span class="p">)</span> <span class="o">:</span> <span class="n">mPointer</span><span class="p">(</span><span class="k">new</span> <span class="kt">int</span><span class="p">(</span><span class="n">other</span><span class="p">.</span><span class="n">mPointer</span><span class="p">))</span>
+    <span class="p">{</span>
+        
+    <span class="p">}</span>
+
+	<span class="o">~</span><span class="n">A</span><span class="p">()</span>
+	<span class="p">{</span>
+		<span class="k">delete</span> <span class="n">mPointer</span><span class="p">;</span>
+	<span class="p">}</span>
+
+	<span class="c1">// Copy assignment operator
+</span>    <span class="n">A</span><span class="o">&amp;</span> <span class="k">operator</span><span class="o">=</span><span class="p">(</span><span class="k">const</span> <span class="n">A</span><span class="o">&amp;</span> <span class="n">other</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">delete</span> <span class="n">mPointer</span><span class="p">;</span>
+        <span class="n">mPointer</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">int</span><span class="p">(</span><span class="n">other</span><span class="p">.</span><span class="n">mPointer</span><span class="p">);</span>
+        <span class="k">return</span> <span class="o">*</span><span class="k">this</span><span class="p">;</span>
+    <span class="p">}</span>
+
+<span class="k">private</span><span class="o">:</span>
+	<span class="kt">int</span><span class="o">*</span> <span class="n">mPointer</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<p>With this definition of A, there is no problem anymore with our previous <code class="highlighter-rouge">main</code>.</p>
+
+<p>With C++11 the rule of three becomes the rule of five as we should also define the move constructor and the move assignment operator but I omit that for the sake of simplicity and brevity.</p>
+
+<p>The main disadvantage of this method is that we have to write a lot of code to obtain the correct behavior.</p>
+
+<h1 id="second-solution-raii">Second solution: RAII</h1>
+
+<p>Another solution is to ensure the destructor is empty by, for instance, using only attributes that follows <a href="https://en.wikipedia.org/wiki/Resource_acquisition_is_initialization">RAII</a>.</p>
+
+<p>In our case, for <code class="highlighter-rouge">A</code>, we could use a smart pointer instead of a plain one:</p>
+
+<div class="language-cpp highlighter-rouge"><pre class="highlight"><code><span class="cp">#include &lt;memory&gt;
+</span>
+<span class="k">class</span> <span class="nc">A</span>
+<span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+	<span class="n">A</span><span class="p">()</span> <span class="o">:</span> <span class="n">mPointer</span><span class="p">(</span><span class="k">new</span> <span class="kt">int</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+	<span class="p">{</span>
+
+	<span class="p">}</span>
+
+<span class="k">private</span><span class="o">:</span>
+	<span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">mPointer</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<p>The code is simpler, we have not to worry about the memory and the previous <code class="highlighter-rouge">main</code> executes successfully.</p>
+
+<p>If adequate, I think that this solution should be chosen.</p>
+
+<h1 id="last-solution-forbid-copy-and-move">Last solution: forbid copy and move</h1>
+
+<p>The last solution is a bit radical: it is to forbid copy and move.</p>
+
+<p>To do that I use the two following class:</p>
+
+<div class="language-cpp highlighter-rouge"><pre class="highlight"><code><span class="k">class</span> <span class="nc">NonCopyable</span>
+<span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+    <span class="n">NonCopyable</span><span class="p">()</span> <span class="o">=</span> <span class="k">default</span><span class="p">;</span>
+    <span class="n">NonCopyable</span><span class="p">(</span><span class="k">const</span> <span class="n">NonCopyable</span><span class="o">&amp;</span><span class="p">)</span> <span class="o">=</span> <span class="k">delete</span><span class="p">;</span>
+    <span class="n">NonCopyable</span><span class="o">&amp;</span> <span class="k">operator</span><span class="o">=</span><span class="p">(</span><span class="k">const</span> <span class="n">NonCopyable</span><span class="o">&amp;</span><span class="p">)</span> <span class="o">=</span> <span class="k">delete</span><span class="p">;</span>
+<span class="p">};</span>
+</code></pre>
+</div>
+
+<div class="language-cpp highlighter-rouge"><pre class="highlight"><code><span class="k">class</span> <span class="nc">NonMovable</span>
+<span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+    <span class="n">NonMovable</span><span class="p">()</span> <span class="o">=</span> <span class="k">default</span><span class="p">;</span>
+    <span class="n">NonMovable</span><span class="p">(</span><span class="n">NonCopyable</span><span class="o">&amp;&amp;</span><span class="p">)</span> <span class="o">=</span> <span class="k">delete</span><span class="p">;</span>
+    <span class="n">NonCopyable</span><span class="o">&amp;</span> <span class="k">operator</span><span class="o">=</span><span class="p">(</span><span class="n">NonCopyable</span><span class="o">&amp;&amp;</span><span class="p">)</span> <span class="o">=</span> <span class="k">delete</span><span class="p">;</span>
+<span class="p">};</span>
+</code></pre>
+</div>
+
+<p>As copy and move is not sure for A, I would make A inheriting of both:</p>
+
+<div class="language-cpp highlighter-rouge"><pre class="highlight"><code><span class="k">class</span> <span class="nc">A</span> <span class="o">:</span> <span class="k">public</span> <span class="n">NonCopyable</span><span class="p">,</span> <span class="k">public</span> <span class="n">NonMovable</span>
+<span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+	<span class="n">A</span><span class="p">()</span> <span class="o">:</span> <span class="n">mPointer</span><span class="p">(</span><span class="k">new</span> <span class="kt">int</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+	<span class="p">{</span>
+
+	<span class="p">}</span>
+
+	<span class="o">~</span><span class="n">A</span><span class="p">()</span>
+	<span class="p">{</span>
+		<span class="k">delete</span> <span class="n">mPointer</span><span class="p">;</span>
+	<span class="p">}</span>
+
+<span class="k">private</span><span class="o">:</span>
+	<span class="kt">int</span><span class="o">*</span> <span class="n">mPointer</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<p>This time, If we try to compile the previous <code class="highlighter-rouge">main</code>, we would obtain a compile-time error. But if the program compile, we are ensured that no wild <code class="highlighter-rouge">Segmentation Fault</code> will appear because of a copy or a mode.</p>
+
+<p>This solution has the benefit of being very fast to implement.</p>
+
+<p>That’s all for this post, I hope you find it useful.</p>
+
+</div><!-- /.blog-post -->
+
+<div id="disqus_thread"></div>
+<script>
+
+/**
+*  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+*  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+/*
+var disqus_config = function () {
+this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+};
+*/
+(function() { // DON'T EDIT BELOW THIS LINE
+var d = document, s = d.createElement('script');
+s.src = 'https://pvigier-github-io.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+</div><!-- /.blog-main -->
+<div class="col-sm-3 col-sm-offset-1 blog-sidebar">
+    <div class="sidebar-module">
+        <h4>Archives</h4>
+        <ol class="list-unstyled">
+        
+            
+            
+            <li id="yFebruary 2018"><a href="/2018/02">February 2018</a></li>
+             
+            
+        
+            
+            
+        
+            
+            
+            <li id="yAugust 2017"><a href="/2017/08">August 2017</a></li>
+             
+            
+        
+            
+            
+            <li id="yJuly 2017"><a href="/2017/07">July 2017</a></li>
+             
+            
+        
+            
+            
+            <li id="yFebruary 2017"><a href="/2017/02">February 2017</a></li>
+             
+            
+        
+        </ol>
+    </div>
+    <div class="sidebar-module">
+        <h4>Follow me</h4>
+        <ol class="list-unstyled">
+            <li><a href="https://github.com/pvigier">GitHub</a></li>
+            <li><a href="https://twitter.com/PierreVigier">Twitter</a></li>
+            <li><a href="/rss.xml">RSS</a></li>
+        </ol>
+    </div>
+</div><!-- /.blog-sidebar -->
+            </div><!-- /.row -->
+        </div><!-- /.container -->
+
+        <footer class="blog-footer">
+            <p>Powered by <a href="http://getbootstrap.com">Bootstrap</a> and <a href="http://jekyllrb.com">Jekyll</a>.</p>
+            <p>
+                <a href="#">Back to top</a>
+            </p>
+        </footer>
+        <!-- Javascript -->
+        <!-- jQuery -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+        <!-- Bootstrap -->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+        <!-- MathJax -->
+        <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+        <!-- Analytics -->
+        <script>
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+        ga('create', 'UA-30902264-4', 'auto');
+        ga('send', 'pageview');
+        </script>
+        <!-- Modal images -->
+        <script src="/media/js/modal.js"></script>
+    </body>
+</html>
