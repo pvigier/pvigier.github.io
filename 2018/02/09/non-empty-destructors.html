@@ -45,7 +45,7 @@
 
 <h1 id="the-problem">The problem</h1>
 
-<p>The problem is not really that the destructor is not empty but that the destructor is non trivial: there is a release of memory or some states are changed in another part of the app.</p>
+<p>The problem is not really that the destructor is non empty but that the destructor is non trivial: there is a release of memory or some states are changed in another part of the app.</p>
 
 <p>Let us take a very simple example with a class that does dynamic allocation to explain the problem:</p>
 
@@ -86,11 +86,11 @@
 
 <p>Why?</p>
 
-<p>Because when we the <code class="highlighter-rouge">main</code> function ends, the destructor of <code class="highlighter-rouge">A</code> is called to delete <code class="highlighter-rouge">a</code> and <code class="highlighter-rouge">anotherA</code>. When <code class="highlighter-rouge">a</code> is destroyed the memory cell to which <code class="highlighter-rouge">a</code>’s <code class="highlighter-rouge">mPointer</code> points to is freed. Then, when <code class="highlighter-rouge">anotherA</code> is destroyed, we try to free the memory to which <code class="highlighter-rouge">anotherA</code>’s <code class="highlighter-rouge">mPointer</code> points to. But as <code class="highlighter-rouge">anotherA</code> is a copy of <code class="highlighter-rouge">a</code>, its <code class="highlighter-rouge">mPointer</code> points to the same memory cell as <code class="highlighter-rouge">a</code>’s <code class="highlighter-rouge">mPointer</code>. Thus we try to free twice the same memory cell which causes the <code class="highlighter-rouge">Segmentation fault</code>.</p>
+<p>Because when the <code class="highlighter-rouge">main</code> function ends, the destructor of <code class="highlighter-rouge">A</code> is called to delete <code class="highlighter-rouge">a</code> and <code class="highlighter-rouge">anotherA</code>. When <code class="highlighter-rouge">a</code> is destroyed the memory cell to which <code class="highlighter-rouge">a</code>’s <code class="highlighter-rouge">mPointer</code> points to is freed. Then, when <code class="highlighter-rouge">anotherA</code> is destroyed, we try to free the memory to which <code class="highlighter-rouge">anotherA</code>’s <code class="highlighter-rouge">mPointer</code> points to. But as <code class="highlighter-rouge">anotherA</code> is a copy of <code class="highlighter-rouge">a</code>, its <code class="highlighter-rouge">mPointer</code> points to the same memory cell as <code class="highlighter-rouge">a</code>’s <code class="highlighter-rouge">mPointer</code>. Thus we try to free twice the same memory cell which causes the <code class="highlighter-rouge">Segmentation fault</code>.</p>
 
-<p>So the problem is that because of copy the destructor is called twice on the same attributes.</p>
+<p>So the problem is that because of the copy the destructor is called twice on the same attributes.</p>
 
-<p>Note that the copy or move constructor are often called when we use containers. For instance, there is a copy or a move when the <code class="highlighter-rouge">std::vector</code>’s <code class="highlighter-rouge">push_back</code> is called.</p>
+<p>Note that the copy or move constructors are often called when we use containers. For instance, there is a copy or a move when the <code class="highlighter-rouge">std::vector</code>’s <code class="highlighter-rouge">push_back</code> is called.</p>
 
 <!--more-->
 
@@ -175,9 +175,9 @@
 
 <p>If adequate, I think that this solution should be chosen.</p>
 
-<h1 id="last-solution-forbid-copy-and-move">Last solution: forbid copy and move</h1>
+<h1 id="third-solution-forbid-copy-and-move">Third solution: forbid copy and move</h1>
 
-<p>The last solution is a bit radical: it is to forbid copy and move.</p>
+<p>The third solution is a bit radical: it is to forbid copy and move.</p>
 
 <p>To do that I use the two following class:</p>
 
@@ -201,7 +201,7 @@
 </code></pre>
 </div>
 
-<p>As copy and move is not sure for A, I would make A inheriting of both:</p>
+<p>As copy and move are not sure for A, I would make A inherit from both:</p>
 
 <div class="language-cpp highlighter-rouge"><pre class="highlight"><code><span class="k">class</span> <span class="nc">A</span> <span class="o">:</span> <span class="k">public</span> <span class="n">NonCopyable</span><span class="p">,</span> <span class="k">public</span> <span class="n">NonMovable</span>
 <span class="p">{</span>
@@ -222,9 +222,61 @@
 </code></pre>
 </div>
 
-<p>This time, If we try to compile the previous <code class="highlighter-rouge">main</code>, we would obtain a compile-time error. But if the program compile, we are ensured that no wild <code class="highlighter-rouge">Segmentation Fault</code> will appear because of a copy or a mode.</p>
+<p>This time, If we try to compile the previous <code class="highlighter-rouge">main</code>, we would obtain a compile-time error. But if the program compile, we are ensured that no wild <code class="highlighter-rouge">Segmentation Fault</code> will occur during execution because of a copy or a move.</p>
 
 <p>This solution has the benefit of being very fast to implement.</p>
+
+<h1 id="fourth-solution--set-up-and-tear-down">Fourth solution : set up and tear down</h1>
+
+<p>The last solution is to manage the initialization and the finalization outside of the constructor and the destructor.</p>
+
+<p>In our example, we could use a method <code class="highlighter-rouge">setUp</code> to allocate the memory and <code class="highlighter-rouge">tearDown</code> to release it:</p>
+
+<div class="language-cpp highlighter-rouge"><pre class="highlight"><code><span class="k">class</span> <span class="nc">A</span>
+<span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+	<span class="n">A</span><span class="p">()</span> <span class="o">:</span> <span class="n">mPointer</span><span class="p">(</span><span class="nb">nullptr</span><span class="p">)</span>
+	<span class="p">{</span>
+
+	<span class="p">}</span>
+
+	<span class="o">~</span><span class="n">A</span><span class="p">()</span>
+	<span class="p">{</span>
+		
+	<span class="p">}</span>
+
+	<span class="kt">void</span> <span class="n">setUp</span><span class="p">()</span>
+	<span class="p">{</span>
+		<span class="n">mPointer</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">int</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+	<span class="p">}</span>
+
+	<span class="kt">void</span> <span class="n">tearDown</span><span class="p">()</span>
+	<span class="p">{</span>
+		<span class="k">delete</span> <span class="n">mPointer</span><span class="p">;</span>
+		<span class="n">mPointer</span> <span class="o">=</span> <span class="nb">nullptr</span><span class="p">;</span>
+	<span class="p">}</span>
+
+<span class="k">private</span><span class="o">:</span>
+	<span class="kt">int</span><span class="o">*</span> <span class="n">mPointer</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<p>Then we can transform the previous <code class="highlighter-rouge">main</code> to obtain the correct behavior:</p>
+
+<div class="language-cpp highlighter-rouge"><pre class="highlight"><code><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+	<span class="n">A</span> <span class="n">a</span><span class="p">;</span>
+	<span class="n">a</span><span class="p">.</span><span class="n">setUp</span><span class="p">();</span>
+	<span class="n">A</span> <span class="n">anotherA</span><span class="p">(</span><span class="n">a</span><span class="p">);</span>
+	<span class="n">a</span><span class="p">.</span><span class="n">tearDown</span><span class="p">();</span>
+
+	<span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<p>This solution works well but requires from the user of the class to be more careful and to manage himself the memory.</p>
 
 <p>That’s all for this post, I hope you find it useful.</p>
 

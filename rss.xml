@@ -3,7 +3,7 @@
 	<title>pvigier's blog</title>
 	<link href="http://pvigier.github.io/rss.xml" rel="self"/>
 	<link href="http://pvigier.github.io"/>
-	<updated>2018-02-15T12:07:37+01:00</updated>
+	<updated>2018-02-15T17:02:00+01:00</updated>
 	<id>http://pvigier.github.io</id>
 	<author>
 		<name>Pierre Vigier</name>
@@ -21,7 +21,7 @@
 
 &lt;h1 id=&quot;the-problem&quot;&gt;The problem&lt;/h1&gt;
 
-&lt;p&gt;The problem is not really that the destructor is not empty but that the destructor is non trivial: there is a release of memory or some states are changed in another part of the app.&lt;/p&gt;
+&lt;p&gt;The problem is not really that the destructor is non empty but that the destructor is non trivial: there is a release of memory or some states are changed in another part of the app.&lt;/p&gt;
 
 &lt;p&gt;Let us take a very simple example with a class that does dynamic allocation to explain the problem:&lt;/p&gt;
 
@@ -62,11 +62,11 @@
 
 &lt;p&gt;Why?&lt;/p&gt;
 
-&lt;p&gt;Because when we the &lt;code class=&quot;highlighter-rouge&quot;&gt;main&lt;/code&gt; function ends, the destructor of &lt;code class=&quot;highlighter-rouge&quot;&gt;A&lt;/code&gt; is called to delete &lt;code class=&quot;highlighter-rouge&quot;&gt;a&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;anotherA&lt;/code&gt;. When &lt;code class=&quot;highlighter-rouge&quot;&gt;a&lt;/code&gt; is destroyed the memory cell to which &lt;code class=&quot;highlighter-rouge&quot;&gt;a&lt;/code&gt;’s &lt;code class=&quot;highlighter-rouge&quot;&gt;mPointer&lt;/code&gt; points to is freed. Then, when &lt;code class=&quot;highlighter-rouge&quot;&gt;anotherA&lt;/code&gt; is destroyed, we try to free the memory to which &lt;code class=&quot;highlighter-rouge&quot;&gt;anotherA&lt;/code&gt;’s &lt;code class=&quot;highlighter-rouge&quot;&gt;mPointer&lt;/code&gt; points to. But as &lt;code class=&quot;highlighter-rouge&quot;&gt;anotherA&lt;/code&gt; is a copy of &lt;code class=&quot;highlighter-rouge&quot;&gt;a&lt;/code&gt;, its &lt;code class=&quot;highlighter-rouge&quot;&gt;mPointer&lt;/code&gt; points to the same memory cell as &lt;code class=&quot;highlighter-rouge&quot;&gt;a&lt;/code&gt;’s &lt;code class=&quot;highlighter-rouge&quot;&gt;mPointer&lt;/code&gt;. Thus we try to free twice the same memory cell which causes the &lt;code class=&quot;highlighter-rouge&quot;&gt;Segmentation fault&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Because when the &lt;code class=&quot;highlighter-rouge&quot;&gt;main&lt;/code&gt; function ends, the destructor of &lt;code class=&quot;highlighter-rouge&quot;&gt;A&lt;/code&gt; is called to delete &lt;code class=&quot;highlighter-rouge&quot;&gt;a&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;anotherA&lt;/code&gt;. When &lt;code class=&quot;highlighter-rouge&quot;&gt;a&lt;/code&gt; is destroyed the memory cell to which &lt;code class=&quot;highlighter-rouge&quot;&gt;a&lt;/code&gt;’s &lt;code class=&quot;highlighter-rouge&quot;&gt;mPointer&lt;/code&gt; points to is freed. Then, when &lt;code class=&quot;highlighter-rouge&quot;&gt;anotherA&lt;/code&gt; is destroyed, we try to free the memory to which &lt;code class=&quot;highlighter-rouge&quot;&gt;anotherA&lt;/code&gt;’s &lt;code class=&quot;highlighter-rouge&quot;&gt;mPointer&lt;/code&gt; points to. But as &lt;code class=&quot;highlighter-rouge&quot;&gt;anotherA&lt;/code&gt; is a copy of &lt;code class=&quot;highlighter-rouge&quot;&gt;a&lt;/code&gt;, its &lt;code class=&quot;highlighter-rouge&quot;&gt;mPointer&lt;/code&gt; points to the same memory cell as &lt;code class=&quot;highlighter-rouge&quot;&gt;a&lt;/code&gt;’s &lt;code class=&quot;highlighter-rouge&quot;&gt;mPointer&lt;/code&gt;. Thus we try to free twice the same memory cell which causes the &lt;code class=&quot;highlighter-rouge&quot;&gt;Segmentation fault&lt;/code&gt;.&lt;/p&gt;
 
-&lt;p&gt;So the problem is that because of copy the destructor is called twice on the same attributes.&lt;/p&gt;
+&lt;p&gt;So the problem is that because of the copy the destructor is called twice on the same attributes.&lt;/p&gt;
 
-&lt;p&gt;Note that the copy or move constructor are often called when we use containers. For instance, there is a copy or a move when the &lt;code class=&quot;highlighter-rouge&quot;&gt;std::vector&lt;/code&gt;’s &lt;code class=&quot;highlighter-rouge&quot;&gt;push_back&lt;/code&gt; is called.&lt;/p&gt;
+&lt;p&gt;Note that the copy or move constructors are often called when we use containers. For instance, there is a copy or a move when the &lt;code class=&quot;highlighter-rouge&quot;&gt;std::vector&lt;/code&gt;’s &lt;code class=&quot;highlighter-rouge&quot;&gt;push_back&lt;/code&gt; is called.&lt;/p&gt;
 
 </content>
 		</entry>
