@@ -23,7 +23,7 @@
                     <a class="blog-nav-item active" href="/">Blog</a>
                     <a class="blog-nav-item" href="/articles">Articles</a>
                     <a class="blog-nav-item" href="/games">Games</a>
-                    <a class="blog-nav-item" href="/best-resources">Best Resources</a>
+                    <!--<a class="blog-nav-item" href="/best-resources">Best Resources</a>-->
                     <a class="blog-nav-item" href="/resume">Resume</a>
                     <a class="blog-nav-item" href="/about">About</a>
                 </nav>
@@ -31,14 +31,14 @@
         </div>
         <div class="container">
             <div class="blog-header">
-                <h1 class="blog-title">pvigier's blog</h1>
+                <h1 class="blog-title">pvigier's logbook</h1>
                 <p class="lead blog-description">computer science, programming and other ideas</p>
             </div>
             <div class="row">
             <div class="col-sm-8 blog-main">
 <div class="blog-post">
     <h2 class="blog-post-title">Non empty destructors in C++</h2>
-    <p class="blog-post-meta">09 Feb 2018 by <a href="/">pierre</a></p>
+    <p class="blog-post-meta">15 Feb 2018 by <a href="/">pierre</a></p>
     <p>Have you already faced problems with non trivial destructors?</p>
 
 <p>I face one recently which was really annoying. In this article, I want to share with you my knowledge of this problem and the solutions I use to address it.</p>
@@ -166,7 +166,7 @@
 	<span class="p">}</span>
 
 <span class="k">private</span><span class="o">:</span>
-	<span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">mPointer</span><span class="p">;</span>
+	<span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">mPointer</span><span class="p">;</span>
 <span class="p">}</span>
 </code></pre>
 </div>

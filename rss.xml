@@ -3,7 +3,7 @@
 	<title>pvigier's blog</title>
 	<link href="http://pvigier.github.io/rss.xml" rel="self"/>
 	<link href="http://pvigier.github.io"/>
-	<updated>2018-02-15T17:02:00+01:00</updated>
+	<updated>2018-05-11T21:04:24+02:00</updated>
 	<id>http://pvigier.github.io</id>
 	<author>
 		<name>Pierre Vigier</name>
@@ -12,9 +12,9 @@
 	
 		<entry>
 			<title>Non empty destructors in C++</title>
-			<link href="http://pvigier.github.io/2018/02/09/non-empty-destructors.html"/>
-			<updated>2018-02-09T00:00:00+01:00</updated>
-			<id>http://pvigier.github.io/2018/02/09/non-empty-destructors</id>
+			<link href="http://pvigier.github.io/2018/02/15/non-empty-destructors.html"/>
+			<updated>2018-02-15T00:00:00+01:00</updated>
+			<id>http://pvigier.github.io/2018/02/15/non-empty-destructors</id>
 			<content type="html">&lt;p&gt;Have you already faced problems with non trivial destructors?&lt;/p&gt;
 
 &lt;p&gt;I face one recently which was really annoying. In this article, I want to share with you my knowledge of this problem and the solutions I use to address it.&lt;/p&gt;
@@ -94,7 +94,7 @@
 		</entry>
 	
 		<entry>
-			<title>Part 2 - Application: MNIST</title>
+			<title>Pychain Part 2 - Application: MNIST</title>
 			<link href="http://pvigier.github.io/2017/08/13/pychain-part2-mnist.html"/>
 			<updated>2017-08-13T00:00:00+02:00</updated>
 			<id>http://pvigier.github.io/2017/08/13/pychain-part2-mnist</id>
@@ -110,7 +110,7 @@
 		</entry>
 	
 		<entry>
-			<title>Part 1 - Computational graphs</title>
+			<title>Pychain Part 1 - Computational graphs</title>
 			<link href="http://pvigier.github.io/2017/07/21/pychain-part1-computational-graphs.html"/>
 			<updated>2017-07-21T00:00:00+02:00</updated>
 			<id>http://pvigier.github.io/2017/07/21/pychain-part1-computational-graphs</id>
