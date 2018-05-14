@@ -3,12 +3,24 @@
 	<title>pvigier's blog</title>
 	<link href="http://pvigier.github.io/rss.xml" rel="self"/>
 	<link href="http://pvigier.github.io"/>
-	<updated>2018-05-11T21:04:24+02:00</updated>
+	<updated>2018-05-14T18:08:32+02:00</updated>
 	<id>http://pvigier.github.io</id>
 	<author>
 		<name>Pierre Vigier</name>
 		<email>pierre.vigier@ymail.com</email>
 	</author>
+	
+		<entry>
+			<title>Fractal Image Compression</title>
+			<link href="http://pvigier.github.io/2018/05/14/fractal-image-compression.html"/>
+			<updated>2018-05-14T00:00:00+02:00</updated>
+			<id>http://pvigier.github.io/2018/05/14/fractal-image-compression</id>
+			<content type="html">&lt;p&gt;One year ago, I coded a very simple implementation of fractal image compression for a course and I made the code available on github &lt;a href=&quot;https://github.com/pvigier/fractal-image-compression&quot;&gt;there&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;To my surprise, the repo is quite popular. So I decided to update the code and to write an article to explain the theory and the code.&lt;/p&gt;
+
+</content>
+		</entry>
 	
 		<entry>
 			<title>Non empty destructors in C++</title>
