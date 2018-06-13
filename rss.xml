@@ -3,7 +3,7 @@
 	<title>pvigier's blog</title>
 	<link href="http://pvigier.github.io/rss.xml" rel="self"/>
 	<link href="http://pvigier.github.io"/>
-	<updated>2018-06-13T12:30:18+02:00</updated>
+	<updated>2018-06-13T21:30:10+02:00</updated>
 	<id>http://pvigier.github.io</id>
 	<author>
 		<name>Pierre Vigier</name>
@@ -19,7 +19,7 @@
 
 &lt;h1 id=&quot;perlin-noise&quot;&gt;Perlin noise&lt;/h1&gt;
 
-&lt;p&gt;My code looks like the original implementation. The only differences is that I tried to use the vectorized operations of numpy as much as possible instead of &lt;code class=&quot;highlighter-rouge&quot;&gt;for&lt;/code&gt; loops. Because as you may know, loops are really slow in Python.&lt;/p&gt;
+&lt;p&gt;My code looks like the original implementation. The only difference is that I tried to use the vectorized operations of numpy as much as possible instead of &lt;code class=&quot;highlighter-rouge&quot;&gt;for&lt;/code&gt; loops. Because as you may know, loops are really slow in Python.&lt;/p&gt;
 
 &lt;p&gt;Here is the code:&lt;/p&gt;
 
