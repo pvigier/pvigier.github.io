@@ -3,7 +3,7 @@
 	<title>pvigier's blog</title>
 	<link href="http://pvigier.github.io/rss.xml" rel="self"/>
 	<link href="http://pvigier.github.io"/>
-	<updated>2018-06-13T21:30:10+02:00</updated>
+	<updated>2018-08-28T18:47:42+02:00</updated>
 	<id>http://pvigier.github.io</id>
 	<author>
 		<name>Pierre Vigier</name>
@@ -15,7 +15,7 @@
 			<link href="http://pvigier.github.io/2018/06/13/perlin-noise-numpy.html"/>
 			<updated>2018-06-13T00:00:00+02:00</updated>
 			<id>http://pvigier.github.io/2018/06/13/perlin-noise-numpy</id>
-			<content type="html">&lt;p&gt;Hi everyone, I have written an implementation of Perlin noise with numpy that is pretty fast and I want to share it with you.&lt;/p&gt;
+			<content type="html">&lt;p&gt;Hi everyone, I have written an implementation of Perlin noise with numpy that is pretty fast and I want to share it with you. The code is available &lt;a href=&quot;https://github.com/pvigier/perlin-numpy&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
 
 &lt;h1 id=&quot;perlin-noise&quot;&gt;Perlin noise&lt;/h1&gt;
 
