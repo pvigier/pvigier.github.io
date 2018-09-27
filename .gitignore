@@ -4,3 +4,7 @@ media/img/part3
 
 # Jekyll
 _site/
+
+# Gem
+Gemfile
+*.lock

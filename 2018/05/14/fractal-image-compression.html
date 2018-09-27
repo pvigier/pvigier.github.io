@@ -198,37 +198,33 @@ $$
 
 <p>The function <code class="highlighter-rouge">reduce</code> reduces the size of an image by averaging neighborhoods:</p>
 
-<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="k">def</span> <span class="nf">reduce</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">factor</span><span class="p">):</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">reduce</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">factor</span><span class="p">):</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">img</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">//</span> <span class="n">factor</span><span class="p">,</span> <span class="n">img</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">//</span> <span class="n">factor</span><span class="p">))</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
         <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
             <span class="n">result</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">img</span><span class="p">[</span><span class="n">i</span><span class="o">*</span><span class="n">factor</span><span class="p">:(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">factor</span><span class="p">,</span><span class="n">j</span><span class="o">*</span><span class="n">factor</span><span class="p">:(</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">factor</span><span class="p">])</span>
     <span class="k">return</span> <span class="n">result</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>The function <code class="highlighter-rouge">rotate</code> simply rotates by the given angle the image:</p>
 
-<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="k">def</span> <span class="nf">rotate</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">angle</span><span class="p">):</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">rotate</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">angle</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">ndimage</span><span class="o">.</span><span class="n">rotate</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">angle</span><span class="p">,</span> <span class="n">reshape</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>In order to preserve the shape of the image, the angle <script type="math/tex">\theta</script> will be in <script type="math/tex">\{0^{\circ}, 90^{\circ}, 180^{\circ}, 270^{\circ}\}</script>.</p>
 
 <p>The function <code class="highlighter-rouge">flip</code> flips the image if <code class="highlighter-rouge">direction</code> is equal to -1 and does not if it is equal to 1:</p>
 
-<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="k">def</span> <span class="nf">flip</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">direction</span><span class="p">):</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">flip</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">direction</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">img</span><span class="p">[::</span><span class="n">direction</span><span class="p">,:]</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>The whole transformation is done by the function <code class="highlighter-rouge">apply_transformation</code>:</p>
 
-<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="k">def</span> <span class="nf">apply_transformation</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">direction</span><span class="p">,</span> <span class="n">angle</span><span class="p">,</span> <span class="n">contrast</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">brightness</span><span class="o">=</span><span class="mf">0.0</span><span class="p">):</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">apply_transformation</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">direction</span><span class="p">,</span> <span class="n">angle</span><span class="p">,</span> <span class="n">contrast</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">brightness</span><span class="o">=</span><span class="mf">0.0</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">contrast</span><span class="o">*</span><span class="n">rotate</span><span class="p">(</span><span class="n">flip</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">direction</span><span class="p">),</span> <span class="n">angle</span><span class="p">)</span> <span class="o">+</span> <span class="n">brightness</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>We need 1 bit to remember if we flip or not and 2 bits for the angle of rotation. Moreover, if we save <script type="math/tex">s</script> and <script type="math/tex">b</script> using 8 bits each then we need only 11 bits in total to save the transformation.</p>
 
@@ -238,7 +234,7 @@ $$
 
 <p>The algorithm for compression is simple. First we generate all possible affine transformations of all source blocks using the function <code class="highlighter-rouge">generate_all_transformed_blocks</code>:</p>
 
-<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="k">def</span> <span class="nf">generate_all_transformed_blocks</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">source_size</span><span class="p">,</span> <span class="n">destination_size</span><span class="p">,</span> <span class="n">step</span><span class="p">):</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">generate_all_transformed_blocks</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">source_size</span><span class="p">,</span> <span class="n">destination_size</span><span class="p">,</span> <span class="n">step</span><span class="p">):</span>
     <span class="n">factor</span> <span class="o">=</span> <span class="n">source_size</span> <span class="o">//</span> <span class="n">destination_size</span>
     <span class="n">transformed_blocks</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">((</span><span class="n">img</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">source_size</span><span class="p">)</span> <span class="o">//</span> <span class="n">step</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
@@ -249,12 +245,11 @@ $$
             <span class="k">for</span> <span class="n">direction</span><span class="p">,</span> <span class="n">angle</span> <span class="ow">in</span> <span class="n">candidates</span><span class="p">:</span>
                 <span class="n">transformed_blocks</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">k</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">direction</span><span class="p">,</span> <span class="n">angle</span><span class="p">,</span> <span class="n">apply_transform</span><span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="n">direction</span><span class="p">,</span> <span class="n">angle</span><span class="p">)))</span>
     <span class="k">return</span> <span class="n">transformed_blocks</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>Then for each destination block, we try all the previously generated transformed source blocks. For each we optimize the contrast and the brightness using the method <code class="highlighter-rouge">find_contrast_and_brightness2</code> and if the tested transformation is the best we have seen so far, we saved it:</p>
 
-<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="k">def</span> <span class="nf">compress</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">source_size</span><span class="p">,</span> <span class="n">destination_size</span><span class="p">,</span> <span class="n">step</span><span class="p">):</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">compress</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">source_size</span><span class="p">,</span> <span class="n">destination_size</span><span class="p">,</span> <span class="n">step</span><span class="p">):</span>
     <span class="n">transformations</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">transformed_blocks</span> <span class="o">=</span> <span class="n">generate_all_transformed_blocks</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">source_size</span><span class="p">,</span> <span class="n">destination_size</span><span class="p">,</span> <span class="n">step</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">img</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">//</span> <span class="n">destination_size</span><span class="p">):</span>
@@ -274,25 +269,23 @@ $$
                     <span class="n">min_d</span> <span class="o">=</span> <span class="n">d</span>
                     <span class="n">transformations</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">direction</span><span class="p">,</span> <span class="n">angle</span><span class="p">,</span> <span class="n">contrast</span><span class="p">,</span> <span class="n">brightness</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">transformations</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>To find the best contrast and brightness, the method <code class="highlighter-rouge">find_contrast_and_brightness2</code> simply solves a least square problem:</p>
 
-<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="k">def</span> <span class="nf">find_contrast_and_brightness2</span><span class="p">(</span><span class="n">D</span><span class="p">,</span> <span class="n">S</span><span class="p">):</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">find_contrast_and_brightness2</span><span class="p">(</span><span class="n">D</span><span class="p">,</span> <span class="n">S</span><span class="p">):</span>
     <span class="c"># Fit the contrast and the brightness</span>
     <span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">S</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="p">(</span><span class="n">S</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="mi">1</span><span class="p">))),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
     <span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">D</span><span class="p">,</span> <span class="p">(</span><span class="n">D</span><span class="o">.</span><span class="n">size</span><span class="p">,))</span>
     <span class="n">x</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">lstsq</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <h2 id="decompression">Decompression</h2>
 
 <p>The decompression algorithm is even simpler. We just start from a completely random image and then we apply the contraction <script type="math/tex">f</script> several times:</p>
 
-<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="k">def</span> <span class="nf">decompress</span><span class="p">(</span><span class="n">transformations</span><span class="p">,</span> <span class="n">source_size</span><span class="p">,</span> <span class="n">destination_size</span><span class="p">,</span> <span class="n">step</span><span class="p">,</span> <span class="n">nb_iter</span><span class="o">=</span><span class="mi">8</span><span class="p">):</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">decompress</span><span class="p">(</span><span class="n">transformations</span><span class="p">,</span> <span class="n">source_size</span><span class="p">,</span> <span class="n">destination_size</span><span class="p">,</span> <span class="n">step</span><span class="p">,</span> <span class="n">nb_iter</span><span class="o">=</span><span class="mi">8</span><span class="p">):</span>
     <span class="n">factor</span> <span class="o">=</span> <span class="n">source_size</span> <span class="o">//</span> <span class="n">destination_size</span>
     <span class="n">height</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">transformations</span><span class="p">)</span> <span class="o">*</span> <span class="n">destination_size</span>
     <span class="n">width</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">transformations</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="n">destination_size</span>
@@ -310,8 +303,7 @@ $$
         <span class="n">iterations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cur_img</span><span class="p">)</span>
         <span class="n">cur_img</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">))</span>
     <span class="k">return</span> <span class="n">iterations</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>It works because the contraction has an unique fixed point and whatever initial image we choose, we will tend to it.</p>
 
@@ -329,23 +321,21 @@ $$
 
 <p>A very naive solution to compress RGB images is to compress the three channels separately:</p>
 
-<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="k">def</span> <span class="nf">compress_rgb</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">source_size</span><span class="p">,</span> <span class="n">destination_size</span><span class="p">,</span> <span class="n">step</span><span class="p">):</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">compress_rgb</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">source_size</span><span class="p">,</span> <span class="n">destination_size</span><span class="p">,</span> <span class="n">step</span><span class="p">):</span>
     <span class="n">img_r</span><span class="p">,</span> <span class="n">img_g</span><span class="p">,</span> <span class="n">img_b</span> <span class="o">=</span> <span class="n">extract_rgb</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
     <span class="k">return</span> <span class="p">[</span><span class="n">compress</span><span class="p">(</span><span class="n">img_r</span><span class="p">,</span> <span class="n">source_size</span><span class="p">,</span> <span class="n">destination_size</span><span class="p">,</span> <span class="n">step</span><span class="p">),</span> \
         <span class="n">compress</span><span class="p">(</span><span class="n">img_g</span><span class="p">,</span> <span class="n">source_size</span><span class="p">,</span> <span class="n">destination_size</span><span class="p">,</span> <span class="n">step</span><span class="p">),</span> \
         <span class="n">compress</span><span class="p">(</span><span class="n">img_b</span><span class="p">,</span> <span class="n">source_size</span><span class="p">,</span> <span class="n">destination_size</span><span class="p">,</span> <span class="n">step</span><span class="p">)]</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>And to decompress, we just decompress the three channels separately and then we assemble the three channels:</p>
 
-<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="k">def</span> <span class="nf">decompress_rgb</span><span class="p">(</span><span class="n">transformations</span><span class="p">,</span> <span class="n">source_size</span><span class="p">,</span> <span class="n">destination_size</span><span class="p">,</span> <span class="n">step</span><span class="p">,</span> <span class="n">nb_iter</span><span class="o">=</span><span class="mi">8</span><span class="p">):</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">decompress_rgb</span><span class="p">(</span><span class="n">transformations</span><span class="p">,</span> <span class="n">source_size</span><span class="p">,</span> <span class="n">destination_size</span><span class="p">,</span> <span class="n">step</span><span class="p">,</span> <span class="n">nb_iter</span><span class="o">=</span><span class="mi">8</span><span class="p">):</span>
     <span class="n">img_r</span> <span class="o">=</span> <span class="n">decompress</span><span class="p">(</span><span class="n">transformations</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">source_size</span><span class="p">,</span> <span class="n">destination_size</span><span class="p">,</span> <span class="n">step</span><span class="p">,</span> <span class="n">nb_iter</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
     <span class="n">img_g</span> <span class="o">=</span> <span class="n">decompress</span><span class="p">(</span><span class="n">transformations</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">source_size</span><span class="p">,</span> <span class="n">destination_size</span><span class="p">,</span> <span class="n">step</span><span class="p">,</span> <span class="n">nb_iter</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
     <span class="n">img_b</span> <span class="o">=</span> <span class="n">decompress</span><span class="p">(</span><span class="n">transformations</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">source_size</span><span class="p">,</span> <span class="n">destination_size</span><span class="p">,</span> <span class="n">step</span><span class="p">,</span> <span class="n">nb_iter</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">assemble_rbg</span><span class="p">(</span><span class="n">img_r</span><span class="p">,</span> <span class="n">img_g</span><span class="p">,</span> <span class="n">img_b</span><span class="p">)</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>Another very simple solution would be to use the same contraction for the three channels as they often are very similar.</p>
 

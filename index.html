@@ -48,7 +48,7 @@
 
 <p>Here is the code:</p>
 
-<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="k">def</span> <span class="nf">generate_perlin_noise_2d</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">res</span><span class="p">):</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">generate_perlin_noise_2d</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">res</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
         <span class="k">return</span> <span class="mi">6</span><span class="o">*</span><span class="n">t</span><span class="o">**</span><span class="mi">5</span> <span class="o">-</span> <span class="mi">15</span><span class="o">*</span><span class="n">t</span><span class="o">**</span><span class="mi">4</span> <span class="o">+</span> <span class="mi">10</span><span class="o">*</span><span class="n">t</span><span class="o">**</span><span class="mi">3</span>
     
@@ -72,8 +72,7 @@
     <span class="n">n0</span> <span class="o">=</span> <span class="n">n00</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">t</span><span class="p">[:,:,</span><span class="mi">0</span><span class="p">])</span> <span class="o">+</span> <span class="n">t</span><span class="p">[:,:,</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">n10</span>
     <span class="n">n1</span> <span class="o">=</span> <span class="n">n01</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">t</span><span class="p">[:,:,</span><span class="mi">0</span><span class="p">])</span> <span class="o">+</span> <span class="n">t</span><span class="p">[:,:,</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">n11</span>
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">*</span><span class="p">((</span><span class="mi">1</span><span class="o">-</span><span class="n">t</span><span class="p">[:,:,</span><span class="mi">1</span><span class="p">])</span><span class="o">*</span><span class="n">n0</span> <span class="o">+</span> <span class="n">t</span><span class="p">[:,:,</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">n1</span><span class="p">)</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>If you are familiar with Perlin noise, nothing should surprise you. Otherwise, I can suggest you to read the first pages of this <a href="http://staffwww.itn.liu.se/~stegu/simplexnoise/simplexnoise.pdf">article</a> which explain Perlin noise very well in my opinion.</p>
 
@@ -113,7 +112,7 @@
 
 <p>Let us take a very simple example with a class that does dynamic allocation to explain the problem:</p>
 
-<div class="language-cpp highlighter-rouge"><pre class="highlight"><code><span class="k">class</span> <span class="nc">A</span>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">A</span>
 <span class="p">{</span>
 <span class="k">public</span><span class="o">:</span>
 	<span class="n">A</span><span class="p">()</span> <span class="o">:</span> <span class="n">mPointer</span><span class="p">(</span><span class="k">new</span> <span class="kt">int</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
@@ -129,22 +128,20 @@
 <span class="k">private</span><span class="o">:</span>
 	<span class="kt">int</span><span class="o">*</span> <span class="n">mPointer</span><span class="p">;</span>
 <span class="p">}</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>As we allocate an integer in the constructor, the natural solution for memory management is to free it in the destructor. However, this will have terrible consequences.</p>
 
 <p>For instance, if we do this:</p>
 
-<div class="language-cpp highlighter-rouge"><pre class="highlight"><code><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
 <span class="p">{</span>
 	<span class="n">A</span> <span class="n">a</span><span class="p">;</span>
 	<span class="n">A</span> <span class="n">anotherA</span><span class="p">(</span><span class="n">a</span><span class="p">);</span>
 
 	<span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
 <span class="p">}</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>A <code class="highlighter-rouge">Segmentation fault</code> will occur.</p>
 

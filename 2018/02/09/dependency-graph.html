@@ -66,7 +66,7 @@
 <p>For example, these three files should compile successfully.</p>
 
 <p>A.h:</p>
-<div class="language-cpp highlighter-rouge"><pre class="highlight"><code><span class="cp">#pragma once
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#pragma once
 </span>
 <span class="cp">#include "B.h"
 </span>
@@ -75,11 +75,10 @@
 <span class="k">private</span><span class="o">:</span>
     <span class="n">B</span> <span class="n">mB</span><span class="p">;</span>
 <span class="p">};</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>B.h:</p>
-<div class="language-cpp highlighter-rouge"><pre class="highlight"><code><span class="cp">#pragma once
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#pragma once
 </span>
 <span class="k">class</span> <span class="nc">A</span><span class="p">;</span> <span class="c1">// forward declaration
 </span>
@@ -88,14 +87,12 @@
 <span class="k">private</span><span class="o">:</span>
     <span class="n">A</span><span class="o">*</span> <span class="n">mA</span><span class="p">;</span>
 <span class="p">};</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>B.cpp:</p>
-<div class="language-cpp highlighter-rouge"><pre class="highlight"><code><span class="cp">#include "B.h"
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include "B.h"
 #include "A.h" // We include "A.h" in the cpp file
-</span></code></pre>
-</div>
+</span></code></pre></div></div>
 
 <p>This works well and is often the simpler solution for small projects.</p>
 

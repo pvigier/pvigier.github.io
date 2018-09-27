@@ -49,7 +49,7 @@
 
 <p>Let us take a very simple example with a class that does dynamic allocation to explain the problem:</p>
 
-<div class="language-cpp highlighter-rouge"><pre class="highlight"><code><span class="k">class</span> <span class="nc">A</span>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">A</span>
 <span class="p">{</span>
 <span class="k">public</span><span class="o">:</span>
 	<span class="n">A</span><span class="p">()</span> <span class="o">:</span> <span class="n">mPointer</span><span class="p">(</span><span class="k">new</span> <span class="kt">int</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
@@ -65,22 +65,20 @@
 <span class="k">private</span><span class="o">:</span>
 	<span class="kt">int</span><span class="o">*</span> <span class="n">mPointer</span><span class="p">;</span>
 <span class="p">}</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>As we allocate an integer in the constructor, the natural solution for memory management is to free it in the destructor. However, this will have terrible consequences.</p>
 
 <p>For instance, if we do this:</p>
 
-<div class="language-cpp highlighter-rouge"><pre class="highlight"><code><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
 <span class="p">{</span>
 	<span class="n">A</span> <span class="n">a</span><span class="p">;</span>
 	<span class="n">A</span> <span class="n">anotherA</span><span class="p">(</span><span class="n">a</span><span class="p">);</span>
 
 	<span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
 <span class="p">}</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>A <code class="highlighter-rouge">Segmentation fault</code> will occur.</p>
 
@@ -110,7 +108,7 @@
 
 <p>So for our previous class <code class="highlighter-rouge">A</code>, we would do the following:</p>
 
-<div class="language-cpp highlighter-rouge"><pre class="highlight"><code><span class="k">class</span> <span class="nc">A</span>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">A</span>
 <span class="p">{</span>
 <span class="k">public</span><span class="o">:</span>
 	<span class="n">A</span><span class="p">()</span> <span class="o">:</span> <span class="n">mPointer</span><span class="p">(</span><span class="k">new</span> <span class="kt">int</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
@@ -140,8 +138,7 @@
 <span class="k">private</span><span class="o">:</span>
 	<span class="kt">int</span><span class="o">*</span> <span class="n">mPointer</span><span class="p">;</span>
 <span class="p">}</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>With this definition of A, there is no problem anymore with our previous <code class="highlighter-rouge">main</code>.</p>
 
@@ -155,7 +152,7 @@
 
 <p>In our case, for <code class="highlighter-rouge">A</code>, we could use a smart pointer instead of a plain one:</p>
 
-<div class="language-cpp highlighter-rouge"><pre class="highlight"><code><span class="cp">#include &lt;memory&gt;
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include &lt;memory&gt;
 </span>
 <span class="k">class</span> <span class="nc">A</span>
 <span class="p">{</span>
@@ -168,8 +165,7 @@
 <span class="k">private</span><span class="o">:</span>
 	<span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">mPointer</span><span class="p">;</span>
 <span class="p">}</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>The code is simpler, we have not to worry about the memory and the previous <code class="highlighter-rouge">main</code> executes successfully.</p>
 
@@ -181,29 +177,27 @@
 
 <p>To do that I use the two following class:</p>
 
-<div class="language-cpp highlighter-rouge"><pre class="highlight"><code><span class="k">class</span> <span class="nc">NonCopyable</span>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">NonCopyable</span>
 <span class="p">{</span>
 <span class="k">public</span><span class="o">:</span>
     <span class="n">NonCopyable</span><span class="p">()</span> <span class="o">=</span> <span class="k">default</span><span class="p">;</span>
     <span class="n">NonCopyable</span><span class="p">(</span><span class="k">const</span> <span class="n">NonCopyable</span><span class="o">&amp;</span><span class="p">)</span> <span class="o">=</span> <span class="k">delete</span><span class="p">;</span>
     <span class="n">NonCopyable</span><span class="o">&amp;</span> <span class="k">operator</span><span class="o">=</span><span class="p">(</span><span class="k">const</span> <span class="n">NonCopyable</span><span class="o">&amp;</span><span class="p">)</span> <span class="o">=</span> <span class="k">delete</span><span class="p">;</span>
 <span class="p">};</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
-<div class="language-cpp highlighter-rouge"><pre class="highlight"><code><span class="k">class</span> <span class="nc">NonMovable</span>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">NonMovable</span>
 <span class="p">{</span>
 <span class="k">public</span><span class="o">:</span>
     <span class="n">NonMovable</span><span class="p">()</span> <span class="o">=</span> <span class="k">default</span><span class="p">;</span>
     <span class="n">NonMovable</span><span class="p">(</span><span class="n">NonCopyable</span><span class="o">&amp;&amp;</span><span class="p">)</span> <span class="o">=</span> <span class="k">delete</span><span class="p">;</span>
     <span class="n">NonCopyable</span><span class="o">&amp;</span> <span class="k">operator</span><span class="o">=</span><span class="p">(</span><span class="n">NonCopyable</span><span class="o">&amp;&amp;</span><span class="p">)</span> <span class="o">=</span> <span class="k">delete</span><span class="p">;</span>
 <span class="p">};</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>As copy and move are not sure for A, I would make A inherit from both:</p>
 
-<div class="language-cpp highlighter-rouge"><pre class="highlight"><code><span class="k">class</span> <span class="nc">A</span> <span class="o">:</span> <span class="k">public</span> <span class="n">NonCopyable</span><span class="p">,</span> <span class="k">public</span> <span class="n">NonMovable</span>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">A</span> <span class="o">:</span> <span class="k">public</span> <span class="n">NonCopyable</span><span class="p">,</span> <span class="k">public</span> <span class="n">NonMovable</span>
 <span class="p">{</span>
 <span class="k">public</span><span class="o">:</span>
 	<span class="n">A</span><span class="p">()</span> <span class="o">:</span> <span class="n">mPointer</span><span class="p">(</span><span class="k">new</span> <span class="kt">int</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
@@ -219,8 +213,7 @@
 <span class="k">private</span><span class="o">:</span>
 	<span class="kt">int</span><span class="o">*</span> <span class="n">mPointer</span><span class="p">;</span>
 <span class="p">}</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>This time, If we try to compile the previous <code class="highlighter-rouge">main</code>, we would obtain a compile-time error. But if the program compile, we are ensured that no wild <code class="highlighter-rouge">Segmentation Fault</code> will occur during execution because of a copy or a move.</p>
 
@@ -232,7 +225,7 @@
 
 <p>In our example, we could use a method <code class="highlighter-rouge">setUp</code> to allocate the memory and <code class="highlighter-rouge">tearDown</code> to release it:</p>
 
-<div class="language-cpp highlighter-rouge"><pre class="highlight"><code><span class="k">class</span> <span class="nc">A</span>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">A</span>
 <span class="p">{</span>
 <span class="k">public</span><span class="o">:</span>
 	<span class="n">A</span><span class="p">()</span> <span class="o">:</span> <span class="n">mPointer</span><span class="p">(</span><span class="nb">nullptr</span><span class="p">)</span>
@@ -259,12 +252,11 @@
 <span class="k">private</span><span class="o">:</span>
 	<span class="kt">int</span><span class="o">*</span> <span class="n">mPointer</span><span class="p">;</span>
 <span class="p">}</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>Then we can transform the previous <code class="highlighter-rouge">main</code> to obtain the correct behavior:</p>
 
-<div class="language-cpp highlighter-rouge"><pre class="highlight"><code><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
 <span class="p">{</span>
 	<span class="n">A</span> <span class="n">a</span><span class="p">;</span>
 	<span class="n">a</span><span class="p">.</span><span class="n">setUp</span><span class="p">();</span>
@@ -273,8 +265,7 @@
 
 	<span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
 <span class="p">}</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>This solution works well but requires from the user of the class to be more careful and to manage himself the memory.</p>
 
