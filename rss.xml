@@ -3,12 +3,26 @@
 	<title>pvigier's blog</title>
 	<link href="http://pvigier.github.io/rss.xml" rel="self"/>
 	<link href="http://pvigier.github.io"/>
-	<updated>2018-09-27T21:21:12+02:00</updated>
+	<updated>2018-10-06T14:19:55+02:00</updated>
 	<id>http://pvigier.github.io</id>
 	<author>
 		<name>Pierre Vigier</name>
 		<email>pierre.vigier@ymail.com</email>
 	</author>
+	
+		<entry>
+			<title>Simulopolis alpha is released</title>
+			<link href="http://pvigier.github.io/2018/10/06/simulopolis-alpha-1.html"/>
+			<updated>2018-10-06T00:00:00+02:00</updated>
+			<id>http://pvigier.github.io/2018/10/06/simulopolis-alpha-1</id>
+			<content type="html">&lt;p&gt;&lt;img src=&quot;/media/img/simulopolis-alpha-1/cover.png&quot; alt=&quot;Cover&quot; class=&quot;center-image modal-image&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Today, I’m happy to announce you that the first release of my city building game, Simulopolis, is available online.&lt;/p&gt;
+
+&lt;p&gt;It’s been a long and chaotic journey which lasted a bit more than six months.&lt;/p&gt;
+
+</content>
+		</entry>
 	
 		<entry>
 			<title>Perlin noise with numpy</title>

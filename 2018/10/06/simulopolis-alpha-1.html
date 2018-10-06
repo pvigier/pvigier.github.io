@@ -7,7 +7,7 @@
         <meta name="description" content="">
         <meta name="author" content="Pierre Vigier">
 
-        <title>Hello World! - pvigier's blog</title>
+        <title>Simulopolis alpha is released - pvigier's blog</title>
         <link rel="shortcut icon" href="/media/img/favicon.png">
         <!-- Bootstrap -->
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
@@ -37,18 +37,53 @@
             <div class="row">
             <div class="col-sm-8 blog-main">
 <div class="blog-post">
-    <h2 class="blog-post-title">Hello World!</h2>
-    <p class="blog-post-meta">14 Feb 2017 by <a href="/">pierre</a></p>
-    <p>Welcome on my new website!</p>
+    <h2 class="blog-post-title">Simulopolis alpha is released</h2>
+    <p class="blog-post-meta">06 Oct 2018 by <a href="/">pierre</a></p>
+    <p><img src="/media/img/simulopolis-alpha-1/cover.png" alt="Cover" class="center-image modal-image" /></p>
 
-<p>I will try to keep it up-to-date. And to write a post as soon as I have an idea or discovered anything interesting. Stay Tuned!</p>
+<p>Today, I’m happy to announce you that the first release of my city building game, Simulopolis, is available online.</p>
 
-<p>A short word on the technologies which proudly power this website. As you can see, the website is gracefully hosted by GitHub. Thanks guys! This website is completely static, I use <a href="http://jekyllrb.com">Jekyll</a> to generate the pages. By the way, I found this <a href="http://jmcglone.com/guides/github-pages/">page</a> very interesting to get started with Jekyll. And the design is made with <a href="http://getbootstrap.com">Bootstrap</a>.</p>
+<p>It’s been a long and chaotic journey which lasted a bit more than six months.</p>
 
-<p>I try <a href="https://disqus.com/">Disqus</a> as commenting system. I’ve seen a lot of blogs using it and it was very easy to install. Finally, I use <a href="https://www.google.com/webmasters/">Google Webmasters</a> and <a href="https://analytics.google.com/">Google Analytics</a> to manage my metrics.</p>
+<!--more-->
 
-<p>I hope you’ll find anything interesting here!
-<!--more--></p>
+<h1 id="philosophy">Philosophy</h1>
+
+<p>At first, there was no idea or concept behind Simulopolis, it was only an experiment about game engine architecture. But then I decided that it would be cool to make a full game from it.</p>
+
+<p>My main goal with Simulopolis is not to ship the best game ever but to learn as much as possible about game development. That’s the reason why I decided to use as few dependencies as possible. Currently, Simulopolis has only three: <a href="https://www.sfml-dev.org/">SFML</a>, <a href="http://www.grinninglizard.com/tinyxml2/">TinyXML-2</a> and <a href="https://www.boost.org/doc/libs/1_68_0/libs/serialization/doc/index.html">Boost Serialization</a>. This means that all the rest (game engine, GUI, AI, PCG, etc.) is handmade.</p>
+
+<p>And doing everything is as interesting as it is time consuming. The game I have after months of development (not full-time, only couple of hours a day and not every day) is barely as good as some games developed during a game jam.</p>
+
+<h1 id="concept">Concept</h1>
+
+<p>When I started, I had no idea of what the game would be. I had a prototype of a game engine and some assets done by <a href="https://opengameart.org/users/kenney">Kenney</a>. I also wanted to explore game AI and PCG so there must be some in the game.</p>
+
+<p>Finally, I choose to make a city building game where each citizen is an autonomous agent. Citizens have different personalities and skills. They are free to evolve in the city you build for them.</p>
+
+<p><img src="/media/img/simulopolis-alpha-1/screenshot.png" alt="Screenshot" class="center-image modal-image" /></p>
+
+<p>They are no precise goal in Simulopolis, it is a sandbox game. You can do whatever you want. Not so much for now.</p>
+
+<p>But my goal is that you can try several economic systems such that capitalism, socialism, a mixed of both or even a system without money.</p>
+
+<h1 id="try-it">Try it!</h1>
+
+<p>The game is available on <a href="https://pvigier.itch.io/simulopolis">itch.io</a> on Windows and Linux and it is totally free!</p>
+
+<iframe src="https://itch.io/embed/295935" width="552" height="167" frameborder="0"></iframe>
+
+<p>However, I have to warn you that the game is not finished. Many features are missing, there is no tutorial, the interface is ugly, … This makes the game hardly playable. But you can try this first version to see where I start and see the future evolution.</p>
+
+<p>Finally, the game is open-source. It is licensed under the GPLv3. You can find the code on my <a href="https://github.com/pvigier/Simulopolis">github account</a>.</p>
+
+<h1 id="whats-next">What’s next?</h1>
+
+<p>My goal is to make the game enjoyable before moving on. I hope to reach that point before the end of the year and I will try to release a new version of the game, with new features, every two weeks.</p>
+
+<p>I will also try to publish some articles on the blog about what I learnt in this project. I have already planned to write one about the procedural generation of terrains and the difficulties I faced to distribute the game on Linux. Maybe I will write on the citizen AI too. If you want me to write on a specific point, do not hesitate to ask!</p>
+
+<p>See you!</p>
 
 </div><!-- /.blog-post -->
 
