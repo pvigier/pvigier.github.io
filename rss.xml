@@ -3,12 +3,35 @@
 	<title>pvigier's blog</title>
 	<link href="http://pvigier.github.io/rss.xml" rel="self"/>
 	<link href="http://pvigier.github.io"/>
-	<updated>2018-10-06T14:19:55+02:00</updated>
+	<updated>2018-10-07T17:19:41+02:00</updated>
 	<id>http://pvigier.github.io</id>
 	<author>
 		<name>Pierre Vigier</name>
 		<email>pierre.vigier@ymail.com</email>
 	</author>
+	
+		<entry>
+			<title>Distributing a C++ program on Linux</title>
+			<link href="http://pvigier.github.io/2018/10/06/distributing-c++-program-linux.html"/>
+			<updated>2018-10-06T00:00:00+02:00</updated>
+			<id>http://pvigier.github.io/2018/10/06/distributing-c++-program-linux</id>
+			<content type="html">&lt;p&gt;Hi! Today I will tackle a problem I faced when I wanted to distribute the alpha version of Simulopolis two weeks ago: distributing a C++ binary on different Linux distributions.&lt;/p&gt;
+
+&lt;p&gt;So two weeks ago, I was happy, I had a version of Simulopolis which ran smoothly on my laptop. And I thought it was time to share it with people to have some feedback. Very naively, I took the binary and the assets, put them on a new folder and uploaded the whole thing on itch.io.&lt;/p&gt;
+
+&lt;p&gt;Then, I sent a message to my big brother telling him that he can try my game. He downloaded the game and when he tried to run the game, he obtained this error message:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;./Simulopolis: error while loading shared libraries: libboost_serialization.so.1.65.1: cannot open shared object file: No such file or directory
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Uhh, this was not expected!&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://media.giphy.com/media/U4VXRfcY3zxTi/giphy.gif&quot; alt=&quot;Disappointed gif&quot; class=&quot;center-image modal-image&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;We read the error message, it tells that a dependency I use to build the game is missing on my brother’s system. So he tried to install Boost Serialization, SFML and TinyXML the three libraries I use in Simulopolis. But that does not solve the problem because the program is looking for a specific version of the dependency (here the version 1.65.1 of Boost serialization). And as he was on a different Linux distribution, Fedora, than me, Ubuntu, it was not the same version of Boost Serialization that was available in its package manager.&lt;/p&gt;
+
+</content>
+		</entry>
 	
 		<entry>
 			<title>Simulopolis alpha is released</title>
