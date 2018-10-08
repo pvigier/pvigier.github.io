@@ -3,7 +3,7 @@
 	<title>pvigier's blog</title>
 	<link href="http://pvigier.github.io/rss.xml" rel="self"/>
 	<link href="http://pvigier.github.io"/>
-	<updated>2018-10-07T17:19:41+02:00</updated>
+	<updated>2018-10-08T23:31:29+02:00</updated>
 	<id>http://pvigier.github.io</id>
 	<author>
 		<name>Pierre Vigier</name>
@@ -11,11 +11,35 @@
 	</author>
 	
 		<entry>
+			<title>Terrain generation in Simulopolis</title>
+			<link href="http://pvigier.github.io/2018/10/08/terrain-generation-simulopolis.html"/>
+			<updated>2018-10-08T00:00:00+02:00</updated>
+			<id>http://pvigier.github.io/2018/10/08/terrain-generation-simulopolis</id>
+			<content type="html">&lt;p&gt;Hi!&lt;/p&gt;
+
+&lt;p&gt;Today I will describe the generator of terrains I made for Simulopolis.&lt;/p&gt;
+
+&lt;p&gt;Here are some screenshots of terrains from the game.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/media/img/terrain-generation-simulopolis/terrain_pcg_gif.gif&quot; alt=&quot;Cover&quot; class=&quot;center-image modal-image&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;In this article, I will not describe the C++ code used in the game as it is verbose and unnecessarily complicated. Instead, I will use the Python code I used to design the generator.&lt;/p&gt;
+
+&lt;p&gt;Indeed, I found much more pleasant to use Python for prototyping as it is really fast to write something which works, there are good libraries and we do not have to wait for compilation every time we made a change. It is especially true for procedural content generation where we have to iterate a lot before obtaining something decent.&lt;/p&gt;
+
+&lt;p&gt;The code I will present is the exact translation in Python of what is currently implemented in the game. It is based on the implementation of Perlin noise I described previously in this &lt;a href=&quot;/2018/06/13/perlin-noise-numpy.html&quot;&gt;article&lt;/a&gt;. As usual, you can find the whole project on &lt;a href=&quot;&quot;&gt;github&lt;/a&gt;.&lt;/p&gt;
+
+</content>
+		</entry>
+	
+		<entry>
 			<title>Distributing a C++ program on Linux</title>
-			<link href="http://pvigier.github.io/2018/10/06/distributing-c++-program-linux.html"/>
-			<updated>2018-10-06T00:00:00+02:00</updated>
-			<id>http://pvigier.github.io/2018/10/06/distributing-c++-program-linux</id>
-			<content type="html">&lt;p&gt;Hi! Today I will tackle a problem I faced when I wanted to distribute the alpha version of Simulopolis two weeks ago: distributing a C++ binary on different Linux distributions.&lt;/p&gt;
+			<link href="http://pvigier.github.io/2018/10/07/distributing-c++-program-linux.html"/>
+			<updated>2018-10-07T00:00:00+02:00</updated>
+			<id>http://pvigier.github.io/2018/10/07/distributing-c++-program-linux</id>
+			<content type="html">&lt;p&gt;Hi!&lt;/p&gt;
+
+&lt;p&gt;Today I will tackle a problem I faced when I wanted to distribute the alpha version of Simulopolis two weeks ago: distributing a C++ binary on different Linux distributions.&lt;/p&gt;
 
 &lt;p&gt;So two weeks ago, I was happy, I had a version of Simulopolis which ran smoothly on my laptop. And I thought it was time to share it with people to have some feedback. Very naively, I took the binary and the assets, put them on a new folder and uploaded the whole thing on itch.io.&lt;/p&gt;
 
@@ -28,7 +52,7 @@
 
 &lt;p&gt;&lt;img src=&quot;https://media.giphy.com/media/U4VXRfcY3zxTi/giphy.gif&quot; alt=&quot;Disappointed gif&quot; class=&quot;center-image modal-image&quot; /&gt;&lt;/p&gt;
 
-&lt;p&gt;We read the error message, it tells that a dependency I use to build the game is missing on my brother’s system. So he tried to install Boost Serialization, SFML and TinyXML the three libraries I use in Simulopolis. But that does not solve the problem because the program is looking for a specific version of the dependency (here the version 1.65.1 of Boost serialization). And as he was on a different Linux distribution, Fedora, than me, Ubuntu, it was not the same version of Boost Serialization that was available in its package manager.&lt;/p&gt;
+&lt;p&gt;We read the error message, it tells that a dependency I use to build the game is missing on my brother’s system. So he tried to install Boost Serialization, SFML and TinyXML the three libraries I use in Simulopolis. But that did not solve the problem because the program is looking for a specific version of the dependency (here the version 1.65.1 of Boost serialization). And as he was on a different Linux distribution, Fedora, than me, Ubuntu, it was not the same version of Boost Serialization that was available in its package manager.&lt;/p&gt;
 
 </content>
 		</entry>

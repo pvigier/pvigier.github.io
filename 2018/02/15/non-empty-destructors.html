@@ -116,8 +116,8 @@
 
 	<span class="p">}</span>
 
-	<span class="c1">// Copy constructor
-</span>    <span class="n">A</span> <span class="p">(</span><span class="k">const</span> <span class="n">A</span><span class="o">&amp;</span> <span class="n">other</span><span class="p">)</span> <span class="o">:</span> <span class="n">mPointer</span><span class="p">(</span><span class="k">new</span> <span class="kt">int</span><span class="p">(</span><span class="n">other</span><span class="p">.</span><span class="n">mPointer</span><span class="p">))</span>
+	<span class="c1">// Copy constructor</span>
+    <span class="n">A</span> <span class="p">(</span><span class="k">const</span> <span class="n">A</span><span class="o">&amp;</span> <span class="n">other</span><span class="p">)</span> <span class="o">:</span> <span class="n">mPointer</span><span class="p">(</span><span class="k">new</span> <span class="kt">int</span><span class="p">(</span><span class="n">other</span><span class="p">.</span><span class="n">mPointer</span><span class="p">))</span>
     <span class="p">{</span>
         
     <span class="p">}</span>
@@ -127,8 +127,8 @@
 		<span class="k">delete</span> <span class="n">mPointer</span><span class="p">;</span>
 	<span class="p">}</span>
 
-	<span class="c1">// Copy assignment operator
-</span>    <span class="n">A</span><span class="o">&amp;</span> <span class="k">operator</span><span class="o">=</span><span class="p">(</span><span class="k">const</span> <span class="n">A</span><span class="o">&amp;</span> <span class="n">other</span><span class="p">)</span>
+	<span class="c1">// Copy assignment operator</span>
+    <span class="n">A</span><span class="o">&amp;</span> <span class="k">operator</span><span class="o">=</span><span class="p">(</span><span class="k">const</span> <span class="n">A</span><span class="o">&amp;</span> <span class="n">other</span><span class="p">)</span>
     <span class="p">{</span>
         <span class="k">delete</span> <span class="n">mPointer</span><span class="p">;</span>
         <span class="n">mPointer</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">int</span><span class="p">(</span><span class="n">other</span><span class="p">.</span><span class="n">mPointer</span><span class="p">);</span>
@@ -304,6 +304,9 @@ s.setAttribute('data-timestamp', +new Date());
             
             <li id="yOctober 2018"><a href="/2018/10">October 2018</a></li>
              
+            
+        
+            
             
         
             
