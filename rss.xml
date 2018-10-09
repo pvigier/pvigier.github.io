@@ -3,7 +3,7 @@
 	<title>pvigier's blog</title>
 	<link href="http://pvigier.github.io/rss.xml" rel="self"/>
 	<link href="http://pvigier.github.io"/>
-	<updated>2018-10-08T23:31:29+02:00</updated>
+	<updated>2018-10-09T23:26:44+02:00</updated>
 	<id>http://pvigier.github.io</id>
 	<author>
 		<name>Pierre Vigier</name>
@@ -27,7 +27,7 @@
 
 &lt;p&gt;Indeed, I found much more pleasant to use Python for prototyping as it is really fast to write something which works, there are good libraries and we do not have to wait for compilation every time we made a change. It is especially true for procedural content generation where we have to iterate a lot before obtaining something decent.&lt;/p&gt;
 
-&lt;p&gt;The code I will present is the exact translation in Python of what is currently implemented in the game. It is based on the implementation of Perlin noise I described previously in this &lt;a href=&quot;/2018/06/13/perlin-noise-numpy.html&quot;&gt;article&lt;/a&gt;. As usual, you can find the whole project on &lt;a href=&quot;&quot;&gt;github&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;The code I will present is the exact translation in Python of what is currently implemented in the game. It is based on the implementation of Perlin noise I described previously in this &lt;a href=&quot;/2018/06/13/perlin-noise-numpy.html&quot;&gt;article&lt;/a&gt;. As usual, you can find the whole project on &lt;a href=&quot;https://github.com/pvigier/simulopolis-terrain-generator&quot;&gt;github&lt;/a&gt;.&lt;/p&gt;
 
 </content>
 		</entry>
