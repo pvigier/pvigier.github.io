@@ -3,12 +3,26 @@
 	<title>pvigier's blog</title>
 	<link href="http://pvigier.github.io/rss.xml" rel="self"/>
 	<link href="http://pvigier.github.io"/>
-	<updated>2018-10-19T23:53:24+02:00</updated>
+	<updated>2018-11-02T23:10:10+01:00</updated>
 	<id>http://pvigier.github.io</id>
 	<author>
 		<name>Pierre Vigier</name>
 		<email>pierre.vigier@ymail.com</email>
 	</author>
+	
+		<entry>
+			<title>3D Perlin noise with numpy</title>
+			<link href="http://pvigier.github.io/2018/11/02/perlin-noise-numpy-3d.html"/>
+			<updated>2018-11-02T00:00:00+01:00</updated>
+			<id>http://pvigier.github.io/2018/11/02/perlin-noise-numpy-3d</id>
+			<content type="html">&lt;p&gt;Few weeks ago, a professor from the university of Waterloo contacted me to ask if it was possible to adapt my code for &lt;a href=&quot;/2018/06/13/perlin-noise-numpy.html&quot;&gt;2D Perlin noise&lt;/a&gt; to 3D Perlin noise.&lt;/p&gt;
+
+&lt;p&gt;I was very happy that someone was interested by this piece of code. After some thoughts, I answer him that it was possible and I decided to do it.&lt;/p&gt;
+
+&lt;p&gt;I move the old code which generates 2D Perlin noise in the file &lt;code class=&quot;highlighter-rouge&quot;&gt;perlin2d.py&lt;/code&gt; and I place the code described below for 3D Perlin noise in the file &lt;code class=&quot;highlighter-rouge&quot;&gt;perlin3d.py&lt;/code&gt;. You can find all the code in this &lt;a href=&quot;https://github.com/pvigier/perlin-numpy&quot;&gt;github repo&lt;/a&gt;.&lt;/p&gt;
+
+</content>
+		</entry>
 	
 		<entry>
 			<title>Terrain generation in Simulopolis</title>
@@ -114,7 +128,7 @@
 
 &lt;p&gt;An example of what the function generates:&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/pvigier/perlin-numpy/master/examples/perlin.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/media/img/perlin2d/perlin2d.png&quot; alt=&quot;Perlin noise&quot; class=&quot;center-image modal-image&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;I normalized the gradients so that the noise is always between -1 and 1.&lt;/p&gt;
 
