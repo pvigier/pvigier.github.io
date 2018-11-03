@@ -7,7 +7,7 @@
         <meta name="description" content="">
         <meta name="author" content="Pierre Vigier">
 
-        <title>Hello World! - pvigier's blog</title>
+        <title>Simulopolis alpha 3 is released - pvigier's blog</title>
         <link rel="shortcut icon" href="/media/img/favicon.png">
         <!-- Bootstrap -->
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
@@ -37,20 +37,45 @@
             <div class="row">
             <div class="col-sm-8 blog-main">
 <div class="blog-post">
-    <h2 class="blog-post-title">Hello World!</h2>
-    <p class="blog-post-meta">14 Feb 2017 by <a href="/">pierre</a></p>
-    <p>Welcome on my new website!</p>
+    <h2 class="blog-post-title">Simulopolis alpha 3 is released</h2>
+    <p class="blog-post-meta">03 Nov 2018 by <a href="/">pierre</a></p>
+    <p>Today, I release the third alpha version of Simulopolis.</p>
 
-<p>I will try to keep it up-to-date. And to write a post as soon as I have an idea or discovered anything interesting. Stay Tuned!</p>
+<p>In this post, I will detail a bit what’s new since the <a href="/2018/10/06/simulopolis-alpha-1.html">initial release</a>.</p>
 
-<p>A short word on the technologies which proudly power this website. As you can see, the website is gracefully hosted by GitHub. Thanks guys! This website is completely static, I use <a href="http://jekyllrb.com">Jekyll</a> to generate the pages. By the way, I found this <a href="http://jmcglone.com/guides/github-pages/">page</a> very interesting to get started with Jekyll. And the design is made with <a href="http://getbootstrap.com">Bootstrap</a>.</p>
+<p><img src="/media/img/simulopolis-alpha-3/newspaper.png" alt="Cover" class="center-image modal-image" /></p>
 
-<p>I try <a href="https://disqus.com/">Disqus</a> as commenting system. I’ve seen a lot of blogs using it and it was very easy to install. Finally, I use <a href="https://www.google.com/webmasters/">Google Webmasters</a> and <a href="https://analytics.google.com/">Google Analytics</a> to manage my metrics.</p>
+<p>On this screenshot, you can saw some minor changes on the interface and the main new feature: the newspaper.</p>
 
-<p>I hope you’ll find anything interesting here!
-<!--more--></p>
+<!--more-->
+
+<h1 id="interface">Interface</h1>
+
+<p>I worked a lot on the user interface. In alpha 1, the window’s resolution was 800x600 and it was not possible to resize the window which makes the experience very painful on some screen.</p>
+
+<p>Thus in alpha 2, I made the window resizable and I improved the GUI code to make widgets resizable too. It was a lot of work but I am very satisfied with the result. The GUI code starts to look like a small library and I am thinking about separating this code from the rest of the game to publish it as a library.</p>
+
+<p>In alpha 3, I continued to improve the interface by fixing some small issues. In addition in the city creation screen, I prefilled the city name input field with a randomly chosen city name. The list of city names is based on this Wikipedia’s <a href="https://en.wikipedia.org/wiki/List_of_mythological_places">list of mythological places</a>.</p>
+
+<p>Finally, I implemented a new GUI widget called <code class="highlighter-rouge">GuiText</code> which allows to display text on several lines and to choose its alignment (left, right, centered, justified). This widget was particularly useful to implement the newspaper window.</p>
+
+<h1 id="newspaper">Newspaper</h1>
+
+<p>The big new feature of alpha 3 is the newspaper. Many people complained about the lack of tutorial. They found difficult to figure what to do. And they are totally right!</p>
+
+<p>The newspaper is my answer to this. It will be the place when players will find advices on what to do and feedbacks on what they do.</p>
+
+<p>For now, the newspaper is still a rough draft. It only shows a message when the player creates a new city. For this version, I focus on the design of the newspaper. To give it a look like <em>The New York Times</em> or <em>The Washington Post</em>, I use a <a href="https://www.dafont.com/julia-black.font">gothic font</a> for the title. For the articles, I use a nice <a href="https://www.dafont.com/linux-libertine.font">serif font</a>.</p>
+
+<p>However, in the future, there should be a new edition of the newspaper each month with articles about the city: what’s new, problems, etc.  Moreover, there will be some procedurally generated articles, but I keep that for another blog post</p>
+
+<p>If you want to test the new version, it is available on <a href="https://pvigier.itch.io/simulopolis">itch.io</a> for free.</p>
+
+<p>See you!</p>
 
     
+	<p>Tags: <span class="label label-primary"><a href="/tag/simulopolis">simulopolis</a></span> </p>
+	
 </div><!-- /.blog-post -->
 
 

@@ -3,7 +3,7 @@
 	<title>pvigier's blog</title>
 	<link href="http://pvigier.github.io/rss.xml" rel="self"/>
 	<link href="http://pvigier.github.io"/>
-	<updated>2018-11-02T23:10:10+01:00</updated>
+	<updated>2018-11-03T20:09:03+01:00</updated>
 	<id>http://pvigier.github.io</id>
 	<author>
 		<name>Pierre Vigier</name>
@@ -11,10 +11,26 @@
 	</author>
 	
 		<entry>
+			<title>Simulopolis alpha 3 is released</title>
+			<link href="http://pvigier.github.io/2018/11/03/simulopolis-alpha-3.html"/>
+			<updated>2018-11-03T00:00:00+01:00</updated>
+			<id>http://pvigier.github.io/2018/11/03/simulopolis-alpha-3</id>
+			<content type="html">&lt;p&gt;Today, I release the third alpha version of Simulopolis.&lt;/p&gt;
+
+&lt;p&gt;In this post, I will detail a bit what’s new since the &lt;a href=&quot;/2018/10/06/simulopolis-alpha-1.html&quot;&gt;initial release&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/media/img/simulopolis-alpha-3/newspaper.png&quot; alt=&quot;Cover&quot; class=&quot;center-image modal-image&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;On this screenshot, you can saw some minor changes on the interface and the main new feature: the newspaper.&lt;/p&gt;
+
+</content>
+		</entry>
+	
+		<entry>
 			<title>3D Perlin noise with numpy</title>
-			<link href="http://pvigier.github.io/2018/11/02/perlin-noise-numpy-3d.html"/>
+			<link href="http://pvigier.github.io/2018/11/02/3d-perlin-noise-numpy.html"/>
 			<updated>2018-11-02T00:00:00+01:00</updated>
-			<id>http://pvigier.github.io/2018/11/02/perlin-noise-numpy-3d</id>
+			<id>http://pvigier.github.io/2018/11/02/3d-perlin-noise-numpy</id>
 			<content type="html">&lt;p&gt;Few weeks ago, a professor from the university of Waterloo contacted me to ask if it was possible to adapt my code for &lt;a href=&quot;/2018/06/13/perlin-noise-numpy.html&quot;&gt;2D Perlin noise&lt;/a&gt; to 3D Perlin noise.&lt;/p&gt;
 
 &lt;p&gt;I was very happy that someone was interested by this piece of code. After some thoughts, I answer him that it was possible and I decided to do it.&lt;/p&gt;
