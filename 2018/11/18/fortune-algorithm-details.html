@@ -128,7 +128,7 @@ while the event queue is not empty
 <span class="p">};</span>
 </code></pre></div></div>
 
-<p>You might wonder what is an half-edge. An edge in the Voronoi diagram is shared by two adjacent cells. In the DCEL data structure, we split these edges in two half-edges, one for each cell, and they are linked by the <code class="highlighter-rouge">twin</code> pointer. Moreover, a half-edge has an origin vertex and a destination vertex. The <code class="highlighter-rouge">incidentFace</code> field points to the face to which the half-edge belongs to. Finally, in DCEL, cells are implemented as a circular doubly linked list of half-edges where adjacent half-edges are linked together. Thus the <code class="highlighter-rouge">prev</code> and <code class="highlighter-rouge">next</code> fields points to the previous and next half-edges in the cell.</p>
+<p>You might wonder what is a half-edge. An edge in the Voronoi diagram is shared by two adjacent cells. In the DCEL data structure, we split these edges in two half-edges, one for each cell, and they are linked by the <code class="highlighter-rouge">twin</code> pointer. Moreover, a half-edge has an origin vertex and a destination vertex. The <code class="highlighter-rouge">incidentFace</code> field points to the face to which the half-edge belongs to. Finally, in DCEL, cells are implemented as a circular doubly linked list of half-edges where adjacent half-edges are linked together. Thus the <code class="highlighter-rouge">prev</code> and <code class="highlighter-rouge">next</code> fields points to the previous and next half-edges in the cell.</p>
 
 <p>On the image below, you can visualize all these fields for the red half-edge:</p>
 
@@ -149,7 +149,7 @@ while the event queue is not empty
 
 <p>There are two ways to tackle this problem. The first and simplest one is to add a <code class="highlighter-rouge">valid</code> flag to events. We set <code class="highlighter-rouge">valid</code> to <code class="highlighter-rouge">true</code> initially. Then instead of removing the circle event from the queue, we just set its flag to <code class="highlighter-rouge">false</code>. Finally, when we process the events in the main loop, if the <code class="highlighter-rouge">valid</code> flag of an event equals to <code class="highlighter-rouge">false</code>, we simply discard it and process the next one.</p>
 
-<p>The second method which I adopted is not to use <code class="highlighter-rouge">std::priority_queue</code>. Instead, I implemented my own priority queue which supports removal of any element it contains. The implementation of such a queue is pretty straightfoward. I choose this method because I find it makes the code for the algorithm clearer.</p>
+<p>The second method which I adopted is not to use <code class="highlighter-rouge">std::priority_queue</code>. Instead, I implemented my own priority queue which supports removal of any element it contains. The implementation of such a queue is pretty straightforward. I choose this method because I find it makes the code for the algorithm clearer.</p>
 
 <h1 id="beachline">Beachline</h1>
 
@@ -187,7 +187,7 @@ while the event queue is not empty
 <span class="p">};</span>
 </code></pre></div></div>
 
-<p>The first three fields are for the tree structure. The <code class="highlighter-rouge">leftHalfEdge</code> field points to the half-edge drawn by the left extremity of the arc. And <code class="highlighter-rouge">rightHalfEdge</code> to the half-edge drawn by the right extremity. The two pointers <code class="highlighter-rouge">prev</code> and <code class="highlighter-rouge">next</code> are useful to have a direct access to the previous and next arcs in the beachline. They also allow to traverse the beachline like a doubly linked list. Finally, every arc have a color which is used to balance the beachline.</p>
+<p>The first three fields are for the tree structure. The <code class="highlighter-rouge">leftHalfEdge</code> field points to the half-edge drawn by the left extremity of the arc. And <code class="highlighter-rouge">rightHalfEdge</code> to the half-edge drawn by the right extremity. The two pointers <code class="highlighter-rouge">prev</code> and <code class="highlighter-rouge">next</code> are useful to have a direct access to the previous and next arcs in the beachline. They also allow to traverse the beachline like a doubly linked list. Finally, every arc has a color which is used to balance the beachline.</p>
 
 <p>I choose to use the <a href="https://en.wikipedia.org/wiki/Red%E2%80%93black_tree">red-black scheme</a> to balance the beachline. My code is directly inspired from <a href="https://en.wikipedia.org/wiki/Introduction_to_Algorithms">CLRS</a>. The two interesting algorithms described in the chapter 13 of the book are <code class="highlighter-rouge">insertFixup</code> and <code class="highlighter-rouge">deleteFixup</code> which balance the tree after insertion/deletion.</p>
 
