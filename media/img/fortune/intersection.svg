@@ -1,0 +1,333 @@
+<?xml version="1.0" encoding="iso-8859-1" standalone="no"?> 
+<?xml-stylesheet href="intersection.css" type="text/css"?> 
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="571.89882pt" height="432.4831pt" viewBox="-119.50105 -85.35913 571.89882 432.4831 "> 
+<g transform="translate(0, 347.12396 ) scale(1,-1) translate(0,85.35913 )"> 
+                                    <g>
+ <g stroke="rgb(0.0%,0.0%,0.0%)">
+ <g fill="rgb(0.0%,0.0%,0.0%)">
+ <g stroke-width="0.4pt">
+ <g>
+ <g stroke-linecap="round">
+ <g stroke-linejoin="round">
+ <clipPath id="pgfcp1"> <path d=" M  -119.50105 -85.35913 M  -119.50105 -85.35913 L  -119.50105 347.12396 L  452.39777 347.12396 L  452.39777 -85.35913 Z M  452.39777 347.12396  "/>
+</clipPath>
+ <g clip-path="url(#pgfcp1)">
+ <g>
+ <g stroke="rgb(80.0003%,39.99939%,0.0%)">
+ <g fill="rgb(80.0003%,39.99939%,0.0%)">
+ <g fill="rgb(80.0003%,39.99939%,0.0%)">
+ <g fill-opacity="0.1">
+ <path d=" M  315.82576 170.71826 L  193.47665 159.33473 L  139.42006 28.45448 L  204.86018 -51.21288 L  335.74043 85.35913 Z  " style="stroke:none"/>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ <g>
+ <g stroke="rgb(80.0003%,0.0%,19.9997%)">
+ <g fill="rgb(80.0003%,0.0%,19.9997%)">
+ <g fill="rgb(80.0003%,0.0%,19.9997%)">
+ <g fill-opacity="0.1">
+ <path d=" M  162.18279 0.0 L  253.22934 0.0 L  284.52756 31.2982 L  284.52756 167.87021 L  193.47665 159.33473 L  139.42006 28.45448 Z  " style="stroke:none"/>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ <path d=" M  0.0 0.0 L  0.0 284.52756  " style="fill:none"/>
+ <path d=" M  0.0 284.52756 L  284.52756 284.52756  " style="fill:none"/>
+ <path d=" M  284.52756 284.52756 L  284.52756 0.0  " style="fill:none"/>
+ <path d=" M  284.52756 0.0 L  0.0 0.0  " style="fill:none"/>
+ <g>
+ <g stroke="rgb(80.0003%,39.99939%,0.0%)">
+ <g fill="rgb(80.0003%,39.99939%,0.0%)">
+ <path d=" M  315.82576 170.71826 L  193.47665 159.33473  " style="fill:none"/>
+ </g>
+ </g>
+ </g>
+ <g>
+ <g stroke="rgb(80.0003%,39.99939%,0.0%)">
+ <g fill="rgb(80.0003%,39.99939%,0.0%)">
+ <path d=" M  193.47665 159.33473 L  139.42006 28.45448  " style="fill:none"/>
+ </g>
+ </g>
+ </g>
+ <g>
+ <g stroke="rgb(80.0003%,39.99939%,0.0%)">
+ <g fill="rgb(80.0003%,39.99939%,0.0%)">
+ <path d=" M  139.42006 28.45448 L  204.86018 -51.21288  " style="fill:none"/>
+ </g>
+ </g>
+ </g>
+ <g>
+ <g stroke="rgb(80.0003%,39.99939%,0.0%)">
+ <g fill="rgb(80.0003%,39.99939%,0.0%)">
+ <path d=" M  204.86018 -51.21288 L  335.74043 85.35913  " style="fill:none"/>
+ </g>
+ </g>
+ </g>
+ <g>
+ <g stroke="rgb(80.0003%,39.99939%,0.0%)">
+ <g fill="rgb(80.0003%,39.99939%,0.0%)">
+ <path d=" M  335.74043 85.35913 L  315.82576 170.71826  " style="fill:none"/>
+ </g>
+ </g>
+ </g>
+ <path d=" M  315.82576 170.71826 L  194.28534 159.40996  " style="fill:none"/>
+ <g>
+ <g transform="matrix(-0.99597,-0.09265,0.09265,-0.99597,194.28534,159.40997)">
+ <g>
+ <g stroke-dasharray="none" stroke-dashoffset="0.0pt">
+ <g stroke-linejoin="miter">
+ <path d=" M  -5.22293 2.34435 L  0.29999 0.0 L  -5.22293 -2.34435 Z  " />
+ </g>
+ </g>
+ </g>
+  </g>
+ </g>
+ <path d=" M  193.47665 159.33473 L  139.73033 29.20575  " style="fill:none"/>
+ <g>
+ <g transform="matrix(-0.38214,-0.92525,0.92525,-0.38214,139.73035,29.20575)">
+ <g>
+ <g stroke-dasharray="none" stroke-dashoffset="0.0pt">
+ <g stroke-linejoin="miter">
+ <path d=" M  -5.22293 2.34435 L  0.29999 0.0 L  -5.22293 -2.34435 Z  " />
+ </g>
+ </g>
+ </g>
+  </g>
+ </g>
+ <path d=" M  139.42006 28.45448 L  204.34447 -50.58502  " style="fill:none"/>
+ <g>
+ <g transform="matrix(0.63516,-0.77325,0.77325,0.63516,204.34445,-50.58502)">
+ <g>
+ <g stroke-dasharray="none" stroke-dashoffset="0.0pt">
+ <g stroke-linejoin="miter">
+ <path d=" M  -5.22293 2.34435 L  0.29999 0.0 L  -5.22293 -2.34435 Z  " />
+ </g>
+ </g>
+ </g>
+  </g>
+ </g>
+ <path d=" M  204.86018 -51.21288 L  335.17628 84.77048  " style="fill:none"/>
+ <g>
+ <g transform="matrix(0.6948,0.72499,-0.72499,0.6948,335.17628,84.77046)">
+ <g>
+ <g stroke-dasharray="none" stroke-dashoffset="0.0pt">
+ <g stroke-linejoin="miter">
+ <path d=" M  -5.22293 2.34435 L  0.29999 0.0 L  -5.22293 -2.34435 Z  " />
+ </g>
+ </g>
+ </g>
+  </g>
+ </g>
+ <path d=" M  335.74043 85.35913 L  316.01036 169.92697  " style="fill:none"/>
+ <g>
+ <g transform="matrix(-0.22736,0.97455,-0.97455,-0.22736,316.01036,169.92696)">
+ <g>
+ <g stroke-dasharray="none" stroke-dashoffset="0.0pt">
+ <g stroke-linejoin="miter">
+ <path d=" M  -5.22293 2.34435 L  0.29999 0.0 L  -5.22293 -2.34435 Z  " />
+ </g>
+ </g>
+ </g>
+  </g>
+ </g>
+ <g>
+ <g stroke="rgb(80.0003%,0.0%,19.9997%)">
+ <g fill="rgb(80.0003%,0.0%,19.9997%)">
+ <path d=" M  162.18279 0.0 L  253.22934 0.0  " style="fill:none"/>
+ </g>
+ </g>
+ </g>
+ <g>
+ <g stroke="rgb(80.0003%,0.0%,19.9997%)">
+ <g fill="rgb(80.0003%,0.0%,19.9997%)">
+ <path d=" M  253.22934 0.0 L  284.52756 31.2982  " style="fill:none"/>
+ </g>
+ </g>
+ </g>
+ <g>
+ <g stroke="rgb(80.0003%,0.0%,19.9997%)">
+ <g fill="rgb(80.0003%,0.0%,19.9997%)">
+ <path d=" M  284.52756 31.2982 L  284.52756 167.87021  " style="fill:none"/>
+ </g>
+ </g>
+ </g>
+ <g>
+ <g stroke="rgb(80.0003%,0.0%,19.9997%)">
+ <g fill="rgb(80.0003%,0.0%,19.9997%)">
+ <path d=" M  284.52756 167.87021 L  193.47665 159.33473  " style="fill:none"/>
+ </g>
+ </g>
+ </g>
+ <g>
+ <g stroke="rgb(80.0003%,0.0%,19.9997%)">
+ <g fill="rgb(80.0003%,0.0%,19.9997%)">
+ <path d=" M  193.47665 159.33473 L  139.42006 28.45448  " style="fill:none"/>
+ </g>
+ </g>
+ </g>
+ <g>
+ <g stroke="rgb(80.0003%,0.0%,19.9997%)">
+ <g fill="rgb(80.0003%,0.0%,19.9997%)">
+ <path d=" M  139.42006 28.45448 L  162.18279 0.0  " style="fill:none"/>
+ </g>
+ </g>
+ </g>
+ <g>
+ <g stroke="rgb(100.0%,19.9997%,19.9997%)">
+ <g fill="rgb(100.0%,19.9997%,19.9997%)">
+ <path d=" M  139.42006 28.45448 L  161.67307 0.63713  " style="fill:none"/>
+ <g>
+ <g transform="matrix(0.62776,-0.78468,0.78468,0.62776,161.67307,0.63713)">
+ <g>
+ <g stroke-dasharray="none" stroke-dashoffset="0.0pt">
+ <g stroke-linejoin="miter">
+ <path d=" M  -5.22293 2.34435 L  0.29999 0.0 L  -5.22293 -2.34435 Z  " />
+ </g>
+ </g>
+ </g>
+  </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ <g>
+ <g stroke="rgb(19.9997%,80.0003%,0.0%)">
+ <g fill="rgb(19.9997%,80.0003%,0.0%)">
+ <path d=" M  162.18279 0.0 L  252.41737 0.0  " style="fill:none"/>
+ <g>
+ <g transform="matrix(1.0,0.0,0.0,1.0,252.41737,0.0)">
+ <g>
+ <g stroke-dasharray="none" stroke-dashoffset="0.0pt">
+ <g stroke-linejoin="miter">
+ <path d=" M  -5.22293 2.34435 L  0.29999 0.0 L  -5.22293 -2.34435 Z  " />
+ </g>
+ </g>
+ </g>
+  </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ <g>
+ <g stroke="rgb(100.0%,19.9997%,19.9997%)">
+ <g fill="rgb(100.0%,19.9997%,19.9997%)">
+ <path d=" M  253.22934 0.0 L  283.95341 30.72403  " style="fill:none"/>
+ <g>
+ <g transform="matrix(0.7071,0.70715,-0.70715,0.7071,283.95341,30.72401)">
+ <g>
+ <g stroke-dasharray="none" stroke-dashoffset="0.0pt">
+ <g stroke-linejoin="miter">
+ <path d=" M  -5.22293 2.34435 L  0.29999 0.0 L  -5.22293 -2.34435 Z  " />
+ </g>
+ </g>
+ </g>
+  </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ <g>
+ <g stroke="rgb(19.9997%,80.0003%,0.0%)">
+ <g fill="rgb(19.9997%,80.0003%,0.0%)">
+ <path d=" M  284.52756 31.2982 L  284.52756 167.05824  " style="fill:none"/>
+ <g>
+ <g transform="matrix(0.0,1.0,-1.0,0.0,284.52756,167.05824)">
+ <g>
+ <g stroke-dasharray="none" stroke-dashoffset="0.0pt">
+ <g stroke-linejoin="miter">
+ <path d=" M  -5.22293 2.34435 L  0.29999 0.0 L  -5.22293 -2.34435 Z  " />
+ </g>
+ </g>
+ </g>
+  </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ <g>
+ <g stroke="rgb(100.0%,19.9997%,19.9997%)">
+ <g fill="rgb(100.0%,19.9997%,19.9997%)">
+ <path d=" M  284.52756 167.87021 L  194.28534 159.41052  " style="fill:none"/>
+ <g>
+ <g transform="matrix(-0.99597,-0.09335,0.09335,-0.99597,194.28534,159.41052)">
+ <g>
+ <g stroke-dasharray="none" stroke-dashoffset="0.0pt">
+ <g stroke-linejoin="miter">
+ <path d=" M  -5.22293 2.34435 L  0.29999 0.0 L  -5.22293 -2.34435 Z  " />
+ </g>
+ </g>
+ </g>
+  </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ <path d=" M  116.65733 110.96556  " style="fill:none"/>
+ <g>
+ <g>
+ <g transform="matrix(1.0,0.0,0.0,1.0,120.1903,100.98816)">
+ <g fill="rgb(0.0%,0.0%,0.0%)">
+ <text style="stroke:none" transform="scale(1,-1) translate(13.08334,0)" text-anchor="middle"  font-size="10"> 
+case 1</text> 
+</g>
+ </g>
+ </g>
+ </g>
+ <path d=" M  344.28024 136.572  " style="fill:none"/>
+ <g>
+ <g>
+ <g transform="matrix(1.0,0.0,0.0,1.0,347.81322,126.5946)">
+ <g fill="rgb(0.0%,0.0%,0.0%)">
+ <text style="stroke:none" transform="scale(1,-1) translate(13.08334,0)" text-anchor="middle"  font-size="10"> 
+case 2</text> 
+</g>
+ </g>
+ </g>
+ </g>
+ <path d=" M  125.19281 -22.76271  " style="fill:none"/>
+ <g>
+ <g>
+ <g transform="matrix(1.0,0.0,0.0,1.0,128.72578,-32.74011)">
+ <g fill="rgb(0.0%,0.0%,0.0%)">
+ <text style="stroke:none" transform="scale(1,-1) translate(13.08334,0)" text-anchor="middle"  font-size="10"> 
+case 3</text> 
+</g>
+ </g>
+ </g>
+ </g>
+ <path d=" M  230.46661 196.3247  " style="fill:none"/>
+ <g>
+ <g>
+ <g transform="matrix(1.0,0.0,0.0,1.0,233.99959,186.3473)">
+ <g fill="rgb(0.0%,0.0%,0.0%)">
+ <text style="stroke:none" transform="scale(1,-1) translate(13.08334,0)" text-anchor="middle"  font-size="10"> 
+case 4</text> 
+</g>
+ </g>
+ </g>
+ </g>
+ <path d=" M  295.90674 25.60643  " style="fill:none"/>
+ <g>
+ <g>
+ <g transform="matrix(1.0,0.0,0.0,1.0,299.43971,15.62903)">
+ <g fill="rgb(0.0%,0.0%,0.0%)">
+ <text style="stroke:none" transform="scale(1,-1) translate(13.08334,0)" text-anchor="middle"  font-size="10"> 
+case 5</text> 
+</g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ 
+                                                                                                                                                                            </g> 
+</svg> 

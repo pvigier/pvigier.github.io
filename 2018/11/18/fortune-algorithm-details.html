@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="">
+        <meta name="author" content="Pierre Vigier">
+
+        <title>Fortune's algorithm, the details - pvigier's blog</title>
+        <link rel="shortcut icon" href="/media/img/favicon.png">
+        <!-- Bootstrap -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+        <!-- My themes -->
+        <link href="/media/css/style.css" rel="stylesheet">
+        <link href="/media/css/syntax.css" rel="stylesheet">
+        <link href="/media/css/modal.css" rel="stylesheet">
+    </head>
+    <body>
+        <div class="blog-masthead">
+            <div class="container">
+                <nav class="blog-nav">
+                    <a class="blog-nav-item active" href="/">Blog</a>
+                    <a class="blog-nav-item" href="/articles">Articles</a>
+                    <a class="blog-nav-item" href="/games">Games</a>
+                    <!--<a class="blog-nav-item" href="/best-resources">Best Resources</a>-->
+                    <a class="blog-nav-item" href="/resume">Resume</a>
+                    <a class="blog-nav-item" href="/about">About</a>
+                </nav>
+            </div>
+        </div>
+        <div class="container">
+            <div class="blog-header">
+                <h1 class="blog-title">pvigier's blog</h1>
+                <p class="lead blog-description">computer science, programming and other ideas</p>
+            </div>
+            <div class="row">
+            <div class="col-sm-8 blog-main">
+<div class="blog-post">
+    <h2 class="blog-post-title">Fortune's algorithm, the details</h2>
+    <p class="blog-post-meta">18 Nov 2018 by <a href="/">pierre</a></p>
+    <p>The last few weeks, I worked on an implementation of the <a href="https://en.wikipedia.org/wiki/Fortune%27s_algorithm">Fortune’s algorithm</a> in C++. This algorithm takes a set of 2D points and construct the <a href="https://en.wikipedia.org/wiki/Voronoi_diagram">Voronoi diagram</a> of these points. If you wonder what is a Voronoi diagram, it looks like this:</p>
+
+<p><img src="/media/img/fortune/voronoi_intersected.png" alt="Voronoi diagram" /></p>
+
+<p>For each input point, which is called a site, we want to find the set of points which is nearer to this site than to any other site. These sets of points form cells as you can see on the image above.</p>
+
+<p>What is remarkable about the Fortune’s algorithm is that it constructs such diagrams in <script type="math/tex">O(n\log n)</script> time (which is optimal for an algorithm which uses comparisons) where <script type="math/tex">n</script> is the number of sites.</p>
+
+<p>I am writing this article because I find it very hard to implement this algorithm. Until now, it is surely the hardest algorithm I have ever implemented. Thus, I want to share with you the issues I faced and how I solved them.</p>
+
+<p>The code is, as usual, available on <a href="https://github.com/pvigier/FortuneAlgorithm">github</a> and you will find all the references I used at the bottom of this article.</p>
+
+<!--more-->
+
+<h1 id="fortunes-algorithm-overview">Fortune’s algorithm overview</h1>
+
+<p>I will not explain how the algorithm works. Because other people have already done it well. I can recommend you these two blog articles: <a href="http://blog.ivank.net/fortunes-algorithm-and-implementation.html">here</a> and <a href="https://jacquesheunis.com/post/fortunes-algorithm/">there</a>. The second one is really cool since its author made an interactive demo in Javascript which is useful to understand how the algorithm works. If you want a more formal approach and to see all the proofs, I advise you to read the chapter 7 of <a href="http://www.cs.uu.nl/geobook/"><em>Computational Geometry, 3rd edition</em></a>.</p>
+
+<p>Moreover, I prefer to tackle the implementation details which are not as well documented. And they are what makes this algorithm so hard to implement correctly. I will especially focus on the data structures I used.</p>
+
+<p>I just put a pseudo-code of the algorithm so that we all agree on the global structure of the algorithm:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>add a site event in the event queue for each site
+while the event queue is not empty 
+    pop the top event
+    if the event is a site event
+        insert a new arc in the beachline
+        check for new circle events
+    else
+        create a vertex in the diagram
+        remove the shrunk arc from the beachline
+        delete invalidated events
+        check for new circle events
+</code></pre></div></div>
+
+<h1 id="diagrams-data-structure">Diagram’s data structure</h1>
+
+<p>The first issue I faced is how to store the Voronoi diagram.</p>
+
+<p>I choose to use a data structure which is widely used in computational geometry called <a href="https://en.wikipedia.org/wiki/Doubly_connected_edge_list">doubly connected edge list</a> (DCEL).</p>
+
+<p>My <code class="highlighter-rouge">VoronoiDiagram</code> class has four containers as fields:</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">VoronoiDiagram</span>
+<span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+    <span class="c1">// ...</span>
+
+<span class="k">private</span><span class="o">:</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Site</span><span class="o">&gt;</span> <span class="n">mSites</span><span class="p">;</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Face</span><span class="o">&gt;</span> <span class="n">mFaces</span><span class="p">;</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">list</span><span class="o">&lt;</span><span class="n">Vertex</span><span class="o">&gt;</span> <span class="n">mVertices</span><span class="p">;</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">list</span><span class="o">&lt;</span><span class="n">HalfEdge</span><span class="o">&gt;</span> <span class="n">mHalfEdges</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>I will detail each of them.</p>
+
+<p>The <code class="highlighter-rouge">Site</code> class represents an input point. Each site has an index, which is useful to query them, coordinates and a pointer to their cell (<code class="highlighter-rouge">face</code>):</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="k">struct</span> <span class="n">Site</span>
+<span class="p">{</span>
+    <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">index</span><span class="p">;</span>
+    <span class="n">Vector2</span> <span class="n">point</span><span class="p">;</span>
+    <span class="n">Face</span><span class="o">*</span> <span class="n">face</span><span class="p">;</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>The vertices of the cells are represented by the <code class="highlighter-rouge">Vertex</code> class, they just have a coordinates field:</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">struct</span> <span class="n">Vertex</span>
+<span class="p">{</span>
+    <span class="n">Vector2</span> <span class="n">point</span><span class="p">;</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>Here is the implementation of half-edges:</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">struct</span> <span class="n">HalfEdge</span>
+<span class="p">{</span>
+    <span class="n">Vertex</span><span class="o">*</span> <span class="n">origin</span><span class="p">;</span>
+    <span class="n">Vertex</span><span class="o">*</span> <span class="n">destination</span><span class="p">;</span>
+    <span class="n">HalfEdge</span><span class="o">*</span> <span class="n">twin</span><span class="p">;</span>
+    <span class="n">Face</span><span class="o">*</span> <span class="n">incidentFace</span><span class="p">;</span>
+    <span class="n">HalfEdge</span><span class="o">*</span> <span class="n">prev</span><span class="p">;</span>
+    <span class="n">HalfEdge</span><span class="o">*</span> <span class="n">next</span><span class="p">;</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>You might wonder what is an half-edge. An edge in the Voronoi diagram is shared by two adjacent cells. In the DCEL data structure, we split these edge in two half-edges, one for each cell, and they are link by the <code class="highlighter-rouge">twin</code> pointer. Moreover, an half-edge have an origin vertex and a destination vertex. The <code class="highlighter-rouge">incidentFace</code> field points to the face to which the half-edge belongs to. Finally, in DCEL, cells are implemented as a circular doubly linked list of half-edges where adjacent half-edges are linked together. Thus the <code class="highlighter-rouge">prev</code> and <code class="highlighter-rouge">next</code> fields points to the previous and next half-edges in the cell.</p>
+
+<p>On the image below, you can visualize all these fields for the red half-edge:</p>
+
+<p><img src="/media/img/fortune/half_edge.svg" alt="Half-edge" class="center-image modal-image" /></p>
+
+<p>Finally, the <code class="highlighter-rouge">Face</code> class represents a cell and it just contains a pointer to its site and another to one of its half-edges. It does not matter which half-edge it is because a cell is a closed polygon. Thus we can access to all of its half-edges by traversing the circular linked list.</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">struct</span> <span class="n">Face</span>
+<span class="p">{</span>
+    <span class="n">Site</span><span class="o">*</span> <span class="n">site</span><span class="p">;</span>
+    <span class="n">HalfEdge</span><span class="o">*</span> <span class="n">outerComponent</span><span class="p">;</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<h1 id="event-queue">Event queue</h1>
+
+<p>The standard way to implement the event queue is to use a priority queue. During the processing of site and circle events we may need to remove circle events from the queue because they are not valid anymore. But most of the standard implementations of priority queues does not allow to remove an element which is not the top one. In particular that is the case for <code class="highlighter-rouge">std::priority_queue</code>.</p>
+
+<p>There are two ways to tackle this problem. The first and simplest one is to add a <code class="highlighter-rouge">valid</code> flag to events. We set <code class="highlighter-rouge">valid</code> to <code class="highlighter-rouge">true</code> initially. Then instead of removing the circle event from the queue, we just set its flag to <code class="highlighter-rouge">false</code>. Finally, when we process the events in the main loop, if the <code class="highlighter-rouge">valid</code> flag of an event equals to <code class="highlighter-rouge">false</code>, we simply discard this event and process the next one.</p>
+
+<p>The second method which I adopted is not to use <code class="highlighter-rouge">std::priority_queue</code>. Instead, I implemented my own priority queue which supports removal of any elements it contains. The implementation of such a queue is pretty straightfoward. I choose this method because I find it makes the code for the algorithm clearer.</p>
+
+<h1 id="beachline">Beachline</h1>
+
+<p>The beachline data structure is the tricky part of the algorithm. If not implemented correctly there is no guarantee that the algorithm will run in <script type="math/tex">O(n\log n)</script>. The key to reach this time complexity is to use a self-balancing tree. That’s easier said than done!</p>
+
+<p>In most resources I have consulted (the two blog articles aforementioned and <em>Computational Geometry</em>), they advise two implement the beachline as a tree where interior nodes represent breakpoints and leaves represent arcs. But they do not indicate how to balance the tree. I think that this representation is not the best possible because:</p>
+
+<ul>
+  <li>there is redundant information: we know that there is a breakpoint between two adjacent arcs, it is not necessary to represent them using nodes</li>
+  <li>it is not very adequate for self-balancing: it is only possible to balance the subtree formed by the breakpoints. Indeed, we cannot balance the whole tree because otherwise arcs may become interior nodes and breakpoints leaves. Writing an algorithm to balance only the subtree formed by the interior nodes seems like a nightmare to me.</li>
+</ul>
+
+<p>Thus, I decided to represent the beachline differently. In my implementation the beachline is still a tree but all nodes represent an arc. This representation have none of the previous shortcomings.</p>
+
+<p>Here is the definition of an <code class="highlighter-rouge">Arc</code> in my implementation:</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">struct</span> <span class="n">Arc</span>
+<span class="p">{</span>
+    <span class="k">enum</span> <span class="k">class</span> <span class="nc">Color</span><span class="p">{</span><span class="n">RED</span><span class="p">,</span> <span class="n">BLACK</span><span class="p">};</span>
+
+    <span class="c1">// Hierarchy</span>
+    <span class="n">Arc</span><span class="o">*</span> <span class="n">parent</span><span class="p">;</span>
+    <span class="n">Arc</span><span class="o">*</span> <span class="n">left</span><span class="p">;</span>
+    <span class="n">Arc</span><span class="o">*</span> <span class="n">right</span><span class="p">;</span>
+    <span class="c1">// Diagram</span>
+    <span class="n">VoronoiDiagram</span><span class="o">::</span><span class="n">Site</span><span class="o">*</span> <span class="n">site</span><span class="p">;</span>
+    <span class="n">VoronoiDiagram</span><span class="o">::</span><span class="n">HalfEdge</span><span class="o">*</span> <span class="n">leftHalfEdge</span><span class="p">;</span>
+    <span class="n">VoronoiDiagram</span><span class="o">::</span><span class="n">HalfEdge</span><span class="o">*</span> <span class="n">rightHalfEdge</span><span class="p">;</span>
+    <span class="n">Event</span><span class="o">*</span> <span class="n">event</span><span class="p">;</span>
+    <span class="c1">// Optimizations</span>
+    <span class="n">Arc</span><span class="o">*</span> <span class="n">prev</span><span class="p">;</span>
+    <span class="n">Arc</span><span class="o">*</span> <span class="n">next</span><span class="p">;</span>
+    <span class="c1">// Only for balancing</span>
+    <span class="n">Color</span> <span class="n">color</span><span class="p">;</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>The first three fields are for the tree structure. The <code class="highlighter-rouge">leftHalfEdge</code> field points to the half-edge drawn by the left extremity of the arc. And <code class="highlighter-rouge">rightHalfEdge</code> to the half-edge drawn by the right one. The two pointers <code class="highlighter-rouge">prev</code> and <code class="highlighter-rouge">next</code> are useful to have a direct access to the previous and next arc in the beachline. They also allow to traverse the beachline like a doubly linked list. Finally, every arc have a color which is used to balance the beachline.</p>
+
+<p>I choose to use the <a href="https://en.wikipedia.org/wiki/Red%E2%80%93black_tree">red-black scheme</a> to balance the beachline. My code is directly inspired from <a href="https://en.wikipedia.org/wiki/Introduction_to_Algorithms">CLRS</a>. The two interesting algorithms described in the chapter 13 of the book are <code class="highlighter-rouge">insertFixup</code> and <code class="highlighter-rouge">deleteFixup</code> which balance the tree after insertion/deletion.</p>
+
+<p>However, we cannot reuse the <code class="highlighter-rouge">insert</code> method of the book because it uses keys to find the correct place where to insert a node. In Fortune’s algorithm we have no key, we only know that we want to insert an arc before or after another in the beachline. To do that, I create methods <code class="highlighter-rouge">insertBefore</code> and <code class="highlighter-rouge">insertAfter</code>:</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="n">Beachline</span><span class="o">::</span><span class="n">insertBefore</span><span class="p">(</span><span class="n">Arc</span><span class="o">*</span> <span class="n">x</span><span class="p">,</span> <span class="n">Arc</span><span class="o">*</span> <span class="n">y</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="c1">// Find the right place</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">isNil</span><span class="p">(</span><span class="n">x</span><span class="o">-&gt;</span><span class="n">left</span><span class="p">))</span>
+    <span class="p">{</span>
+        <span class="n">x</span><span class="o">-&gt;</span><span class="n">left</span> <span class="o">=</span> <span class="n">y</span><span class="p">;</span>
+        <span class="n">y</span><span class="o">-&gt;</span><span class="n">parent</span> <span class="o">=</span> <span class="n">x</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">else</span>
+    <span class="p">{</span>
+        <span class="n">x</span><span class="o">-&gt;</span><span class="n">prev</span><span class="o">-&gt;</span><span class="n">right</span> <span class="o">=</span> <span class="n">y</span><span class="p">;</span>
+        <span class="n">y</span><span class="o">-&gt;</span><span class="n">parent</span> <span class="o">=</span> <span class="n">x</span><span class="o">-&gt;</span><span class="n">prev</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="c1">// Set the pointers</span>
+    <span class="n">y</span><span class="o">-&gt;</span><span class="n">prev</span> <span class="o">=</span> <span class="n">x</span><span class="o">-&gt;</span><span class="n">prev</span><span class="p">;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">isNil</span><span class="p">(</span><span class="n">y</span><span class="o">-&gt;</span><span class="n">prev</span><span class="p">))</span>
+        <span class="n">y</span><span class="o">-&gt;</span><span class="n">prev</span><span class="o">-&gt;</span><span class="n">next</span> <span class="o">=</span> <span class="n">y</span><span class="p">;</span>
+    <span class="n">y</span><span class="o">-&gt;</span><span class="n">next</span> <span class="o">=</span> <span class="n">x</span><span class="p">;</span>
+    <span class="n">x</span><span class="o">-&gt;</span><span class="n">prev</span> <span class="o">=</span> <span class="n">y</span><span class="p">;</span>
+    <span class="c1">// Balance the tree</span>
+    <span class="n">insertFixup</span><span class="p">(</span><span class="n">y</span><span class="p">);</span>    
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>The insertion of <code class="highlighter-rouge">y</code> before <code class="highlighter-rouge">x</code> is made in three steps:</p>
+
+<ol>
+  <li>Find the place to insert the new node. To do that I use the following observation: either the left child of <code class="highlighter-rouge">x</code> is <code class="highlighter-rouge">Nil</code> or it is the right child of <code class="highlighter-rouge">x-&gt;prev</code> and the one that is <code class="highlighter-rouge">Nil</code> is before <code class="highlighter-rouge">x</code> and after<code class="highlighter-rouge">x-&gt;prev</code>.</li>
+  <li>We maintain a structure of doubly linked list inside the beachline so we must update the <code class="highlighter-rouge">prev</code> and <code class="highlighter-rouge">next</code> pointers of <code class="highlighter-rouge">x-&gt;prev</code>, <code class="highlighter-rouge">y</code> and <code class="highlighter-rouge">x</code> accordingly.</li>
+  <li>Finally, we just call the <code class="highlighter-rouge">insertFixup</code> method described in the book to balance the tree.</li>
+</ol>
+
+<p><code class="highlighter-rouge">insertAfter</code> is implemented analogously.</p>
+
+<p>Finally, the deletion method from the book can be implemented as it is.</p>
+
+<h1 id="bounding-the-diagram">Bounding the diagram</h1>
+
+<p>Here is the output of the Fortune’s algorithm described above:</p>
+
+<p><img src="/media/img/fortune/voronoi.png" alt="Voronoi diagram" /></p>
+
+<p>There is a little problem with some edges for cells on the border of the image: they are not drawn. That is because they are infinite.</p>
+
+<p>Worse, a cell might not be in one piece. For instance, if we take three points aligned, the middle point will have two infinite half-edges not linked together. It is not very satisfactory because that means we cannot access to one of the half-edges as a cell is a linked list of edges.</p>
+
+<p>To solve these problems, we will bound the diagram. By bounding the diagram, I mean that we will bound every cell of the diagram so that there are no infinite edges anymore and every cell is a closed polygon.</p>
+
+<p>Fortunately, Fortune’s algorithm gives us a way to quickly find the infinite edges: they correspond to the half-edges still in the beachline at the end of the algorithm.</p>
+
+<p>My bounding algorithm takes a box as input and has three steps:</p>
+
+<ol>
+  <li>It will makes sure that every vertices of the diagram is contained inside the box.</li>
+  <li>Clip every infinite edge.</li>
+  <li>Close the cells.</li>
+</ol>
+
+<p>Step 1 is trivial, we just expand the box if it does not a contain a vertex.</p>
+
+<p>Step 2 is pretty simple too, it just consists of computing intersections between rays and the box.</p>
+
+<p>Step 3 is not very difficult neither but it requires to be very careful. I do it in two steps. Firstly, I add the corners of the box to cells that need them in their vertices. Secondly, I make sure that all the vertices of a cell are linked by half-edges.</p>
+
+<p>I encourage you to read the code or ask questions if you want more details on this part.</p>
+
+<p>Here is the diagram output by the bounding algorithm:</p>
+
+<p><img src="/media/img/fortune/voronoi_bounded.png" alt="Voronoi diagram bounded" /></p>
+
+<p>We can see that all the edges are drawn now. And if we zoom out, we can check that all the cells are closed:</p>
+
+<p><img src="/media/img/fortune/voronoi_bounded_zoomed_out.png" alt="Voronoi diagram bounded" /></p>
+
+<h1 id="intersection-with-a-box">Intersection with a box</h1>
+
+<p>Cool! But the first image at the top of the article is cooler, isn’t it?</p>
+
+<p>In many applications, it is useful to have the intersection between a Voronoi diagram and a box, it is what is shown on the first image.</p>
+
+<p>The good news is that it is a lot easier now that we have bounded the diagram. The bad news is that once again even if the algorithm is not over-complicated we will have to be careful.</p>
+
+<p>The idea is the following: for each cell we traverse its half-edges and we check the intersection between this half-edge and the box. There are five cases:</p>
+
+<ol>
+  <li>The half-edge is completely inside the box: we keep this half-edge</li>
+  <li>The half-edge is completely outside the box: we discard this half-edge</li>
+  <li>The half-edge is going outside the box: we clip the half-edge and we store it as the <em>last half-edge that went outside</em>.</li>
+  <li>The half-edge is going inside the box: we clip the half-edge and we add half-edges to link it with the <em>last half-edge that went outside</em> (we store it at case 3 or 5)</li>
+  <li>The half-edge crosses the box twice: we clip the half-edge, we add half-edges to link it with the <em>last half-edge that went outside</em> and we store it as the new <em>last half-edge that went outside</em>.</li>
+</ol>
+
+<p>Uh, that’s a lot of cases. I made a picture to visualize them:</p>
+
+<p><img src="/media/img/fortune/intersection.svg" alt="Intersection algorithm" class="center-image modal-image" /></p>
+
+<p>The orange polygon is the original cell while the red one is the clipped cell. The clipped half-edges are depicted in red. The green ones are the ones added to link the half-edges that are going inside the box with the ones that are going outside.</p>
+
+<p>After we applied this algorithm to the bounded diagram, we have the expected result:</p>
+
+<p><img src="/media/img/fortune/voronoi_intersected.png" alt="Voronoi diagram intersected with a box" /></p>
+
+<h1 id="conclusion">Conclusion</h1>
+
+<p>This article was pretty long. And I am sure that many things are still unclear. Nevertheless, I hope that you find it useful. Do not hesitate to read the code if you want to see all the details and if you have any question you can ask them in the comment section below.</p>
+
+<p>To finish this article and to be sure we have not done all of this for nothing I have measured the time it takes to compute the Voronoi diagram for different numbers of sites on my (cheap) laptop:</p>
+
+<ul>
+  <li><script type="math/tex">n = 1000</script>: 3ms</li>
+  <li><script type="math/tex">n = 10000</script>: 50ms</li>
+  <li><script type="math/tex">n = 100000</script>: 1000ms</li>
+</ul>
+
+<p>I have nothing to compare these durations with but it seems blazing fast!</p>
+
+<h1 id="references">References</h1>
+
+<ul>
+  <li><a href="http://www.wias-berlin.de/people/si/course/files/Fortune87-SweepLine-Voronoi.pdf">Steven Fortune’s original paper</a></li>
+  <li><a href="http://www.cs.uu.nl/geobook/"><em>Computational Geometry, 3rd edition</em></a> by Mark de Berg, Otfried Cheong, Marc van Kreveld and Mark Overmars</li>
+  <li><a href="https://jacquesheunis.com/post/fortunes-algorithm/">Fortunes Algorithm: An intuitive explanation</a> on jacquesheunis.com</li>
+  <li><a href="http://blog.ivank.net/fortunes-algorithm-and-implementation.html">Fortune’s algorithm and implementation</a> on blog.ivank.net</li>
+  <li><a href="http://mitpress.mit.edu/books/introduction-algorithms-third-edition"><em>Introduction to Algorithms, 3rd edition</em></a> by Thomas H. Cormen, Charles E. Leiserson, Ronald L. Rivest and Clifford Stein</li>
+</ul>
+
+    
+	<p>Tags: <span class="label label-primary"><a href="/tag/cpp">cpp</a></span> <span class="label label-primary"><a href="/tag/geometry">geometry</a></span> </p>
+	
+</div><!-- /.blog-post -->
+
+
+<div id="disqus_thread"></div>
+<script>
+
+/**
+*  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+*  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+/*
+var disqus_config = function () {
+this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+};
+*/
+(function() { // DON'T EDIT BELOW THIS LINE
+var d = document, s = d.createElement('script');
+s.src = 'https://pvigier-github-io.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+</div><!-- /.blog-main -->
+<div class="col-sm-3 col-sm-offset-1 blog-sidebar">
+	<div class="sidebar-module">
+        <h4>Tags</h4>
+        <ol class="list-unstyled">
+		
+			<li><a href="/tag/math">math (3)</a></li>
+		
+			<li><a href="/tag/python">python (6)</a></li>
+		
+			<li><a href="/tag/cpp">cpp (4)</a></li>
+		
+			<li><a href="/tag/pcg">pcg (3)</a></li>
+		
+			<li><a href="/tag/simulopolis">simulopolis (4)</a></li>
+		
+			<li><a href="/tag/linux">linux (1)</a></li>
+		
+			<li><a href="/tag/geometry">geometry (1)</a></li>
+		
+        </ol>
+    </div>
+    <div class="sidebar-module">
+        <h4>Archives</h4>
+        <ol class="list-unstyled">
+		
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+			<li id="yNovember 2018"><a href="/2018/11">November 2018 (3)</a></li>
+				
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+			<li id="yOctober 2018"><a href="/2018/10">October 2018 (3)</a></li>
+				
+            
+        
+            
+            
+            
+            
+			<li id="yJune 2018"><a href="/2018/06">June 2018 (1)</a></li>
+				
+            
+        
+            
+            
+            
+            
+			<li id="yMay 2018"><a href="/2018/05">May 2018 (1)</a></li>
+				
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+			<li id="yFebruary 2018"><a href="/2018/02">February 2018 (2)</a></li>
+				
+            
+        
+            
+            
+            
+            
+			<li id="yAugust 2017"><a href="/2017/08">August 2017 (1)</a></li>
+				
+            
+        
+            
+            
+            
+            
+			<li id="yJuly 2017"><a href="/2017/07">July 2017 (1)</a></li>
+				
+            
+        
+            
+            
+            
+            
+			<li id="yFebruary 2017"><a href="/2017/02">February 2017 (1)</a></li>
+				
+            
+        
+        </ol>
+    </div>
+    <div class="sidebar-module">
+        <h4>Follow me</h4>
+        <ol class="list-unstyled">
+            <li><a href="https://github.com/pvigier">GitHub</a></li>
+            <li><a href="https://pvigier.itch.io/">itch.io</a></li>
+            <li><a href="https://twitter.com/PierreVigier">Twitter</a></li>
+            <li><a href="/rss.xml">RSS</a></li>
+        </ol>
+    </div>
+</div><!-- /.blog-sidebar -->
+
+            </div><!-- /.row -->
+        </div><!-- /.container -->
+
+        <footer class="blog-footer">
+            <p>Powered by <a href="http://getbootstrap.com">Bootstrap</a> and <a href="http://jekyllrb.com">Jekyll</a>.</p>
+            <p>
+                <a href="#">Back to top</a>
+            </p>
+        </footer>
+        <!-- Javascript -->
+        <!-- jQuery -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+        <!-- Bootstrap -->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+        <!-- MathJax -->
+        <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+        <!-- Analytics -->
+        <script>
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+        ga('create', 'UA-30902264-4', 'auto');
+        ga('send', 'pageview');
+        </script>
+        <!-- Modal images -->
+        <script src="/media/js/modal.js"></script>
+    </body>
+</html>
