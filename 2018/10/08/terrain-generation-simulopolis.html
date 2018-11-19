@@ -104,7 +104,7 @@
 
 <h1 id="trees">Trees</h1>
 
-<p>The rule for generating trees is more complicated. I wanted to put trees far from water, in the hills. Thus I reuse the previous noise texture and interpret it as altitude.</p>
+<p>The rule for generating trees is more complicated. I wanted to put trees far from water, in the hills. Thus, I reuse the previous noise texture and interpret it as altitude.</p>
 
 <p>At the tiles that are not water, the noise is between <code class="highlighter-rouge">threshold</code> and 1. I normalize this value between 0 and 1 again by using this formula: <code class="highlighter-rouge">(noise - threshold) / (1 - threshold)</code>.</p>
 

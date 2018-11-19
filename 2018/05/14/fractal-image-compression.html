@@ -66,7 +66,7 @@
 
 <p><a href="#proof1" data-toggle="collapse">Show the proof</a></p>
 <div id="proof1" class="collapse">
-<p>First let us proof that the sequence \((u_n)\) defined by \(\left\{\begin{alignat*}{2}u_0 &amp; = x\\ u_{n+1} &amp; = f(u_n)\end{alignat*}\right.\) is convergent for all \(x \in E\).</p>
+<p>First, let us proof that the sequence \((u_n)\) defined by \(\left\{\begin{alignat*}{2}u_0 &amp; = x\\ u_{n+1} &amp; = f(u_n)\end{alignat*}\right.\) is convergent for all \(x \in E\).</p>
 
 <p>For all \(m &lt; n \in \mathbb{N}\): </p>
 
@@ -129,7 +129,7 @@ d(x, x_0) < \frac{\epsilon}{1 - s} %]]></script>.</p>
 
 <ul>
   <li>Firstly, we partition the image in <em>destination</em> or <em>range</em> blocks <script type="math/tex">R_1, ..., R_L</script>. These blocks are disjoint and they cover the whole image.</li>
-  <li>Then, we segment the image in <em>source</em> or <em>domain</em> blocks <script type="math/tex">D_1, ..., D_K</script>. These blocks are not necessary disjoint and neither they necessary cover the image.</li>
+  <li>Then, we segment the image in <em>source</em> or <em>domain</em> blocks <script type="math/tex">D_1, ..., D_K</script>. These blocks are not necessarily disjoint and neither they necessarily cover the image.</li>
 </ul>
 
 <p>For instance, we can segment the image like this:</p>
@@ -181,15 +181,15 @@ $$
 
 <p>The size of the blocks are powers of two as it makes things easier. The source blocks are 8 by 8 while the destination blocks are 4 by 4.</p>
 
-<p>There exists more advanced schemes for segmentation. For instance, we can use a quadtree to segment more the areas with lots of details.</p>
+<p>There exist more advanced schemes for segmentation. For instance, we can use a quadtree to segment more the areas with lots of details.</p>
 
 <h2 id="transformations">Transformations</h2>
 
 <p>In this section, we will show how to construct the contractions from <script type="math/tex">D_{k}</script> to <script type="math/tex">R_l</script>.</p>
 
-<p>Remember that we want to generate a mapping <script type="math/tex">f_l</script> such that <script type="math/tex">f(x_{D_k})</script> is near to <script type="math/tex">x_{R_l}</script>. So the more mappings we generate, the more likely we are to find a good one.</p>
+<p>Remember that we want to generate a mapping <script type="math/tex">f_l</script> such that <script type="math/tex">f(x_{D_k})</script> is near to <script type="math/tex">x_{R_l}</script>. So, the more mappings we generate, the more likely we are to find a good one.</p>
 
-<p>However the quality of the compression depends on the number of bits necessary to save <script type="math/tex">f_l</script>. So if we have a set of functions that is too large, the compression will be bad. There is a tradeoff to find.</p>
+<p>However, the quality of the compression depends on the number of bits necessary to save <script type="math/tex">f_l</script>. So if we have a set of functions that is too large, the compression will be bad. There is a tradeoff to find.</p>
 
 <p>I chose that <script type="math/tex">f_l</script> will have the following form:
 <script type="math/tex">f_l(x_{D_k}) = s \times rotate_{\theta}(flip_d(reduce(x_{D_k}))) + b</script></p>
@@ -305,7 +305,7 @@ $$
     <span class="k">return</span> <span class="n">iterations</span>
 </code></pre></div></div>
 
-<p>It works because the contraction has an unique fixed point and whatever initial image we choose, we will tend to it.</p>
+<p>It works because the contraction has a unique fixed point and whatever initial image we choose, we will tend to it.</p>
 
 <p>I think, it is time for a little example. We will try to compress and decompress this image of a monkey:</p>
 

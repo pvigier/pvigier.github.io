@@ -128,7 +128,7 @@ while the event queue is not empty
 <span class="p">};</span>
 </code></pre></div></div>
 
-<p>You might wonder what is a half-edge. An edge in the Voronoi diagram is shared by two adjacent cells. In the DCEL data structure, we split these edges in two half-edges, one for each cell, and they are linked by the <code class="highlighter-rouge">twin</code> pointer. Moreover, a half-edge has an origin vertex and a destination vertex. The <code class="highlighter-rouge">incidentFace</code> field points to the face to which the half-edge belongs to. Finally, in DCEL, cells are implemented as a circular doubly linked list of half-edges where adjacent half-edges are linked together. Thus the <code class="highlighter-rouge">prev</code> and <code class="highlighter-rouge">next</code> fields points to the previous and next half-edges in the cell.</p>
+<p>You might wonder what is a half-edge. An edge in a Voronoi diagram is shared by two adjacent cells. In the DCEL data structure, we split these edges in two half-edges, one for each cell, and they are linked by the <code class="highlighter-rouge">twin</code> pointer. Moreover, a half-edge has an origin vertex and a destination vertex. The <code class="highlighter-rouge">incidentFace</code> field points to the face to which the half-edge belongs to. Finally, in DCEL, cells are implemented as a circular doubly linked list of half-edges where adjacent half-edges are linked together. Thus the <code class="highlighter-rouge">prev</code> and <code class="highlighter-rouge">next</code> fields points to the previous and next half-edges in the cell.</p>
 
 <p>On the image below, you can visualize all these fields for the red half-edge:</p>
 
@@ -145,7 +145,7 @@ while the event queue is not empty
 
 <h1 id="event-queue">Event queue</h1>
 
-<p>The standard way to implement the event queue is to use a priority queue. During the processing of site and circle events we may need to remove circle events from the queue because they are not valid anymore. But most of the standard implementations of priority queues does not allow to remove an element which is not the top one. In particular that is the case for <code class="highlighter-rouge">std::priority_queue</code>.</p>
+<p>The standard way to implement the event queue is to use a priority queue. During the processing of site and circle events we may need to remove circle events from the queue because they are not valid anymore. But most of the standard implementations of priority queues do not allow to remove an element which is not the top one. In particular that is the case for <code class="highlighter-rouge">std::priority_queue</code>.</p>
 
 <p>There are two ways to tackle this problem. The first and simplest one is to add a <code class="highlighter-rouge">valid</code> flag to events. We set <code class="highlighter-rouge">valid</code> to <code class="highlighter-rouge">true</code> initially. Then instead of removing the circle event from the queue, we just set its flag to <code class="highlighter-rouge">false</code>. Finally, when we process the events in the main loop, if the <code class="highlighter-rouge">valid</code> flag of an event equals to <code class="highlighter-rouge">false</code>, we simply discard it and process the next one.</p>
 
@@ -162,7 +162,7 @@ while the event queue is not empty
   <li>it is not very adequate for self-balancing: it is only possible to balance the subtree formed by the breakpoints. Indeed, we cannot balance the whole tree because otherwise arcs may become interior nodes and breakpoints leaves. Writing an algorithm to balance only the subtree formed by the interior nodes seems like a nightmare to me.</li>
 </ul>
 
-<p>Thus, I decided to represent the beachline differently. In my implementation the beachline is still a tree but all nodes represent an arc. This representation has none of the previous shortcomings.</p>
+<p>Thus, I decided to represent the beachline differently. In my implementation the beachline is still a tree, but all nodes represent an arc. This representation has none of the previous shortcomings.</p>
 
 <p>Here is the definition of an <code class="highlighter-rouge">Arc</code> in my implementation:</p>
 
@@ -220,7 +220,7 @@ while the event queue is not empty
 <p>The insertion of <code class="highlighter-rouge">y</code> before <code class="highlighter-rouge">x</code> is made in three steps:</p>
 
 <ol>
-  <li>Find the place to insert the new node. To do that I use the following observation: either the left child of <code class="highlighter-rouge">x</code> is <code class="highlighter-rouge">Nil</code> or it is the right child of <code class="highlighter-rouge">x-&gt;prev</code> and the one that is <code class="highlighter-rouge">Nil</code> is before <code class="highlighter-rouge">x</code> and after<code class="highlighter-rouge">x-&gt;prev</code>.</li>
+  <li>Find the place to insert the new node. To do that I use the following observation: either the left child of <code class="highlighter-rouge">x</code> is <code class="highlighter-rouge">Nil</code> or it is the right child of <code class="highlighter-rouge">x-&gt;prev</code>, and the one that is <code class="highlighter-rouge">Nil</code> is before <code class="highlighter-rouge">x</code> and after<code class="highlighter-rouge">x-&gt;prev</code>.</li>
   <li>We maintain a structure of doubly linked list inside the beachline so we must update the <code class="highlighter-rouge">prev</code> and <code class="highlighter-rouge">next</code> pointers of <code class="highlighter-rouge">x-&gt;prev</code>, <code class="highlighter-rouge">y</code> and <code class="highlighter-rouge">x</code> accordingly.</li>
   <li>Finally, we just call the <code class="highlighter-rouge">insertFixup</code> method described in the book to balance the tree.</li>
 </ol>
@@ -246,7 +246,7 @@ while the event queue is not empty
 <p>My bounding algorithm takes a box as input and has three steps:</p>
 
 <ol>
-  <li>It will makes sure that every vertices of the diagram is contained inside the box.</li>
+  <li>It will make sure that every vertices of the diagram is contained inside the box.</li>
   <li>Clip every infinite edge.</li>
   <li>Close the cells.</li>
 </ol>
@@ -255,7 +255,7 @@ while the event queue is not empty
 
 <p>Step 2 is pretty simple too, it just consists of computing intersections between rays and the box.</p>
 
-<p>Step 3 is not very difficult neither but it requires to be very careful. I do it in two steps. Firstly, I add the corners of the box to cells that need them in their vertices. Secondly, I make sure that all the vertices of a cell are linked by half-edges.</p>
+<p>Step 3 is not very difficult neither, but it requires to be very careful. I do it in two steps. Firstly, I add the corners of the box to cells that need them in their vertices. Secondly, I make sure that all the vertices of a cell are linked by half-edges.</p>
 
 <p>I encourage you to read the code or ask questions if you want more details on this part.</p>
 
@@ -273,7 +273,7 @@ while the event queue is not empty
 
 <p>In many applications, it is useful to have the intersection between a Voronoi diagram and a box, it is what is shown on the first image.</p>
 
-<p>The good news is that it is a lot easier now that we have bounded the diagram. The bad news is that once again even if the algorithm is not over-complicated we will have to be careful.</p>
+<p>The good news is that it is a lot easier now that we have bounded the diagram. The bad news is that once again even if the algorithm is not over-complicated, we will have to be careful.</p>
 
 <p>The idea is the following: for each cell we traverse its half-edges and we check the intersection between this half-edge and the box. There are five cases:</p>
 
@@ -282,7 +282,7 @@ while the event queue is not empty
   <li>The half-edge is completely outside the box: we discard this half-edge</li>
   <li>The half-edge is going outside the box: we clip the half-edge and we store it as the <em>last half-edge that went outside</em>.</li>
   <li>The half-edge is going inside the box: we clip the half-edge and we add half-edges to link it with the <em>last half-edge that went outside</em> (we store it at case 3 or 5)</li>
-  <li>The half-edge crosses the box twice: we clip the half-edge, we add half-edges to link it with the <em>last half-edge that went outside</em> and we store it as the new <em>last half-edge that went outside</em>.</li>
+  <li>The half-edge crosses the box twice: we clip the half-edge, we add half-edges to link it with the <em>last half-edge that went outside</em>, and we store it as the new <em>last half-edge that went outside</em>.</li>
 </ol>
 
 <p>Uh, that’s a lot of cases. I made a picture to visualize them:</p>
@@ -297,7 +297,7 @@ while the event queue is not empty
 
 <h1 id="conclusion">Conclusion</h1>
 
-<p>This article was pretty long. And I am sure that many things are still unclear. Nevertheless, I hope that you find it useful. Do not hesitate to read the code if you want to see all the details and if you have any question you can ask them in the comment section below.</p>
+<p>This article was pretty long. And I am sure that many things are still unclear. Nevertheless, I hope you find it useful. Do not hesitate to read the code if you want to see all the details and if you have any question you can ask them in the comment section below.</p>
 
 <p>To finish this article and to be sure we have not done all of this for nothing I have measured the time it takes to compute the Voronoi diagram for different numbers of sites on my (cheap) laptop:</p>
 
@@ -307,7 +307,7 @@ while the event queue is not empty
   <li><script type="math/tex">n = 100000</script>: 1000ms</li>
 </ul>
 
-<p>I have nothing to compare these durations with but it seems blazing fast!</p>
+<p>I have nothing to compare these durations with, but it seems blazing fast!</p>
 
 <h1 id="references">References</h1>
 

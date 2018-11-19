@@ -43,7 +43,7 @@
 
 <p>Today I will tackle a problem I faced when I wanted to distribute the alpha version of Simulopolis two weeks ago: distributing a C++ binary on different Linux distributions.</p>
 
-<p>So two weeks ago, I was happy, I had a version of Simulopolis which ran smoothly on my laptop. And I thought it was time to share it with people to have some feedback. Very naively, I took the binary and the assets, put them on a new folder and uploaded the whole thing on itch.io.</p>
+<p>So, two weeks ago, I was happy as I had a version of Simulopolis which ran smoothly on my laptop. And I thought it was time to share it with people to have some feedback. Very naively, I took the binary and the assets, put them on a new folder and uploaded the whole thing on itch.io.</p>
 
 <p>Then, I sent a message to my big brother telling him that he can try my game. He downloaded the game and when he tried to run the game, he obtained this error message:</p>
 
@@ -84,7 +84,7 @@
 <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>0x000000000000001d (RUNPATH)            Library runpath: [lib]
 </code></pre></div></div>
 
-<p>Now you must add your dependencies in the <code class="highlighter-rouge">lib/</code> folder. But how to know which files it is neccessary to put there? Again, using the <code class="highlighter-rouge">readelf -d</code> command we can read the shared libraries that are needed by the binary. For Simulopolis, it is:</p>
+<p>Now you must add your dependencies in the <code class="highlighter-rouge">lib/</code> folder. But how to know which files it is necessary to put there? Again, using the <code class="highlighter-rouge">readelf -d</code> command we can read the shared libraries that are needed by the binary. For Simulopolis, it is:</p>
 
 <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>0x0000000000000001 (NEEDED)             Shared library: [libsfml-audio.so.2.5]
 0x0000000000000001 (NEEDED)             Shared library: [libsfml-graphics.so.2.5]

@@ -3,7 +3,7 @@
 	<title>pvigier's blog</title>
 	<link href="http://pvigier.github.io/rss.xml" rel="self"/>
 	<link href="http://pvigier.github.io"/>
-	<updated>2018-11-18T22:10:35+01:00</updated>
+	<updated>2018-11-19T20:03:19+01:00</updated>
 	<id>http://pvigier.github.io</id>
 	<author>
 		<name>Pierre Vigier</name>
@@ -91,7 +91,7 @@
 
 &lt;p&gt;Today I will tackle a problem I faced when I wanted to distribute the alpha version of Simulopolis two weeks ago: distributing a C++ binary on different Linux distributions.&lt;/p&gt;
 
-&lt;p&gt;So two weeks ago, I was happy, I had a version of Simulopolis which ran smoothly on my laptop. And I thought it was time to share it with people to have some feedback. Very naively, I took the binary and the assets, put them on a new folder and uploaded the whole thing on itch.io.&lt;/p&gt;
+&lt;p&gt;So, two weeks ago, I was happy as I had a version of Simulopolis which ran smoothly on my laptop. And I thought it was time to share it with people to have some feedback. Very naively, I took the binary and the assets, put them on a new folder and uploaded the whole thing on itch.io.&lt;/p&gt;
 
 &lt;p&gt;Then, I sent a message to my big brother telling him that he can try my game. He downloaded the game and when he tried to run the game, he obtained this error message:&lt;/p&gt;
 
@@ -126,7 +126,7 @@
 			<link href="http://pvigier.github.io/2018/06/13/perlin-noise-numpy.html"/>
 			<updated>2018-06-13T00:00:00+02:00</updated>
 			<id>http://pvigier.github.io/2018/06/13/perlin-noise-numpy</id>
-			<content type="html">&lt;p&gt;Hi everyone, I have written an implementation of Perlin noise with numpy that is pretty fast and I want to share it with you. The code is available &lt;a href=&quot;https://github.com/pvigier/perlin-numpy&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
+			<content type="html">&lt;p&gt;Hi everyone, I have written an implementation of Perlin noise with numpy that is pretty fast, and I want to share it with you. The code is available &lt;a href=&quot;https://github.com/pvigier/perlin-numpy&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
 
 &lt;h1 id=&quot;perlin-noise&quot;&gt;Perlin noise&lt;/h1&gt;
 
@@ -188,13 +188,13 @@
 			<link href="http://pvigier.github.io/2018/02/15/non-empty-destructors.html"/>
 			<updated>2018-02-15T00:00:00+01:00</updated>
 			<id>http://pvigier.github.io/2018/02/15/non-empty-destructors</id>
-			<content type="html">&lt;p&gt;Have you already faced problems with non trivial destructors?&lt;/p&gt;
+			<content type="html">&lt;p&gt;Have you already faced problems with nontrivial destructors?&lt;/p&gt;
 
 &lt;p&gt;I face one recently which was really annoying. In this article, I want to share with you my knowledge of this problem and the solutions I use to address it.&lt;/p&gt;
 
 &lt;h1 id=&quot;the-problem&quot;&gt;The problem&lt;/h1&gt;
 
-&lt;p&gt;The problem is not really that the destructor is non empty but that the destructor is non trivial: there is a release of memory or some states are changed in another part of the app.&lt;/p&gt;
+&lt;p&gt;The problem is not really that the destructor is nonempty but that the destructor is nontrivial: there is a release of memory or some states are changed in another part of the app.&lt;/p&gt;
 
 &lt;p&gt;Let us take a very simple example with a class that does dynamic allocation to explain the problem:&lt;/p&gt;
 
@@ -233,9 +233,9 @@
 
 &lt;p&gt;Why?&lt;/p&gt;
 
-&lt;p&gt;Because when the &lt;code class=&quot;highlighter-rouge&quot;&gt;main&lt;/code&gt; function ends, the destructor of &lt;code class=&quot;highlighter-rouge&quot;&gt;A&lt;/code&gt; is called to delete &lt;code class=&quot;highlighter-rouge&quot;&gt;a&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;anotherA&lt;/code&gt;. When &lt;code class=&quot;highlighter-rouge&quot;&gt;a&lt;/code&gt; is destroyed the memory cell to which &lt;code class=&quot;highlighter-rouge&quot;&gt;a&lt;/code&gt;’s &lt;code class=&quot;highlighter-rouge&quot;&gt;mPointer&lt;/code&gt; points to is freed. Then, when &lt;code class=&quot;highlighter-rouge&quot;&gt;anotherA&lt;/code&gt; is destroyed, we try to free the memory to which &lt;code class=&quot;highlighter-rouge&quot;&gt;anotherA&lt;/code&gt;’s &lt;code class=&quot;highlighter-rouge&quot;&gt;mPointer&lt;/code&gt; points to. But as &lt;code class=&quot;highlighter-rouge&quot;&gt;anotherA&lt;/code&gt; is a copy of &lt;code class=&quot;highlighter-rouge&quot;&gt;a&lt;/code&gt;, its &lt;code class=&quot;highlighter-rouge&quot;&gt;mPointer&lt;/code&gt; points to the same memory cell as &lt;code class=&quot;highlighter-rouge&quot;&gt;a&lt;/code&gt;’s &lt;code class=&quot;highlighter-rouge&quot;&gt;mPointer&lt;/code&gt;. Thus we try to free twice the same memory cell which causes the &lt;code class=&quot;highlighter-rouge&quot;&gt;Segmentation fault&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Because when the &lt;code class=&quot;highlighter-rouge&quot;&gt;main&lt;/code&gt; function ends, the destructor of &lt;code class=&quot;highlighter-rouge&quot;&gt;A&lt;/code&gt; is called to delete &lt;code class=&quot;highlighter-rouge&quot;&gt;a&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;anotherA&lt;/code&gt;. When &lt;code class=&quot;highlighter-rouge&quot;&gt;a&lt;/code&gt; is destroyed the memory cell to which &lt;code class=&quot;highlighter-rouge&quot;&gt;a&lt;/code&gt;’s &lt;code class=&quot;highlighter-rouge&quot;&gt;mPointer&lt;/code&gt; points to is freed. Then, when &lt;code class=&quot;highlighter-rouge&quot;&gt;anotherA&lt;/code&gt; is destroyed, we try to free the memory to which &lt;code class=&quot;highlighter-rouge&quot;&gt;anotherA&lt;/code&gt;’s &lt;code class=&quot;highlighter-rouge&quot;&gt;mPointer&lt;/code&gt; points to. But as &lt;code class=&quot;highlighter-rouge&quot;&gt;anotherA&lt;/code&gt; is a copy of &lt;code class=&quot;highlighter-rouge&quot;&gt;a&lt;/code&gt;, its &lt;code class=&quot;highlighter-rouge&quot;&gt;mPointer&lt;/code&gt; points to the same memory cell as &lt;code class=&quot;highlighter-rouge&quot;&gt;a&lt;/code&gt;’s &lt;code class=&quot;highlighter-rouge&quot;&gt;mPointer&lt;/code&gt;. Thus, we try to free twice the same memory cell which causes the &lt;code class=&quot;highlighter-rouge&quot;&gt;Segmentation fault&lt;/code&gt;.&lt;/p&gt;
 
-&lt;p&gt;So the problem is that because of the copy the destructor is called twice on the same attributes.&lt;/p&gt;
+&lt;p&gt;So, the problem is that because of the copy the destructor is called twice on the same attributes.&lt;/p&gt;
 
 &lt;p&gt;Note that the copy or move constructors are often called when we use containers. For instance, there is a copy or a move when the &lt;code class=&quot;highlighter-rouge&quot;&gt;std::vector&lt;/code&gt;’s &lt;code class=&quot;highlighter-rouge&quot;&gt;push_back&lt;/code&gt; is called.&lt;/p&gt;
 
@@ -289,7 +289,7 @@
 
 &lt;p&gt;Our goal is to write our own deep learning framework like TensorFlow or Torch. We are going to learn in-depth how neural networks work, all the mechanics behind them.&lt;/p&gt;
 
-&lt;p&gt;We will get our hands dirty and code everything! In this tutorial, we will use Python3 and scipy but I hope that the code and the ideas are clear enough so that you can adapt the code to your favourite language.&lt;/p&gt;
+&lt;p&gt;We will get our hands dirty and code everything! In this tutorial, we will use Python3 and scipy but I hope that the code and the ideas are clear enough so that you can adapt the code to your favorite language.&lt;/p&gt;
 
 &lt;p&gt;First, I show you the plan. In this part, we are going to quickly introduce neural networks and then, we will introduce computational graphs in order to model them. In the end of this part, we are going to use our implementation to learn some non-linear functions.&lt;/p&gt;
 
@@ -299,7 +299,7 @@
 
 &lt;p&gt;In part 4, we will go further with recurrent neural networks and introduce the well-known LSTM cell. We will briefly compare it with fully-connected recurrent neural networks.&lt;/p&gt;
 
-&lt;p&gt;To approach part 6, some more efficient optimization algorithms are necessary. Consequently we will discuss them in part 5.&lt;/p&gt;
+&lt;p&gt;To approach part 6, some more efficient optimization algorithms are necessary. Consequently, we will discuss them in part 5.&lt;/p&gt;
 
 &lt;p&gt;Have you ever read &lt;a href=&quot;http://karpathy.github.io/2015/05/21/rnn-effectiveness/&quot;&gt;this fabulous article&lt;/a&gt; by Andrej Karpathy? Yes? Cool, because, we are going to reproduce his results with our own library in part 6. Amazing, isn’t it?&lt;/p&gt;
 

@@ -49,7 +49,7 @@
 
 <h1 id="code">Code</h1>
 
-<p>The only difficulty to generalize the 2D code to 3D is the increased number of cases in each steps. Besides, we need to be careful with indices:</p>
+<p>The only difficulty to generalize the 2D code to 3D is the increased number of cases in each step. Besides, we need to be careful with indices:</p>
 
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">generate_perlin_noise_3d</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">res</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
@@ -92,7 +92,7 @@
     <span class="k">return</span> <span class="p">((</span><span class="mi">1</span><span class="o">-</span><span class="n">t</span><span class="p">[:,:,:,</span><span class="mi">2</span><span class="p">])</span><span class="o">*</span><span class="n">n0</span> <span class="o">+</span> <span class="n">t</span><span class="p">[:,:,:,</span><span class="mi">2</span><span class="p">]</span><span class="o">*</span><span class="n">n1</span><span class="p">)</span>
 </code></pre></div></div>
 
-<p>The adaptation of the code to generate 3D fractal is more direct and simple:</p>
+<p>The adaptation of the code to generate 3D fractal is more direct and simpler:</p>
 
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">generate_fractal_noise_3d</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">res</span><span class="p">,</span> <span class="n">octaves</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">persistence</span><span class="o">=</span><span class="mf">0.5</span><span class="p">):</span>
     <span class="n">noise</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>

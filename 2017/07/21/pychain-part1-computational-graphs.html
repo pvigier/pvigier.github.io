@@ -43,7 +43,7 @@
 
 <p>Our goal is to write our own deep learning framework like TensorFlow or Torch. We are going to learn in-depth how neural networks work, all the mechanics behind them.</p>
 
-<p>We will get our hands dirty and code everything! In this tutorial, we will use Python3 and scipy but I hope that the code and the ideas are clear enough so that you can adapt the code to your favourite language.</p>
+<p>We will get our hands dirty and code everything! In this tutorial, we will use Python3 and scipy but I hope that the code and the ideas are clear enough so that you can adapt the code to your favorite language.</p>
 
 <p>First, I show you the plan. In this part, we are going to quickly introduce neural networks and then, we will introduce computational graphs in order to model them. In the end of this part, we are going to use our implementation to learn some non-linear functions.</p>
 
@@ -53,7 +53,7 @@
 
 <p>In part 4, we will go further with recurrent neural networks and introduce the well-known LSTM cell. We will briefly compare it with fully-connected recurrent neural networks.</p>
 
-<p>To approach part 6, some more efficient optimization algorithms are necessary. Consequently we will discuss them in part 5.</p>
+<p>To approach part 6, some more efficient optimization algorithms are necessary. Consequently, we will discuss them in part 5.</p>
 
 <p>Have you ever read <a href="http://karpathy.github.io/2015/05/21/rnn-effectiveness/">this fabulous article</a> by Andrej Karpathy? Yes? Cool, because, we are going to reproduce his results with our own library in part 6. Amazing, isn’t it?</p>
 
@@ -90,7 +90,7 @@
 
 <script type="math/tex; mode=display">J(f, D) = \sum_{(x, y) \in D}{||y - f(x)||_2^2}</script>
 
-<p>If you want to know more about cost functions, how to derive them from statistics, regularization, etc … You are welcome to read the appendix on cost functions.</p>
+<p>If you want to know more about cost functions, how to derive them from statistics, regularization, etc. You are welcome to read the appendix on cost functions.</p>
 
 <p>Now that we have a cost function, our goal is to find a function <script type="math/tex">f</script> such that <script type="math/tex">J(f, D)</script> is small.</p>
 
@@ -104,17 +104,17 @@
 
 <h2 id="gradient-descent">Gradient descent</h2>
 
-<p>I am going to present quickly an algorithm to find a good <script type="math/tex">\theta</script>. The algorithm is called <em>gradient descent</em>. It consists of choosing randomly an initial parameter <script type="math/tex">\theta_0</script> and at each step of the algorithm we will optimize locally to improve the solution. The idea is to make small steps to diminish the cost. We have to decide in which direction we make these steps.</p>
+<p>I am going to quickly present an algorithm to find a good <script type="math/tex">\theta</script>. The algorithm is called <em>gradient descent</em>. It consists of choosing randomly an initial parameter <script type="math/tex">\theta_0</script> and at each step of the algorithm we will optimize locally to improve the solution. The idea is to make small steps to diminish the cost. We have to decide in which direction we make these steps.</p>
 
 <p>Thanks to <a href="https://en.wikipedia.org/wiki/Taylor%27s_theorem">Taylor’s theorem</a>, we know that around a point <script type="math/tex">x_0</script>, a differentiable function <script type="math/tex">f</script> can be approximated by:</p>
 
 <script type="math/tex; mode=display">f(x) \approx f(x_0) + \frac{\partial f}{\partial x}(x_0)^T(x - x_0)</script>
 
-<p>Maybe your are more familiar with the 1D case which says that around a point a differentiable function can be approximated by its tangent:</p>
+<p>Maybe you are more familiar with the 1D case which says that around a point a differentiable function can be approximated by its tangent:</p>
 
 <script type="math/tex; mode=display">f(x) \approx f(x_0) + f'(x_0)(x - x_0)</script>
 
-<p>Let’s visualize what this formula means and how it can be useful to find a good direction. The generalization of the tangent, which is a line, in a vector space is an hyperplane. In a 2D space it corresponds to a plane.</p>
+<p>Let’s visualize what this formula means and how it can be useful to find a good direction. The generalization of the tangent, which is a line, in a vector space is a hyperplane. In a 2D space it corresponds to a plane.</p>
 
 <p><img src="/media/img/part1/tangent_space.png" alt="Taylor's theorem visualization" class="center-image modal-image" /></p>
 
@@ -164,7 +164,7 @@
 
 <p><img src="/media/img/part1/graph_3_5_3.svg" alt="Computational graph for the neural networks" class="center-image modal-image" /></p>
 
-<p>We can see several things from these examples. Firstly there are differents nodes:</p>
+<p>We can see several things from these examples. Firstly there are different nodes:</p>
 <ul>
   <li>Input nodes (in rose): they represent the inputs of the function. In our examples, they are the <script type="math/tex">x</script> nodes.</li>
   <li>Operation nodes (in blue): they are nodes that represent operations. They take inputs, make a computation and give ouputs. In our examples, the <script type="math/tex">\sigma</script>, <script type="math/tex">\tanh</script>, <script type="math/tex">\times</script>, <script type="math/tex">+</script> nodes are operation nodes.</li>
@@ -205,7 +205,7 @@
 
 <p><img src="/media/img/part1/node_backpropagation.svg" alt="Backpropagation in a node" class="center-image modal-image" /></p>
 
-<p>Precisely, if a node have <script type="math/tex">m</script> inputs and <script type="math/tex">n</script> outputs, we have:</p>
+<p>Precisely, if a node has <script type="math/tex">m</script> inputs and <script type="math/tex">n</script> outputs, we have:</p>
 
 <script type="math/tex; mode=display">\forall i \in \{1, ..., m\}, \frac{\partial J}{\partial x_i} = \sum_{j=1}^{n}{\frac{\partial y_j}{\partial x_i}\frac{\partial J}{\partial y_j}}</script>
 
@@ -219,7 +219,7 @@
 
 <h2 id="base-class">Base class</h2>
 
-<p>Most of the code is contained in the base class. We are going to divide the work in two stages. First we are going to see the methods that are useful to create the computational graph. Then we are going to describe the methods used during the propagation and the backpropagation.</p>
+<p>Most of the code is contained in the base class. We are going to divide the work in two stages. First, we are going to see the methods that are useful to create the computational graph. Then we are going to describe the methods used during the propagation and the backpropagation.</p>
 
 <p>Let’s see the first part of the code.</p>
 
@@ -250,11 +250,11 @@
     <span class="k">def</span> <span class="nf">add_child</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">child</span><span class="p">,</span> <span class="n">i_child_input</span><span class="p">,</span> <span class="n">i_output</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="n">i_output</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">child</span><span class="p">,</span> <span class="n">i_child_input</span><span class="p">))</span></code></pre></figure>
 
-<p>A node has a list of its parents, the list have the following form <code class="highlighter-rouge">[(node1, i_output1), (node2, i_output2), ... ]</code>. For each parent node, we precise the indice of its output to which the current node is connected. The first couple corresponds to the first input of the node <script type="math/tex">x_1</script>, the second to <script type="math/tex">x_2</script>, etc.</p>
+<p>A node has a list of its parents, the list have the following form <code class="highlighter-rouge">[(node1, i_output1), (node2, i_output2), ... ]</code>. For each parent node, we precise the index of its output to which the current node is connected. The first couple corresponds to the first input of the node <script type="math/tex">x_1</script>, the second to <script type="math/tex">x_2</script>, etc.</p>
 
-<p>A node has a 2D list of its children too. The first dimension is the output indice. And for each output indice, there is a list containing the nodes connected to this output. The list has the following form <code class="highlighter-rouge">[(node1, i_input1), (node2, i_input2), ...]</code>. For each child node, we precise the indice of its input that is connected to this output.</p>
+<p>A node has a 2D list of its children too. The first dimension is the output index. And for each output index, there is a list containing the nodes connected to this output. The list has the following form <code class="highlighter-rouge">[(node1, i_input1), (node2, i_input2), ...]</code>. For each child node, we precise the index of its input that is connected to this output.</p>
 
-<p>OK, it is a bit hard to follow. Hopefully a diagram will make it crystal clear!</p>
+<p>OK, it is a bit hard to follow. Hopefully, a diagram will make it crystal clear!</p>
 
 <p><img src="/media/img/part1/node_links.svg" alt="Node links" class="center-image modal-image" /></p>
 
@@ -343,7 +343,7 @@
     <span class="k">def</span> <span class="nf">compute_gradient</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">dJdy</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span></code></pre></figure>
 
-<p>This class is very simple. The only issue is that the constructor expect an initial value for the weights. There are several thumb rules regarding the initialization of the weights. The general idea is to sample from a zero mean distribution with a small standard deviation. You can see more details about initialization in <a href="http://yann.lecun.com/exdb/publis/pdf/lecun-98b.pdf">Efficient BackProp</a>.</p>
+<p>This class is very simple. The only issue is that the constructor expects an initial value for the weights. There are several thumb rules regarding the initialization of the weights. The general idea is to sample from a zero mean distribution with a small standard deviation. You can see more details about initialization in <a href="http://yann.lecun.com/exdb/publis/pdf/lecun-98b.pdf">Efficient BackProp</a>.</p>
 
 <p>You will see several examples of initialization later in the tutorial.</p>
 
@@ -364,7 +364,7 @@
 
 <p>To have decent performances in Python, it is very important to use numpy at most and to forbid for-loops. Consequently, it is important to express the formulas in term of matrix operations.</p>
 
-<p>If you want to see all the formulas and how to derive the backpropagation formulas you can go to the appendix on matrix derivations.</p>
+<p>If you want to see all the formulas and how to derive the backpropagation formulas, you can go to the appendix on matrix derivations.</p>
 
 <h2 id="gradient-nodes">Gradient nodes</h2>
 
@@ -525,9 +525,9 @@
     <span class="n">nodes</span> <span class="o">+=</span> <span class="p">[</span><span class="n">expected_output_node</span><span class="p">,</span> <span class="n">cost_node</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">Graph</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="p">[</span><span class="n">input_node</span><span class="p">],</span> <span class="p">[</span><span class="n">cur_input_node</span><span class="p">],</span> <span class="p">[</span><span class="n">expected_output_node</span><span class="p">],</span> <span class="n">cost_node</span><span class="p">,</span> <span class="n">parameter_nodes</span><span class="p">)</span></code></pre></figure>
 
-<p>The function is a bit long but simple, we simply create nodes and connect them. First, we create an input node. Then, for each layer, we create a bias node, a parameter node, a multiplication node and an activation node. These nodes model the operation <script type="math/tex">x \mapsto f((1 \mid x)W)</script> where <script type="math/tex">(1 \mid x)</script> denotes the matrice <script type="math/tex">x</script> to which we have added a column of 1 at the beginning, <script type="math/tex">W</script> the weights of the parameter node and <script type="math/tex">f</script> the activation function.</p>
+<p>The function is a bit long but simple, we simply create nodes and connect them. First, we create an input node. Then, for each layer, we create a bias node, a parameter node, a multiplication node and an activation node. These nodes model the operation <script type="math/tex">x \mapsto f((1 \mid x)W)</script> where <script type="math/tex">(1 \mid x)</script> denotes the matrix <script type="math/tex">x</script> to which we have added a column of 1 at the beginning, <script type="math/tex">W</script> the weights of the parameter node and <script type="math/tex">f</script> the activation function.</p>
 
-<p>We use two different activation functions: <script type="math/tex">\tanh</script> and <script type="math/tex">\sigma</script>. <script type="math/tex">\tanh</script> is used in the hidden layers, it is a non linear function which maps <script type="math/tex">\mathbb{R}</script> to <script type="math/tex">]-1, 1[</script>. It is very important that activation functions are non linear otherwise the multilayer neural network is equivalent to a one layer neural network.</p>
+<p>We use two different activation functions: <script type="math/tex">\tanh</script> and <script type="math/tex">\sigma</script>. <script type="math/tex">\tanh</script> is used in the hidden layers, it is a nonlinear function which maps <script type="math/tex">\mathbb{R}</script> to <script type="math/tex">]-1, 1[</script>. It is very important that activation functions are nonlinear otherwise the multilayer neural network is equivalent to a one layer neural network.</p>
 
 <p>We use the sigmoid function as activation function for the output layer because it maps <script type="math/tex">\mathbb{R}</script> to <script type="math/tex">]0,1[</script> and consequently the output of the network can be interpreted as a probability, usually <script type="math/tex">p(y=1 \mid x)</script>.</p>
 
@@ -535,7 +535,7 @@
 
 <h2 id="xor">XOR</h2>
 
-<p>Learning XOR is an interesting problem because XOR is surely the simplest boolean function that can not be learnt by a linear classifier. Crafted features or a deep neural network are necessary to solve this non linear problem.</p>
+<p>Learning XOR is an interesting problem because XOR is surely the simplest boolean function that cannot be learnt by a linear classifier. Crafted features or a deep neural network are necessary to solve this nonlinear problem.</p>
 
 <p>Let’s use this piece of code to train the network.</p>
 
@@ -557,7 +557,7 @@
     <span class="n">costs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cost</span><span class="p">)</span>
     <span class="k">print</span><span class="p">(</span><span class="n">cost</span><span class="p">)</span></code></pre></figure>
 
-<p>Finally, you can use the <code class="highlighter-rouge">visualize</code> to compute the output of the graph for every <script type="math/tex">x \in [-0.5, 1.5]^2</script> and see the frontier. You can see that the network models a non linear function.</p>
+<p>Finally, you can use the <code class="highlighter-rouge">visualize</code> to compute the output of the graph for every <script type="math/tex">x \in [-0.5, 1.5]^2</script> and see the frontier. You can see that the network models a nonlinear function.</p>
 
 <p>Below, you can see such generated images for two different activation functions for the hidden layers. We can note that <script type="math/tex">\tanh</script> seems to create smooth frontiers while <script type="math/tex">ReLU</script> creates sharper ones.</p>
 
@@ -580,7 +580,7 @@
 
 <p>Just for fun let’s learn another function and generate beautiful images. The function we want to learn is such that <script type="math/tex">f(x) = 1</script> if <script type="math/tex">x</script> is inside the disk of radius 0.5 and centered on (0.5, 0.5) and <script type="math/tex">f(x) = 0</script> otherwise.</p>
 
-<p>The function is clearly non linear and consequently, it is a perfect problem for a neural network.</p>
+<p>The function is clearly nonlinear and consequently, it is a perfect problem for a neural network.</p>
 
 <p>To test the code for the disk function, you just have to comment/uncomment few lines in train.py. Below, there are some outputs.</p>
 

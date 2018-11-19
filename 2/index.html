@@ -57,7 +57,7 @@
     <div class="blog-post">
         <h2 class="blog-post-title"><a href="/2018/06/13/perlin-noise-numpy.html">Perlin noise with numpy</a></h2>
         <p class="blog-post-meta">13 Jun 2018 by <a href="/">pierre</a></p>
-        <p>Hi everyone, I have written an implementation of Perlin noise with numpy that is pretty fast and I want to share it with you. The code is available <a href="https://github.com/pvigier/perlin-numpy">here</a>.</p>
+        <p>Hi everyone, I have written an implementation of Perlin noise with numpy that is pretty fast, and I want to share it with you. The code is available <a href="https://github.com/pvigier/perlin-numpy">here</a>.</p>
 
 <h1 id="perlin-noise">Perlin noise</h1>
 
@@ -125,13 +125,13 @@
     <div class="blog-post">
         <h2 class="blog-post-title"><a href="/2018/02/15/non-empty-destructors.html">Non empty destructors in C++</a></h2>
         <p class="blog-post-meta">15 Feb 2018 by <a href="/">pierre</a></p>
-        <p>Have you already faced problems with non trivial destructors?</p>
+        <p>Have you already faced problems with nontrivial destructors?</p>
 
 <p>I face one recently which was really annoying. In this article, I want to share with you my knowledge of this problem and the solutions I use to address it.</p>
 
 <h1 id="the-problem">The problem</h1>
 
-<p>The problem is not really that the destructor is non empty but that the destructor is non trivial: there is a release of memory or some states are changed in another part of the app.</p>
+<p>The problem is not really that the destructor is nonempty but that the destructor is nontrivial: there is a release of memory or some states are changed in another part of the app.</p>
 
 <p>Let us take a very simple example with a class that does dynamic allocation to explain the problem:</p>
 
@@ -170,9 +170,9 @@
 
 <p>Why?</p>
 
-<p>Because when the <code class="highlighter-rouge">main</code> function ends, the destructor of <code class="highlighter-rouge">A</code> is called to delete <code class="highlighter-rouge">a</code> and <code class="highlighter-rouge">anotherA</code>. When <code class="highlighter-rouge">a</code> is destroyed the memory cell to which <code class="highlighter-rouge">a</code>’s <code class="highlighter-rouge">mPointer</code> points to is freed. Then, when <code class="highlighter-rouge">anotherA</code> is destroyed, we try to free the memory to which <code class="highlighter-rouge">anotherA</code>’s <code class="highlighter-rouge">mPointer</code> points to. But as <code class="highlighter-rouge">anotherA</code> is a copy of <code class="highlighter-rouge">a</code>, its <code class="highlighter-rouge">mPointer</code> points to the same memory cell as <code class="highlighter-rouge">a</code>’s <code class="highlighter-rouge">mPointer</code>. Thus we try to free twice the same memory cell which causes the <code class="highlighter-rouge">Segmentation fault</code>.</p>
+<p>Because when the <code class="highlighter-rouge">main</code> function ends, the destructor of <code class="highlighter-rouge">A</code> is called to delete <code class="highlighter-rouge">a</code> and <code class="highlighter-rouge">anotherA</code>. When <code class="highlighter-rouge">a</code> is destroyed the memory cell to which <code class="highlighter-rouge">a</code>’s <code class="highlighter-rouge">mPointer</code> points to is freed. Then, when <code class="highlighter-rouge">anotherA</code> is destroyed, we try to free the memory to which <code class="highlighter-rouge">anotherA</code>’s <code class="highlighter-rouge">mPointer</code> points to. But as <code class="highlighter-rouge">anotherA</code> is a copy of <code class="highlighter-rouge">a</code>, its <code class="highlighter-rouge">mPointer</code> points to the same memory cell as <code class="highlighter-rouge">a</code>’s <code class="highlighter-rouge">mPointer</code>. Thus, we try to free twice the same memory cell which causes the <code class="highlighter-rouge">Segmentation fault</code>.</p>
 
-<p>So the problem is that because of the copy the destructor is called twice on the same attributes.</p>
+<p>So, the problem is that because of the copy the destructor is called twice on the same attributes.</p>
 
 <p>Note that the copy or move constructors are often called when we use containers. For instance, there is a copy or a move when the <code class="highlighter-rouge">std::vector</code>’s <code class="highlighter-rouge">push_back</code> is called.</p>
 
