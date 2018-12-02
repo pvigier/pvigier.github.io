@@ -1,0 +1,5 @@
+<map id="mygal::Diagram&lt; T &gt;::HalfEdge" name="mygal::Diagram&lt; T &gt;::HalfEdge">
+<area shape="rect" id="node2" href="$structmygal_1_1Diagram_1_1Face.html" title="Structure representing a cell in the diagram. " alt="" coords="5,231,152,272"/>
+<area shape="rect" id="node3" href="$structmygal_1_1Diagram_1_1Site.html" title="Point associated with a face of the partitioning. " alt="" coords="5,335,152,376"/>
+<area shape="rect" id="node4" href="$structmygal_1_1Diagram_1_1Vertex.html" title="Vertex of a face. " alt="" coords="5,5,152,47"/>
+</map>

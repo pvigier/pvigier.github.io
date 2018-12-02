@@ -1,0 +1,5 @@
+<map id="mygal::Diagram&lt; T &gt;::Site" name="mygal::Diagram&lt; T &gt;::Site">
+<area shape="rect" id="node2" href="$structmygal_1_1Diagram_1_1Face.html" title="Structure representing a cell in the diagram. " alt="" coords="5,109,152,151"/>
+<area shape="rect" id="node3" href="$structmygal_1_1Diagram_1_1HalfEdge.html" title="Half&#45;edge of a face. " alt="" coords="79,229,225,271"/>
+<area shape="rect" id="node4" href="$structmygal_1_1Diagram_1_1Vertex.html" title="Vertex of a face. " alt="" coords="211,109,357,151"/>
+</map>

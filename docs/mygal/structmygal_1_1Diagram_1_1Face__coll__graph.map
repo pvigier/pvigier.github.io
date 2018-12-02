@@ -1,0 +1,5 @@
+<map id="mygal::Diagram&lt; T &gt;::Face" name="mygal::Diagram&lt; T &gt;::Face">
+<area shape="rect" id="node2" href="$structmygal_1_1Diagram_1_1HalfEdge.html" title="Half&#45;edge of a face. " alt="" coords="223,125,369,167"/>
+<area shape="rect" id="node4" href="$structmygal_1_1Diagram_1_1Site.html" title="Point associated with a face of the partitioning. " alt="" coords="5,125,152,167"/>
+<area shape="rect" id="node3" href="$structmygal_1_1Diagram_1_1Vertex.html" title="Vertex of a face. " alt="" coords="332,5,479,47"/>
+</map>
