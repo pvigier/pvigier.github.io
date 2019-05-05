@@ -3,12 +3,46 @@
 	<title>pvigier's blog</title>
 	<link href="http://pvigier.github.io/rss.xml" rel="self"/>
 	<link href="http://pvigier.github.io"/>
-	<updated>2018-12-02T18:59:07+01:00</updated>
+	<updated>2019-05-05T20:53:24+02:00</updated>
 	<id>http://pvigier.github.io</id>
 	<author>
 		<name>Pierre Vigier</name>
 		<email>pierre.vigier@ymail.com</email>
 	</author>
+	
+		<entry>
+			<title>Commit graph drawing algorithms</title>
+			<link href="http://pvigier.github.io/2019/05/06/commit-graph-drawing-algorithms.html"/>
+			<updated>2019-05-06T00:00:00+02:00</updated>
+			<id>http://pvigier.github.io/2019/05/06/commit-graph-drawing-algorithms</id>
+			<content type="html">&lt;p&gt;&lt;img src=&quot;/media/img/commit-graph/many_merges/gitamine.png&quot; alt=&quot;A commit graph drawn by gitamine&quot; width=&quot;300px&quot; class=&quot;center-image modal-image&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;This article is one of the chapter of my master thesis entitled “Design and implementation of a graphical user interface for git”. It describes the algorithm I designed to draw the commit graph in my own prototype git client called &lt;a href=&quot;https://github.com/pvigier/gitamine&quot;&gt;gitamine&lt;/a&gt;. I have adapted the content so that it fits better with this blog.&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;Drawing graphs is a very complex topic in general but here we want to draw a specific type of graphs: commit graphs. Commit graphs have several several pieces of information that simplify the problem. The most important ones are that the graph is directed and acyclic and that the commits have timestamps.&lt;/p&gt;
+
+&lt;p&gt;Moreover, among the many ways we can draw a directed acyclic graph some are more appropriate for commit graphs. Indeed, programmers manipulate the branches of the graph thus it will be more convenient for them if the representation allows to visualize them easily.&lt;/p&gt;
+
+&lt;p&gt;We will first study the different types of graph drawing algorithms used in other clients. Then, we will describe how to place the nodes so that the commit graph is nicely drawable. Finally, we will cover some optimizations done in gitamine to draw and browse the graph in real time.&lt;/p&gt;
+
+</content>
+		</entry>
+	
+		<entry>
+			<title>Simulopolis is dead</title>
+			<link href="http://pvigier.github.io/2019/05/05/simulopolis-is-dead.html"/>
+			<updated>2019-05-05T00:00:00+02:00</updated>
+			<id>http://pvigier.github.io/2019/05/05/simulopolis-is-dead</id>
+			<content type="html">&lt;p&gt;As some of you noticed, Simulopolis is not active since last November. I had still many ideas and many things to do before the game was finished. I started to work on the version 0.0.4 and even had some small features ready.&lt;/p&gt;
+
+&lt;p&gt;However, the internship and the master thesis (see &lt;a href=&quot;/2019/05/06/commit-graph-drawing-algorithms.html&quot;&gt;next article&lt;/a&gt;) for more info) I was doing since September were not going well. Thus, I had to completely stop working on Simulopolis on my free time and work on my master thesis instead to have a little chance to see my thesis accepted by the jury. It was exhausting but eventually I succeeded!&lt;/p&gt;
+
+&lt;p&gt;My oral defense was in April so I did not work on Simulopolis for five months. Then, I had to take decisions concerning my future. I chose to leave Paris and to join my girlfriend in a smaller city in the center of France. Moreover, I decided that I did not want to work in a big company. Indeed, I am still young and relatively free from any constraint so I think it is the right moment in order to take my chance as an indie developer.&lt;/p&gt;
+
+&lt;p&gt;The bad news is, as you have guessed with the title, that I am not going to resume the development of Simulopolis. But the good news is that I have already started to work on a new project. It is called &lt;em&gt;Vagabond&lt;/em&gt; (the name can still change). I will try to blog as much as possible about it so stay tuned! :)&lt;/p&gt;
+
+</content>
+		</entry>
 	
 		<entry>
 			<title>Fortune's algorithm, the details</title>

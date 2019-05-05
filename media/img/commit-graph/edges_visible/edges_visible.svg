@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="iso-8859-1" standalone="no"?> 
+<?xml-stylesheet href="edges_visible.css" type="text/css"?> 
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="151.50009pt" height="211.50009pt" viewBox="239.24995 -270.75005 151.50009 211.50009 "> 
+<g transform="translate(0,-59.24995 ) scale(1,-1) translate(0,270.75005 )"> 
+<g>
+ <g stroke="rgb(0.0%,0.0%,0.0%)">
+ <g fill="rgb(0.0%,0.0%,0.0%)">
+ <g stroke-width="0.4pt">
+ <g>
+ <g stroke="rgb(0.0%,0.0%,0.0%)">
+ <g stroke-opacity="1.000000">
+ <g fill="rgb(100.0%,100.0%,100.0%)">
+ <g fill-opacity="1.000000">
+ <g stroke-width="1.50009pt">
+ <g stroke-dasharray="none" stroke-dashoffset="0.0pt">
+ <g stroke-linejoin="miter">
+ <g stroke-linecap="butt">
+ <g fill="rgb(100.0%,100.0%,100.0%)">
+ <g fill-opacity="1.000000">
+ <path d=" M  240.0 -97.5 L  240.0 -232.5 L  390.0 -232.5 L  390.0 -97.5 Z  " style="stroke:none"/>
+ <g stroke="rgb(0.0%,0.0%,0.0%)">
+ <g stroke-opacity="1.000000">
+ <path d=" M  240.0 -97.5 L  240.0 -232.5 L  390.0 -232.5 L  390.0 -97.5 Z  " style="fill:none"/>
+ <g stroke-width="1.50009pt">
+ <g stroke-dasharray="none" stroke-dashoffset="0.0pt">
+ <g fill="rgb(100.0%,100.0%,100.0%)">
+ <g fill-opacity="1.000000">
+ <path d=" M  375.0 -75.0 C  375.0 -83.28438 368.28438 -90.0 360.0 -90.0 C  351.71562 -90.0 345.0 -83.28438 345.0 -75.0 C  345.0 -66.71562 351.71562 -60.0 360.0 -60.0 C  368.28438 -60.0 375.0 -66.71562 375.0 -75.0 Z M  360.0 -75.0  " style="stroke:none"/>
+ <g stroke="rgb(0.0%,0.0%,0.0%)">
+ <g stroke-opacity="1.000000">
+ <path d=" M  375.0 -75.0 C  375.0 -83.28438 368.28438 -90.0 360.0 -90.0 C  351.71562 -90.0 345.0 -83.28438 345.0 -75.0 C  345.0 -66.71562 351.71562 -60.0 360.0 -60.0 C  368.28438 -60.0 375.0 -66.71562 375.0 -75.0 Z M  360.0 -75.0  " style="fill:none"/>
+ <g stroke-width="1.50009pt">
+ <g stroke-dasharray="none" stroke-dashoffset="0.0pt">
+ <g fill="rgb(100.0%,100.0%,100.0%)">
+ <g fill-opacity="1.000000">
+ <path d=" M  375.0 -255.0 C  375.0 -263.28438 368.28438 -270.0 360.0 -270.0 C  351.71562 -270.0 345.0 -263.28438 345.0 -255.0 C  345.0 -246.71562 351.71562 -240.0 360.0 -240.0 C  368.28438 -240.0 375.0 -246.71562 375.0 -255.0 Z M  360.0 -255.0  " style="stroke:none"/>
+ <g stroke="rgb(0.0%,0.0%,0.0%)">
+ <g stroke-opacity="1.000000">
+ <path d=" M  375.0 -255.0 C  375.0 -263.28438 368.28438 -270.0 360.0 -270.0 C  351.71562 -270.0 345.0 -263.28438 345.0 -255.0 C  345.0 -246.71562 351.71562 -240.0 360.0 -240.0 C  368.28438 -240.0 375.0 -246.71562 375.0 -255.0 Z M  360.0 -255.0  " style="fill:none"/>
+ <g stroke-width="1.50009pt">
+ <g stroke-dasharray="none" stroke-dashoffset="0.0pt">
+ <g fill="rgb(100.0%,100.0%,100.0%)">
+ <g fill-opacity="1.000000">
+ <path d=" M  330.0 -165.0 C  330.0 -173.28438 323.28438 -180.0 315.0 -180.0 C  306.71562 -180.0 300.0 -173.28438 300.0 -165.0 C  300.0 -156.71562 306.71562 -150.0 315.0 -150.0 C  323.28438 -150.0 330.0 -156.71562 330.0 -165.0 Z M  315.0 -165.0  " style="stroke:none"/>
+ <g stroke="rgb(0.0%,0.0%,0.0%)">
+ <g stroke-opacity="1.000000">
+ <path d=" M  330.0 -165.0 C  330.0 -173.28438 323.28438 -180.0 315.0 -180.0 C  306.71562 -180.0 300.0 -173.28438 300.0 -165.0 C  300.0 -156.71562 306.71562 -150.0 315.0 -150.0 C  323.28438 -150.0 330.0 -156.71562 330.0 -165.0 Z M  315.0 -165.0  " style="fill:none"/>
+ <g stroke-width="1.50009pt">
+ <g stroke-dasharray="none" stroke-dashoffset="0.0pt">
+ <g fill="rgb(100.0%,100.0%,100.0%)">
+ <g fill-opacity="1.000000">
+ <path d=" M  285.0 -210.0 C  285.0 -218.28438 278.28438 -225.0 270.0 -225.0 C  261.71562 -225.0 255.0 -218.28438 255.0 -210.0 C  255.0 -201.71562 261.71562 -195.0 270.0 -195.0 C  278.28438 -195.0 285.0 -201.71562 285.0 -210.0 Z M  270.0 -210.0  " style="stroke:none"/>
+ <g stroke="rgb(0.0%,0.0%,0.0%)">
+ <g stroke-opacity="1.000000">
+ <path d=" M  285.0 -210.0 C  285.0 -218.28438 278.28438 -225.0 270.0 -225.0 C  261.71562 -225.0 255.0 -218.28438 255.0 -210.0 C  255.0 -201.71562 261.71562 -195.0 270.0 -195.0 C  278.28438 -195.0 285.0 -201.71562 285.0 -210.0 Z M  270.0 -210.0  " style="fill:none"/>
+ <g stroke-width="1.50009pt">
+ <g stroke-dasharray="none" stroke-dashoffset="0.0pt">
+ <g fill="rgb(100.0%,100.0%,100.0%)">
+ <g fill-opacity="1.000000">
+ <path d=" M  285.0 -120.0 C  285.0 -128.28438 278.28438 -135.0 270.0 -135.0 C  261.71562 -135.0 255.0 -128.28438 255.0 -120.0 C  255.0 -111.71562 261.71562 -105.0 270.0 -105.0 C  278.28438 -105.0 285.0 -111.71562 285.0 -120.0 Z M  270.0 -120.0  " style="stroke:none"/>
+ <g stroke="rgb(0.0%,0.0%,0.0%)">
+ <g stroke-opacity="1.000000">
+ <path d=" M  285.0 -120.0 C  285.0 -128.28438 278.28438 -135.0 270.0 -135.0 C  261.71562 -135.0 255.0 -128.28438 255.0 -120.0 C  255.0 -111.71562 261.71562 -105.0 270.0 -105.0 C  278.28438 -105.0 285.0 -111.71562 285.0 -120.0 Z M  270.0 -120.0  " style="fill:none"/>
+ <g stroke-width="1.50009pt">
+ <g stroke-dasharray="none" stroke-dashoffset="0.0pt">
+ <g stroke-linecap="butt">
+ <g fill="rgb(0.0%,0.0%,0.0%)">
+ <g fill-opacity="1.000000">
+ <g stroke="rgb(0.0%,0.0%,0.0%)">
+ <g stroke-opacity="1.000000">
+ <path d=" M  270.0 -195.0 L  270.0 -135.0  " style="fill:none"/>
+ <g stroke-width="1.50009pt">
+ <g stroke-dasharray="none" stroke-dashoffset="0.0pt">
+ <g stroke-linecap="butt">
+ <g fill="rgb(0.0%,0.0%,0.0%)">
+ <g fill-opacity="1.000000">
+ <g stroke="rgb(0.0%,0.0%,0.0%)">
+ <g stroke-opacity="1.000000">
+ <path d=" M  315.0 -150.0 L  315.0 -75.0  " style="fill:none"/>
+ <g stroke-width="1.50009pt">
+ <g stroke-dasharray="none" stroke-dashoffset="0.0pt">
+ <g stroke-linecap="butt">
+ <g fill="rgb(0.0%,0.0%,0.0%)">
+ <g fill-opacity="1.000000">
+ <g stroke="rgb(0.0%,0.0%,0.0%)">
+ <g stroke-opacity="1.000000">
+ <path d=" M  315.0 -180.0 L  315.0 -255.0  " style="fill:none"/>
+ <g stroke-width="1.50009pt">
+ <g stroke-dasharray="none" stroke-dashoffset="0.0pt">
+ <g stroke-linecap="butt">
+ <g fill="rgb(0.0%,0.0%,0.0%)">
+ <g fill-opacity="1.000000">
+ <g stroke="rgb(0.0%,0.0%,0.0%)">
+ <g stroke-opacity="1.000000">
+ <path d=" M  360.0 -240.0 L  360.0 -90.0  " style="fill:none"/>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ </g>
+ 
+                             </g> 
+</svg> 

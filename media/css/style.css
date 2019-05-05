@@ -217,3 +217,20 @@ body > .container {
 .label a {
 	color: white;
 }
+
+/* 
+ * Tables 
+ */
+
+table {
+    margin: 8px auto;
+    border-collapse: collapse;
+}
+
+td, th {
+    padding: 0px 4px;
+}
+
+.table-border, .table-border td, .table-border th {
+    border: 1px solid;
+}
