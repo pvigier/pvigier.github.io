@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="">
+        <meta name="author" content="Pierre Vigier">
+
+        <title>Vagabond &ndash; Map generation - pvigier's blog</title>
+        <link rel="shortcut icon" href="/media/img/favicon.png">
+        <!-- Bootstrap -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+        <!-- My themes -->
+        <link href="/media/css/style.css" rel="stylesheet">
+        <link href="/media/css/syntax.css" rel="stylesheet">
+        <link href="/media/css/modal.css" rel="stylesheet">
+    </head>
+    <body>
+        <div class="blog-masthead">
+            <div class="container">
+                <nav class="blog-nav">
+                    <a class="blog-nav-item active" href="/">Blog</a>
+                    <a class="blog-nav-item" href="/articles">Articles</a>
+                    <a class="blog-nav-item" href="/projects">Projects</a>
+                    <!--<a class="blog-nav-item" href="/best-resources">Best Resources</a>-->
+                    <!--<a class="blog-nav-item" href="/resume">Resume</a>-->
+                    <a class="blog-nav-item" href="/about">About</a>
+                </nav>
+            </div>
+        </div>
+        <div class="container">
+            <div class="blog-header">
+                <h1 class="blog-title">pvigier's blog</h1>
+                <p class="lead blog-description">computer science, programming and other ideas</p>
+            </div>
+            <div class="row">
+            <div class="col-sm-8 blog-main">
+<div class="blog-post">
+    <h2 class="blog-post-title">Vagabond &ndash; Map generation</h2>
+    <p class="blog-post-meta">12 May 2019 by <a href="/">pierre</a></p>
+    <p><img src="/media/img/vagabond-map-generation/0/Biome.png" alt="" width="400" class="center-image modal-image" /></p>
+
+<p>In this first devlog about Vagabond, I am going to talk about the map generation algorithm I have started to design. Indeed, in Vagabond all the maps will be procedurally generated.</p>
+
+<p>Firstly, I will list some of the constraints that will influcence the design of the map generation pipeline:</p>
+
+<ul>
+  <li>It must be fast as I do not want the player to wait for too long during map generation.</li>
+  <li>It must not be totally random as Vagabond is a RPG, the world must be coherent.</li>
+  <li>It must generate the entire map at once as different part of the world will interact.</li>
+  <li>It must return a data structure easy to manipulate to be able to add more elements later such as rivers, cities, roads, dungeons, etc.</li>
+</ul>
+
+<!--more-->
+
+<h1 id="generating-cells">Generating cells</h1>
+
+<p>The first step is to divide the world into cells. I like the idea popularized by <a href="http://www-cs-students.stanford.edu/~amitp/game-programming/polygon-map-generation/">Amit Patel</a> of using Voronoi cells. Thus I randomly generate a bunch of points and compute the <a href="https://en.wikipedia.org/wiki/Voronoi_diagram">Voronoi diagram</a> using my own implementation of <a href="https://en.wikipedia.org/wiki/Fortune%27s_algorithm">Fortune’s algorithm</a>. I talked about it in this <a href="/2018/11/18/fortune-algorithm-details.html">article</a> but I have revamped the code and fixed many edge cases to turn it into a library called <a href="https://github.com/pvigier/MyGAL">MyGAL</a>.</p>
+
+<p>Here are the results with 1024 points. For each step, I will show the result for four seeds:</p>
+
+<table class="image-table">
+  <thead>
+    <tr>
+      <th style="text-align: center"><img src="/media/img/vagabond-map-generation/0/Voronoi.png" alt="" width="250" class="modal-image" /></th>
+      <th style="text-align: center"><img src="/media/img/vagabond-map-generation/3/Voronoi.png" alt="" width="250" class="modal-image" /></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center"><img src="/media/img/vagabond-map-generation/5/Voronoi.png" alt="" width="250" class="modal-image" /></td>
+      <td style="text-align: center"><img src="/media/img/vagabond-map-generation/7/Voronoi.png" alt="" width="250" class="modal-image" /></td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Then to have something a bit less random, I apply <a href="https://en.wikipedia.org/wiki/Lloyd%27s_algorithm">Lloyd’s relaxation</a> twice:</p>
+
+<table class="image-table">
+  <thead>
+    <tr>
+      <th style="text-align: center"><img src="/media/img/vagabond-map-generation/0/Voronoi_relaxed.png" alt="" width="250" class="modal-image" /></th>
+      <th style="text-align: center"><img src="/media/img/vagabond-map-generation/3/Voronoi_relaxed.png" alt="" width="250" class="modal-image" /></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center"><img src="/media/img/vagabond-map-generation/5/Voronoi_relaxed.png" alt="" width="250" class="modal-image" /></td>
+      <td style="text-align: center"><img src="/media/img/vagabond-map-generation/7/Voronoi_relaxed.png" alt="" width="250" class="modal-image" /></td>
+    </tr>
+  </tbody>
+</table>
+
+<h1 id="height">Height</h1>
+
+<p>The next step is to assign a height to each cell to determine if a cell will be land or sea.</p>
+
+<p>I start by generating some fractal noise using a minimalist library I wrote called <a href="https://github.com/pvigier/noisette">noisette</a>:</p>
+
+<table class="image-table">
+  <thead>
+    <tr>
+      <th style="text-align: center"><img src="/media/img/vagabond-map-generation/0/Height_noise.png" alt="" width="250" class="modal-image" /></th>
+      <th style="text-align: center"><img src="/media/img/vagabond-map-generation/3/Height_noise.png" alt="" width="250" class="modal-image" /></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center"><img src="/media/img/vagabond-map-generation/5/Height_noise.png" alt="" width="250" class="modal-image" /></td>
+      <td style="text-align: center"><img src="/media/img/vagabond-map-generation/7/Height_noise.png" alt="" width="250" class="modal-image" /></td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Then I scale the noise between 0 and 1 and multiply by a gaussian kernel centered on the center of the map to then obtain an island roughly circular and centered in the middle of the world.</p>
+
+<p>Finally, I set the height of cells on the frontier of the world to zero to ensure that these cells will be seas later. And I redistribute the values so that half of the cells have a height smaller than 0.5 and the other half higher as 0.5 will be the threshold to be land:</p>
+
+<table class="image-table">
+  <thead>
+    <tr>
+      <th style="text-align: center"><img src="/media/img/vagabond-map-generation/0/Height.png" alt="" width="250" class="modal-image" /></th>
+      <th style="text-align: center"><img src="/media/img/vagabond-map-generation/3/Height.png" alt="" width="250" class="modal-image" /></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center"><img src="/media/img/vagabond-map-generation/5/Height.png" alt="" width="250" class="modal-image" /></td>
+      <td style="text-align: center"><img src="/media/img/vagabond-map-generation/7/Height.png" alt="" width="250" class="modal-image" /></td>
+    </tr>
+  </tbody>
+</table>
+
+<h1 id="temperature">Temperature</h1>
+
+<p>The biome of a cell will be determined by its temperature and its moisture. Thus we need to generate both.</p>
+
+<p>For temperature, I did not want something too much random as it does not feel right to me if there is a glacier next to a desert. Instead, I decided to generate temperatures so that it is cooler in the north of the island and warmer in the south as it is the case for countries in the north hemisphere of Earth. It is also the case for some fantasy worlds such as Westeros, the main continent of Game of Thrones where the North is cold and the southern regions are warmer.</p>
+
+<p>To do that, I just <a href="https://iquilezles.org/www/articles/warp/warp.htm">warp</a> a vertical linear gradient with some Perlin noise:</p>
+
+<table class="image-table">
+  <thead>
+    <tr>
+      <th style="text-align: center"><img src="/media/img/vagabond-map-generation/0/Temperature_noise.png" alt="" width="250" class="modal-image" /></th>
+      <th style="text-align: center"><img src="/media/img/vagabond-map-generation/3/Temperature_noise.png" alt="" width="250" class="modal-image" /></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center"><img src="/media/img/vagabond-map-generation/5/Temperature_noise.png" alt="" width="250" class="modal-image" /></td>
+      <td style="text-align: center"><img src="/media/img/vagabond-map-generation/7/Temperature_noise.png" alt="" width="250" class="modal-image" /></td>
+    </tr>
+  </tbody>
+</table>
+
+<p>And here is the temperature of each cell (cold is blue and hot is red):</p>
+
+<table class="image-table">
+  <thead>
+    <tr>
+      <th style="text-align: center"><img src="/media/img/vagabond-map-generation/0/Temperature.png" alt="" width="250" class="modal-image" /></th>
+      <th style="text-align: center"><img src="/media/img/vagabond-map-generation/3/Temperature.png" alt="" width="250" class="modal-image" /></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center"><img src="/media/img/vagabond-map-generation/5/Temperature.png" alt="" width="250" class="modal-image" /></td>
+      <td style="text-align: center"><img src="/media/img/vagabond-map-generation/7/Temperature.png" alt="" width="250" class="modal-image" /></td>
+    </tr>
+  </tbody>
+</table>
+
+<!--image-->
+
+<h1 id="precipitation">Precipitation</h1>
+
+<p>Then, we need to generate precipitation. I could have used a model which takes into account the height of each cell and wind as presented <a href="https://azgaar.wordpress.com/2017/05/08/river-systems/">here</a> and <a href="https://heredragonsabound.blogspot.com/2016/10/is-it-windy-in-here.html">here</a>.</p>
+
+<p>But I wanted to start with something really simple so I just use raw Perlin noise again. I do not use fractal noise this time because I did not want the precipitation to vary too quickly:</p>
+
+<table class="image-table">
+  <thead>
+    <tr>
+      <th style="text-align: center"><img src="/media/img/vagabond-map-generation/0/Precipitation_noise.png" alt="" width="250" class="modal-image" /></th>
+      <th style="text-align: center"><img src="/media/img/vagabond-map-generation/3/Precipitation_noise.png" alt="" width="250" class="modal-image" /></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center"><img src="/media/img/vagabond-map-generation/5/Precipitation_noise.png" alt="" width="250" class="modal-image" /></td>
+      <td style="text-align: center"><img src="/media/img/vagabond-map-generation/7/Precipitation_noise.png" alt="" width="250" class="modal-image" /></td>
+    </tr>
+  </tbody>
+</table>
+
+<p>And here is the precipitation of each cell (white is no precipitation and blue a lot):</p>
+
+<table class="image-table">
+  <thead>
+    <tr>
+      <th style="text-align: center"><img src="/media/img/vagabond-map-generation/0/Precipitation.png" alt="" width="250" class="modal-image" /></th>
+      <th style="text-align: center"><img src="/media/img/vagabond-map-generation/3/Precipitation.png" alt="" width="250" class="modal-image" /></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center"><img src="/media/img/vagabond-map-generation/5/Precipitation.png" alt="" width="250" class="modal-image" /></td>
+      <td style="text-align: center"><img src="/media/img/vagabond-map-generation/7/Precipitation.png" alt="" width="250" class="modal-image" /></td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Maybe I will use a more physically accurate model later but it seems sufficient for now.</p>
+
+<h1 id="biome">Biome</h1>
+
+<p>At the moment, I have 8 different biomes:</p>
+
+<ul>
+  <li>Desert</li>
+  <li>Grassland</li>
+  <li>Forest</li>
+  <li>Dark forest</li>
+  <li>Jungle</li>
+  <li>Snow</li>
+  <li>Toundra</li>
+  <li>Scorched</li>
+</ul>
+
+<p>I assign each of them using a <a href="http://w3.marietta.edu/~biol/biomes/biome_main.htm">Whittaker diagram</a>. Here are the final results:</p>
+
+<table class="image-table">
+  <thead>
+    <tr>
+      <th style="text-align: center"><img src="/media/img/vagabond-map-generation/0/Biome.png" alt="" width="250" class="modal-image" /></th>
+      <th style="text-align: center"><img src="/media/img/vagabond-map-generation/3/Biome.png" alt="" width="250" class="modal-image" /></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center"><img src="/media/img/vagabond-map-generation/5/Biome.png" alt="" width="250" class="modal-image" /></td>
+      <td style="text-align: center"><img src="/media/img/vagabond-map-generation/7/Biome.png" alt="" width="250" class="modal-image" /></td>
+    </tr>
+  </tbody>
+</table>
+
+<h1 id="useful-links">Useful links</h1>
+
+<p>Before to finish this article, I must cite some other map generators that inspired me:</p>
+
+<ul>
+  <li><a href="https://azgaar.wordpress.com">Fantasy Map Generator</a> by Azgaar</li>
+  <li><a href="http://mewo2.com/notes/terrain/">Generating fantasy maps</a> by Martin O’Leary</li>
+  <li><a href="https://heredragonsabound.blogspot.com">Here Dragons Abound</a> by Scott Turner</li>
+  <li><a href="http://www-cs-students.stanford.edu/~amitp/game-programming/polygon-map-generation/">Polygonal Map Generation for Games</a> by Amit Patel</li>
+</ul>
+
+<p>The next steps are to generate the rivers, the regions and placing some cities. See you next week for more!</p>
+
+<p><em>If you are interested by my adventures during the development of Vagabond, you can follow me on <a href="https://twitter.com/PierreVigier">Twitter</a>.</em></p>
+
+    
+	<p>Tags: <span class="label label-primary"><a href="/tag/vagabond">vagabond</a></span> <span class="label label-primary"><a href="/tag/pcg">pcg</a></span> </p>
+	
+</div><!-- /.blog-post -->
+
+<hr/>
+<p>If you do not want to miss any new article, you can subscribe to the newsletter:</p>
+<!-- Begin Mailchimp Signup Form -->
+<link href="//cdn-images.mailchimp.com/embedcode/horizontal-slim-10_7.css" rel="stylesheet" type="text/css">
+<style type="text/css">
+	#mc_embed_signup{background:#fff; clear:left; font:14px Helvetica,Arial,sans-serif; width:100%;}
+	/* Add your own Mailchimp form style overrides in your site stylesheet or in this style block.
+	   We recommend moving this block and the preceding CSS link to the HEAD of your HTML file. */
+</style>
+<div id="mc_embed_signup">
+<form action="https://ymail.us20.list-manage.com/subscribe/post?u=7bb3b720a12ef1d8e0b48d8da&amp;id=7516dd4562" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate" target="_blank" novalidate>
+    <div id="mc_embed_signup_scroll">
+	
+	<input type="email" value="" name="EMAIL" class="email" id="mce-EMAIL" placeholder="email address" required>
+    <!-- real people should not fill this in and expect good things - do not remove this or risk form bot signups-->
+    <div style="position: absolute; left: -5000px;" aria-hidden="true"><input type="text" name="b_7bb3b720a12ef1d8e0b48d8da_7516dd4562" tabindex="-1" value=""></div>
+    <div class="clear"><input type="submit" value="Subscribe" name="subscribe" id="mc-embedded-subscribe" class="button"></div>
+    </div>
+</form>
+</div>
+<!--End mc_embed_signup-->
+
+<hr/>
+<div id="disqus_thread"></div>
+<script>
+
+/**
+*  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+*  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+/*
+var disqus_config = function () {
+this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+};
+*/
+(function() { // DON'T EDIT BELOW THIS LINE
+var d = document, s = d.createElement('script');
+s.src = 'https://pvigier-github-io.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+</div><!-- /.blog-main -->
+<div class="col-sm-3 col-sm-offset-1 blog-sidebar">
+	<div class="sidebar-module">
+        <h4>Tags</h4>
+        <ol class="list-unstyled">
+		
+			<li><a href="/tag/math">math (3)</a></li>
+		
+			<li><a href="/tag/python">python (6)</a></li>
+		
+			<li><a href="/tag/cpp">cpp (4)</a></li>
+		
+			<li><a href="/tag/pcg">pcg (4)</a></li>
+		
+			<li><a href="/tag/simulopolis">simulopolis (5)</a></li>
+		
+			<li><a href="/tag/linux">linux (1)</a></li>
+		
+			<li><a href="/tag/geometry">geometry (1)</a></li>
+		
+			<li><a href="/tag/graph">graph (1)</a></li>
+		
+			<li><a href="/tag/git">git (1)</a></li>
+		
+			<li><a href="/tag/vagabond">vagabond (1)</a></li>
+		
+        </ol>
+    </div>
+    <div class="sidebar-module">
+        <h4>Archives</h4>
+        <ol class="list-unstyled">
+		
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+			<li id="yMay 2019"><a href="/2019/05">May 2019 (3)</a></li>
+				
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+			<li id="yNovember 2018"><a href="/2018/11">November 2018 (3)</a></li>
+				
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+			<li id="yOctober 2018"><a href="/2018/10">October 2018 (3)</a></li>
+				
+            
+        
+            
+            
+            
+            
+			<li id="yJune 2018"><a href="/2018/06">June 2018 (1)</a></li>
+				
+            
+        
+            
+            
+            
+            
+			<li id="yMay 2018"><a href="/2018/05">May 2018 (1)</a></li>
+				
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+			<li id="yFebruary 2018"><a href="/2018/02">February 2018 (2)</a></li>
+				
+            
+        
+            
+            
+            
+            
+			<li id="yAugust 2017"><a href="/2017/08">August 2017 (1)</a></li>
+				
+            
+        
+            
+            
+            
+            
+			<li id="yJuly 2017"><a href="/2017/07">July 2017 (1)</a></li>
+				
+            
+        
+            
+            
+            
+            
+			<li id="yFebruary 2017"><a href="/2017/02">February 2017 (1)</a></li>
+				
+            
+        
+        </ol>
+    </div>
+    <div class="sidebar-module">
+        <h4>Follow me</h4>
+        <ol class="list-unstyled">
+            <li><a href="https://github.com/pvigier">GitHub</a></li>
+            <li><a href="https://pvigier.itch.io/">itch.io</a></li>
+            <li><a href="https://twitter.com/PierreVigier">Twitter</a></li>
+            <li><a href="/rss.xml">RSS</a></li>
+        </ol>
+    </div>
+</div><!-- /.blog-sidebar -->
+
+            </div><!-- /.row -->
+        </div><!-- /.container -->
+
+        <footer class="blog-footer">
+            <p>Powered by <a href="http://getbootstrap.com">Bootstrap</a> and <a href="http://jekyllrb.com">Jekyll</a>.</p>
+            <p>
+                <a href="#">Back to top</a>
+            </p>
+        </footer>
+        <!-- Javascript -->
+        <!-- jQuery -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+        <!-- Bootstrap -->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+        <!-- MathJax -->
+        <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+        <!-- Analytics -->
+        <script>
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+        ga('create', 'UA-30902264-4', 'auto');
+        ga('send', 'pageview');
+        </script>
+        <!-- Modal images -->
+        <script src="/media/js/modal.js"></script>
+    </body>
+</html>

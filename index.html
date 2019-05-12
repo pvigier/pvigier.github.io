@@ -38,11 +38,35 @@
             <div class="col-sm-8 blog-main">
 
     <div class="blog-post">
+        <h2 class="blog-post-title"><a href="/2019/05/12/vagabond-map-generation.html">Vagabond &ndash; Map generation</a></h2>
+        <p class="blog-post-meta">12 May 2019 by <a href="/">pierre</a></p>
+        <p><img src="/media/img/vagabond-map-generation/0/Biome.png" alt="" width="400" class="center-image modal-image" /></p>
+
+<p>In this first devlog about Vagabond, I am going to talk about the map generation algorithm I have started to design. Indeed, in Vagabond all the maps will be procedurally generated.</p>
+
+<p>Firstly, I will list some of the constraints that will influcence the design of the map generation pipeline:</p>
+
+<ul>
+  <li>It must be fast as I do not want the player to wait for too long during map generation.</li>
+  <li>It must not be totally random as Vagabond is a RPG, the world must be coherent.</li>
+  <li>It must generate the entire map at once as different part of the world will interact.</li>
+  <li>It must return a data structure easy to manipulate to be able to add more elements later such as rivers, cities, roads, dungeons, etc.</li>
+</ul>
+
+
+        <p><a href="/2019/05/12/vagabond-map-generation.html">Read more ...</a></p>
+        
+        <p>Tags: <span class="label label-primary"><a href="/tag/vagabond">vagabond</a></span> <span class="label label-primary"><a href="/tag/pcg">pcg</a></span> </p>
+        
+    </div>
+    <hr />
+
+    <div class="blog-post">
         <h2 class="blog-post-title"><a href="/2019/05/06/commit-graph-drawing-algorithms.html">Commit graph drawing algorithms</a></h2>
         <p class="blog-post-meta">06 May 2019 by <a href="/">pierre</a></p>
         <p><img src="/media/img/commit-graph/many_merges/gitamine.png" alt="A commit graph drawn by gitamine" width="300px" class="center-image modal-image" /></p>
 
-<p><em>This article is one of the chapter of my master thesis entitled “Design and implementation of a graphical user interface for git”. It describes the algorithm I designed to draw the commit graph in my own prototype git client called <a href="https://github.com/pvigier/gitamine">gitamine</a>. I have adapted the content so that it fits better with this blog.</em></p>
+<p><em>This article is one chapter of my master thesis entitled “Design and implementation of a graphical user interface for git”. It describes the algorithm I designed to draw the commit graph in my own prototype git client called <a href="https://github.com/pvigier/gitamine">gitamine</a>. I have adapted the content so that it fits better with this blog.</em></p>
 
 <p>Drawing graphs is a very complex topic in general but here we want to draw a specific type of graphs: commit graphs. Commit graphs have several several pieces of information that simplify the problem. The most important ones are that the graph is directed and acyclic and that the commits have timestamps.</p>
 
@@ -119,23 +143,6 @@
     </div>
     <hr />
 
-    <div class="blog-post">
-        <h2 class="blog-post-title"><a href="/2018/11/02/3d-perlin-noise-numpy.html">3D Perlin noise with numpy</a></h2>
-        <p class="blog-post-meta">02 Nov 2018 by <a href="/">pierre</a></p>
-        <p>Few weeks ago, a professor from the university of Waterloo contacted me to ask if it was possible to adapt my code for <a href="/2018/06/13/perlin-noise-numpy.html">2D Perlin noise</a> to 3D Perlin noise.</p>
-
-<p>I was very happy that someone was interested by this piece of code. After some thoughts, I answer him that it was possible and I decided to do it.</p>
-
-<p>I move the old code which generates 2D Perlin noise in the file <code class="highlighter-rouge">perlin2d.py</code> and I place the code described below for 3D Perlin noise in the file <code class="highlighter-rouge">perlin3d.py</code>. You can find all the code in this <a href="https://github.com/pvigier/perlin-numpy">github repo</a>.</p>
-
-
-        <p><a href="/2018/11/02/3d-perlin-noise-numpy.html">Read more ...</a></p>
-        
-        <p>Tags: <span class="label label-primary"><a href="/tag/pcg">pcg</a></span> <span class="label label-primary"><a href="/tag/python">python</a></span> </p>
-        
-    </div>
-    <hr />
-
 <nav>
     <ul class="pager">
         
@@ -147,6 +154,27 @@
     </ul>
 </nav>
 
+<hr/>
+<p>If you do not want to miss any new article, you can subscribe to the newsletter:</p>
+<!-- Begin Mailchimp Signup Form -->
+<link href="//cdn-images.mailchimp.com/embedcode/horizontal-slim-10_7.css" rel="stylesheet" type="text/css">
+<style type="text/css">
+	#mc_embed_signup{background:#fff; clear:left; font:14px Helvetica,Arial,sans-serif; width:100%;}
+	/* Add your own Mailchimp form style overrides in your site stylesheet or in this style block.
+	   We recommend moving this block and the preceding CSS link to the HEAD of your HTML file. */
+</style>
+<div id="mc_embed_signup">
+<form action="https://ymail.us20.list-manage.com/subscribe/post?u=7bb3b720a12ef1d8e0b48d8da&amp;id=7516dd4562" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate" target="_blank" novalidate>
+    <div id="mc_embed_signup_scroll">
+	
+	<input type="email" value="" name="EMAIL" class="email" id="mce-EMAIL" placeholder="email address" required>
+    <!-- real people should not fill this in and expect good things - do not remove this or risk form bot signups-->
+    <div style="position: absolute; left: -5000px;" aria-hidden="true"><input type="text" name="b_7bb3b720a12ef1d8e0b48d8da_7516dd4562" tabindex="-1" value=""></div>
+    <div class="clear"><input type="submit" value="Subscribe" name="subscribe" id="mc-embedded-subscribe" class="button"></div>
+    </div>
+</form>
+</div>
+<!--End mc_embed_signup-->
 
 </div><!-- /.blog-main -->
 <div class="col-sm-3 col-sm-offset-1 blog-sidebar">
@@ -160,7 +188,7 @@
 		
 			<li><a href="/tag/cpp">cpp (4)</a></li>
 		
-			<li><a href="/tag/pcg">pcg (3)</a></li>
+			<li><a href="/tag/pcg">pcg (4)</a></li>
 		
 			<li><a href="/tag/simulopolis">simulopolis (5)</a></li>
 		
@@ -171,6 +199,8 @@
 			<li><a href="/tag/graph">graph (1)</a></li>
 		
 			<li><a href="/tag/git">git (1)</a></li>
+		
+			<li><a href="/tag/vagabond">vagabond (1)</a></li>
 		
         </ol>
     </div>
@@ -188,7 +218,12 @@
             
             
             
-			<li id="yMay 2019"><a href="/2019/05">May 2019 (2)</a></li>
+        
+            
+            
+            
+            
+			<li id="yMay 2019"><a href="/2019/05">May 2019 (3)</a></li>
 				
             
         

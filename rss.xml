@@ -3,12 +3,33 @@
 	<title>pvigier's blog</title>
 	<link href="http://pvigier.github.io/rss.xml" rel="self"/>
 	<link href="http://pvigier.github.io"/>
-	<updated>2019-05-05T21:00:10+02:00</updated>
+	<updated>2019-05-12T11:07:54+02:00</updated>
 	<id>http://pvigier.github.io</id>
 	<author>
 		<name>Pierre Vigier</name>
 		<email>pierre.vigier@ymail.com</email>
 	</author>
+	
+		<entry>
+			<title>Vagabond &ndash; Map generation</title>
+			<link href="http://pvigier.github.io/2019/05/12/vagabond-map-generation.html"/>
+			<updated>2019-05-12T00:00:00+02:00</updated>
+			<id>http://pvigier.github.io/2019/05/12/vagabond-map-generation</id>
+			<content type="html">&lt;p&gt;&lt;img src=&quot;/media/img/vagabond-map-generation/0/Biome.png&quot; alt=&quot;&quot; width=&quot;400&quot; class=&quot;center-image modal-image&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;In this first devlog about Vagabond, I am going to talk about the map generation algorithm I have started to design. Indeed, in Vagabond all the maps will be procedurally generated.&lt;/p&gt;
+
+&lt;p&gt;Firstly, I will list some of the constraints that will influcence the design of the map generation pipeline:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;It must be fast as I do not want the player to wait for too long during map generation.&lt;/li&gt;
+  &lt;li&gt;It must not be totally random as Vagabond is a RPG, the world must be coherent.&lt;/li&gt;
+  &lt;li&gt;It must generate the entire map at once as different part of the world will interact.&lt;/li&gt;
+  &lt;li&gt;It must return a data structure easy to manipulate to be able to add more elements later such as rivers, cities, roads, dungeons, etc.&lt;/li&gt;
+&lt;/ul&gt;
+
+</content>
+		</entry>
 	
 		<entry>
 			<title>Commit graph drawing algorithms</title>
@@ -17,7 +38,7 @@
 			<id>http://pvigier.github.io/2019/05/06/commit-graph-drawing-algorithms</id>
 			<content type="html">&lt;p&gt;&lt;img src=&quot;/media/img/commit-graph/many_merges/gitamine.png&quot; alt=&quot;A commit graph drawn by gitamine&quot; width=&quot;300px&quot; class=&quot;center-image modal-image&quot; /&gt;&lt;/p&gt;
 
-&lt;p&gt;&lt;em&gt;This article is one of the chapter of my master thesis entitled “Design and implementation of a graphical user interface for git”. It describes the algorithm I designed to draw the commit graph in my own prototype git client called &lt;a href=&quot;https://github.com/pvigier/gitamine&quot;&gt;gitamine&lt;/a&gt;. I have adapted the content so that it fits better with this blog.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;This article is one chapter of my master thesis entitled “Design and implementation of a graphical user interface for git”. It describes the algorithm I designed to draw the commit graph in my own prototype git client called &lt;a href=&quot;https://github.com/pvigier/gitamine&quot;&gt;gitamine&lt;/a&gt;. I have adapted the content so that it fits better with this blog.&lt;/em&gt;&lt;/p&gt;
 
 &lt;p&gt;Drawing graphs is a very complex topic in general but here we want to draw a specific type of graphs: commit graphs. Commit graphs have several several pieces of information that simplify the problem. The most important ones are that the graph is directed and acyclic and that the commits have timestamps.&lt;/p&gt;
 

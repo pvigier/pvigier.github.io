@@ -234,3 +234,7 @@ td, th {
 .table-border, .table-border td, .table-border th {
     border: 1px solid;
 }
+
+.image-table td, .image-table th {
+    padding: 4px;
+}
