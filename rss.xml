@@ -3,12 +3,24 @@
 	<title>pvigier's blog</title>
 	<link href="http://pvigier.github.io/rss.xml" rel="self"/>
 	<link href="http://pvigier.github.io"/>
-	<updated>2019-05-13T11:20:08+02:00</updated>
+	<updated>2019-05-19T12:14:43+02:00</updated>
 	<id>http://pvigier.github.io</id>
 	<author>
 		<name>Pierre Vigier</name>
 		<email>pierre.vigier@ymail.com</email>
 	</author>
+	
+		<entry>
+			<title>Vagabond &#8211; Borders, Rivers, Cities and Roads</title>
+			<link href="http://pvigier.github.io/2019/05/19/vagabond-borders-rivers-cities-roads.html"/>
+			<updated>2019-05-19T00:00:00+02:00</updated>
+			<id>http://pvigier.github.io/2019/05/19/vagabond-borders-rivers-cities-roads</id>
+			<content type="html">&lt;p&gt;&lt;img src=&quot;/media/img/vagabond-borders-rivers-cities-roads/rivers_cities.png&quot; alt=&quot;&quot; width=&quot;400&quot; class=&quot;center-image modal-image&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;In this week’s devlog, I take up the map generator where I left it &lt;a href=&quot;/2019/05/12/vagabond-map-generation.html&quot;&gt;last week&lt;/a&gt;. I explain how I improved cell borders and added rivers, cities and roads to the map generator.&lt;/p&gt;
+
+</content>
+		</entry>
 	
 		<entry>
 			<title>Vagabond &#8211; Map generation</title>
@@ -72,7 +84,7 @@
 			<id>http://pvigier.github.io/2018/11/18/fortune-algorithm-details</id>
 			<content type="html">&lt;p&gt;The last few weeks, I worked on an implementation of the &lt;a href=&quot;https://en.wikipedia.org/wiki/Fortune%27s_algorithm&quot;&gt;Fortune’s algorithm&lt;/a&gt; in C++. This algorithm takes a set of 2D points and construct the &lt;a href=&quot;https://en.wikipedia.org/wiki/Voronoi_diagram&quot;&gt;Voronoi diagram&lt;/a&gt; of these points. If you wonder what is a Voronoi diagram, it looks like this:&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;/media/img/fortune/voronoi_intersected.png&quot; alt=&quot;Voronoi diagram&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/media/img/fortune/voronoi_intersected.png&quot; alt=&quot;Voronoi diagram&quot; width=&quot;400&quot; class=&quot;center-image modal-image&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;For each input point, which is called a site, we want to find the set of points which are nearer to this site than to any other site. These sets of points form cells as you can see on the image above.&lt;/p&gt;
 

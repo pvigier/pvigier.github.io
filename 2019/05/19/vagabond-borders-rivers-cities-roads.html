@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="">
+        <meta name="author" content="Pierre Vigier">
+
+        <title>Vagabond &#8211; Borders, Rivers, Cities and Roads - pvigier's blog</title>
+        <link rel="shortcut icon" href="/media/img/favicon.png">
+        <!-- Bootstrap -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+        <!-- My themes -->
+        <link href="/media/css/style.css" rel="stylesheet">
+        <link href="/media/css/syntax.css" rel="stylesheet">
+        <link href="/media/css/modal.css" rel="stylesheet">
+        <!-- RSS -->
+        <link href="https://pvigier.github.io/rss.xml" rel="alternate" title="pvigier's blog" type="application/atom+xml" />
+    </head>
+    <body>
+        <div class="blog-masthead">
+            <div class="container">
+                <nav class="blog-nav">
+                    <a class="blog-nav-item active" href="/">Blog</a>
+                    <a class="blog-nav-item" href="/articles">Articles</a>
+                    <a class="blog-nav-item" href="/projects">Projects</a>
+                    <!--<a class="blog-nav-item" href="/best-resources">Best Resources</a>-->
+                    <!--<a class="blog-nav-item" href="/resume">Resume</a>-->
+                    <a class="blog-nav-item" href="/about">About</a>
+                </nav>
+            </div>
+        </div>
+        <div class="container">
+            <div class="blog-header">
+                <h1 class="blog-title">pvigier's blog</h1>
+                <p class="lead blog-description">computer science, programming and other ideas</p>
+            </div>
+            <div class="row">
+            <div class="col-sm-8 blog-main">
+<div class="blog-post">
+    <h2 class="blog-post-title">Vagabond &#8211; Borders, Rivers, Cities and Roads</h2>
+    <p class="blog-post-meta">19 May 2019 by <a href="/">pierre</a></p>
+    <p><img src="/media/img/vagabond-borders-rivers-cities-roads/rivers_cities.png" alt="" width="400" class="center-image modal-image" /></p>
+
+<p>In this week’s devlog, I take up the map generator where I left it <a href="/2019/05/12/vagabond-map-generation.html">last week</a>. I explain how I improved cell borders and added rivers, cities and roads to the map generator.</p>
+
+<!--more-->
+
+<h1 id="borders">Borders</h1>
+
+<p>The first thing I did was working on improving the cell borders. I wanted something more natural than straight lines to separate the biomes.</p>
+
+<p>I just use 1D Perlin noise to disturb the lines: each point of the line is displaced according to the value of noise.</p>
+
+<p>There are mainly two parameters with which we can play: the frequency of the noise and the strength of the displacement. I made two gifs to show you what happens when we vary these parameters.</p>
+
+<p>The frequency:</p>
+
+<p><img src="/media/img/vagabond-borders-rivers-cities-roads/gifs/borders_frequency.gif" alt="" width="400" class="center-image modal-image" /></p>
+
+<p>The strength:</p>
+
+<p><img src="/media/img/vagabond-borders-rivers-cities-roads/gifs/borders_strength.gif" alt="" width="400" class="center-image modal-image" /></p>
+
+<p>One idea may be to have different parameters for different biomes. For instance, we could increase the frequency for borders between snow and sea to have some fjords.</p>
+
+<p>However, I want to keep things simple for now so I use a low frequency and low strength for all borders. Here are the results for four seeds:</p>
+
+<table class="image-table">
+  <thead>
+    <tr>
+      <th style="text-align: center"><img src="/media/img/vagabond-borders-rivers-cities-roads/borders/Biome_0.png" alt="" width="250" class="modal-image" /></th>
+      <th style="text-align: center"><img src="/media/img/vagabond-borders-rivers-cities-roads/borders/Biome_3.png" alt="" width="250" class="modal-image" /></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center"><img src="/media/img/vagabond-borders-rivers-cities-roads/borders/Biome_5.png" alt="" width="250" class="modal-image" /></td>
+      <td style="text-align: center"><img src="/media/img/vagabond-borders-rivers-cities-roads/borders/Biome_7.png" alt="" width="250" class="modal-image" /></td>
+    </tr>
+  </tbody>
+</table>
+
+<h1 id="regions">Regions</h1>
+
+<p>One small thing I wanted to do last week was to unite adjacent cells with the same biome into a larger structure called a region. To achieve that, I just use a simple <a href="https://en.wikipedia.org/wiki/Flood_fill">flood fill</a>. Here are the results:</p>
+
+<table class="image-table">
+  <thead>
+    <tr>
+      <th style="text-align: center"><img src="/media/img/vagabond-borders-rivers-cities-roads/regions/Biome_0.png" alt="" width="250" class="modal-image" /></th>
+      <th style="text-align: center"><img src="/media/img/vagabond-borders-rivers-cities-roads/regions/Biome_3.png" alt="" width="250" class="modal-image" /></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center"><img src="/media/img/vagabond-borders-rivers-cities-roads/regions/Biome_5.png" alt="" width="250" class="modal-image" /></td>
+      <td style="text-align: center"><img src="/media/img/vagabond-borders-rivers-cities-roads/regions/Biome_7.png" alt="" width="250" class="modal-image" /></td>
+    </tr>
+  </tbody>
+</table>
+
+<p>I don’t know exactly what I will do with these regions yet. But it seems so natural to join adjacent cells that I had to do that. Maybe I will give them names so that NPC can refer to them.</p>
+
+<h1 id="rivers">Rivers</h1>
+
+<p>Next, I worked on rivers. I decided that the rivers will be on the edges of cells. The reason is that only the edges can be in contact with seas, not the sites of Voronoi cells. Another reason is that rivers are good natural frontiers between biomes.</p>
+
+<p>So the first thing to do is to compute the height of each vertex. I simply did an average of the height of adjacent cells. Then, I computed a <em>downstream</em> neighbor for each vertex, it is the lowest neighbor of this vertex that is also lower than this vertex. It may not be possible to find one for each vertex as a vertex could be a local minimum.</p>
+
+<p>From that, we obtain a water flux:</p>
+
+<p><img src="/media/img/vagabond-borders-rivers-cities-roads/water_flux.png" alt="" width="400" class="center-image modal-image" /></p>
+
+<p>Then, I use a <a href="https://en.wikipedia.org/wiki/Disjoint-set_data_structure">disjoint-set data structure</a> to quickly find all the separated water networks.</p>
+
+<p>Next, I reject all the networks that do not reach seas. It remains a list of candidate rivers from which I will select the actual rivers.</p>
+
+<p>I have two criteria for the selection: I want the rivers to be well-spread over the map and to be interesting.</p>
+
+<p>So, I compute a score for each river and I pick the one with the highest score. And I repeat the process until I reach the desired number of rivers.</p>
+
+<p>The score is in two parts to take into account the two criteria. The first part assesses the proximity of the barycenter of the candidate river from the ones of already selected rivers.</p>
+
+<p>In the animation below, you can observe how this part changes when there are more rivers (black is 0 and white is 1):</p>
+
+<p><img src="/media/img/vagabond-borders-rivers-cities-roads/gifs/rivers_mask.gif" alt="" width="400" class="center-image modal-image" /></p>
+
+<p>The second part is just the size (number of edges) of the river. And I just multiply the two parts to obtain the final score. This is pretty simple but it works well.</p>
+
+<p>Moreover, we can also distort the river as we distorted the borders to obtain more natural rivers with meanders:</p>
+
+<table class="image-table">
+  <thead>
+    <tr>
+      <th style="text-align: center"><img src="/media/img/vagabond-borders-rivers-cities-roads/rivers/Biome_0.png" alt="" width="250" class="modal-image" /></th>
+      <th style="text-align: center"><img src="/media/img/vagabond-borders-rivers-cities-roads/rivers/Biome_3.png" alt="" width="250" class="modal-image" /></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center"><img src="/media/img/vagabond-borders-rivers-cities-roads/rivers/Biome_5.png" alt="" width="250" class="modal-image" /></td>
+      <td style="text-align: center"><img src="/media/img/vagabond-borders-rivers-cities-roads/rivers/Biome_7.png" alt="" width="250" class="modal-image" /></td>
+    </tr>
+  </tbody>
+</table>
+
+<h1 id="cities">Cities</h1>
+
+<p>The cities will be at the center of Voronoi cells. I use the same technique as before to choose the cells. I will give a score to each cell, put a city in the cell with the highest score and iterate until I have enough cities.</p>
+
+<p>I firstly thought taking into account the rivers and shores to encourage the emergence of cities near sources of water. But the problem is that all the cities would be near rivers or seas and I would have no cities far inland.</p>
+
+<p>So, I just use a simple score that only takes into account the proximity of a cell with already selected cities. And the results were sufficiently satisfying so I stopped there. You can see the results at the end of the next section.</p>
+
+<h1 id="roads">Roads</h1>
+
+<p>Now that we have cities, we need some roads to connect them.</p>
+
+<p>The idea is pretty simple, we will compute the shortest path between each pair of cities and add roads to link them. To compute the shortest paths, I use <a href="https://en.wikipedia.org/wiki/A*_search_algorithm">A* algorithm</a>.</p>
+
+<p>The problem is that in doing that, we will obtain a very dense network with a large amount of redundancy. To avoid that, when I compute the path between a new pair of cities I give a discount if it uses a road that already exists. For instance, creating a new road segment costs <script type="math/tex">d</script> where <script type="math/tex">d</script> is its distance while using an existing road segment costs only <script type="math/tex">\gamma \times d</script> where <script type="math/tex">\gamma</script> is the discount factor ranging between 0 and 1. Here is an animation that shows how the road network changes depending on the value of the discount factor:</p>
+
+<p><img src="/media/img/vagabond-borders-rivers-cities-roads/gifs/roads_discount.gif" alt="" width="400" class="center-image modal-image" /></p>
+
+<p>When <script type="math/tex">\gamma</script> is low, it is really advantageous to reuse an already built road segment so the road network is sparse. On the contrary, when <script type="math/tex">\gamma</script> is high, there is no big difference between reusing a road segment or constructing a new one so the network is dense.</p>
+
+<p>Another issue is the order in which we process the pair of cities. Indeed, if we first compute the shortest paths between a city and all the others, we will have a network centered on this city like a star network:</p>
+
+<p><img src="/media/img/vagabond-borders-rivers-cities-roads/roads_star_network.png" alt="" width="400" class="center-image modal-image" /></p>
+
+<p>My idea to fix this issue is to first link near cities. Besides, I think it makes sense for a city to be connected first with its nearest neighbors and later with far cities. So I sort the pairs of cities by distance between the cities in the pair before processing them.</p>
+
+<p>Here are the final results for roads:</p>
+
+<table class="image-table">
+  <thead>
+    <tr>
+      <th style="text-align: center"><img src="/media/img/vagabond-borders-rivers-cities-roads/roads/Biome_0.png" alt="" width="250" class="modal-image" /></th>
+      <th style="text-align: center"><img src="/media/img/vagabond-borders-rivers-cities-roads/roads/Biome_3.png" alt="" width="250" class="modal-image" /></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center"><img src="/media/img/vagabond-borders-rivers-cities-roads/roads/Biome_5.png" alt="" width="250" class="modal-image" /></td>
+      <td style="text-align: center"><img src="/media/img/vagabond-borders-rivers-cities-roads/roads/Biome_7.png" alt="" width="250" class="modal-image" /></td>
+    </tr>
+  </tbody>
+</table>
+
+<p>I really like how the roads look. Moreover, the algorithm is robust: it always give good result. And it is easily extensible: we can take into account elevation or biomes by modifying the cost function used by A*.</p>
+
+<h1 id="conclusion">Conclusion</h1>
+
+<p>I try to keep things as simple as possible in order to have a solid base on which I can iterate.</p>
+
+<p>Moreover, the generator is really fast: it takes less than 20ms to generate one of the map on my (cheap) laptop. Thus, I have some freedom to add complexity later.</p>
+
+<p>The next step is to transform this symbolic map into a world where players would be able to move and interact. See you next week for more!</p>
+
+<p><em>If you are interested by my adventures during the development of Vagabond, you can follow me on <a href="https://twitter.com/PierreVigier">Twitter</a>.</em></p>
+
+    
+	<p>Tags: <span class="label label-primary"><a href="/tag/vagabond">vagabond</a></span> <span class="label label-primary"><a href="/tag/pcg">pcg</a></span> </p>
+	
+</div><!-- /.blog-post -->
+<hr/>
+<p>Subscribe to the newsletter if you do not want to miss any new article:</p>
+<!-- Begin Mailchimp Signup Form -->
+<link href="//cdn-images.mailchimp.com/embedcode/horizontal-slim-10_7.css" rel="stylesheet" type="text/css">
+<style type="text/css">
+	#mc_embed_signup{background:#fff; clear:left; font:14px Helvetica,Arial,sans-serif; width:100%;}
+	/* Add your own Mailchimp form style overrides in your site stylesheet or in this style block.
+	   We recommend moving this block and the preceding CSS link to the HEAD of your HTML file. */
+</style>
+<div id="mc_embed_signup">
+<form action="https://ymail.us20.list-manage.com/subscribe/post?u=7bb3b720a12ef1d8e0b48d8da&amp;id=7516dd4562" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate" target="_blank" novalidate>
+    <div id="mc_embed_signup_scroll">
+	
+	<input type="email" value="" name="EMAIL" class="email" id="mce-EMAIL" placeholder="email address" required>
+    <!-- real people should not fill this in and expect good things - do not remove this or risk form bot signups-->
+    <div style="position: absolute; left: -5000px;" aria-hidden="true"><input type="text" name="b_7bb3b720a12ef1d8e0b48d8da_7516dd4562" tabindex="-1" value=""></div>
+    <div class="clear"><input type="submit" value="Subscribe" name="subscribe" id="mc-embedded-subscribe" class="button"></div>
+    </div>
+</form>
+</div>
+<!--End mc_embed_signup-->
+<!-- Disqus -->
+<hr/>
+<div id="disqus_thread"></div>
+<script>
+
+/**
+*  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+*  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+/*
+var disqus_config = function () {
+this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+};
+*/
+(function() { // DON'T EDIT BELOW THIS LINE
+var d = document, s = d.createElement('script');
+s.src = 'https://pvigier-github-io.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div><!-- /.blog-main -->
+<div class="col-sm-3 col-sm-offset-1 blog-sidebar">
+	<div class="sidebar-module">
+        <h4>Tags</h4>
+        <ol class="list-unstyled">
+		
+			<li><a href="/tag/math">math (3)</a></li>
+		
+			<li><a href="/tag/python">python (6)</a></li>
+		
+			<li><a href="/tag/cpp">cpp (4)</a></li>
+		
+			<li><a href="/tag/pcg">pcg (5)</a></li>
+		
+			<li><a href="/tag/simulopolis">simulopolis (5)</a></li>
+		
+			<li><a href="/tag/linux">linux (1)</a></li>
+		
+			<li><a href="/tag/geometry">geometry (1)</a></li>
+		
+			<li><a href="/tag/graph">graph (1)</a></li>
+		
+			<li><a href="/tag/git">git (1)</a></li>
+		
+			<li><a href="/tag/vagabond">vagabond (2)</a></li>
+		
+        </ol>
+    </div>
+    <div class="sidebar-module">
+        <h4>Archives</h4>
+        <ol class="list-unstyled">
+		
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+			<li id="yMay 2019"><a href="/2019/05">May 2019 (4)</a></li>
+				
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+			<li id="yNovember 2018"><a href="/2018/11">November 2018 (3)</a></li>
+				
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+			<li id="yOctober 2018"><a href="/2018/10">October 2018 (3)</a></li>
+				
+            
+        
+            
+            
+            
+            
+			<li id="yJune 2018"><a href="/2018/06">June 2018 (1)</a></li>
+				
+            
+        
+            
+            
+            
+            
+			<li id="yMay 2018"><a href="/2018/05">May 2018 (1)</a></li>
+				
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+			<li id="yFebruary 2018"><a href="/2018/02">February 2018 (2)</a></li>
+				
+            
+        
+            
+            
+            
+            
+			<li id="yAugust 2017"><a href="/2017/08">August 2017 (1)</a></li>
+				
+            
+        
+            
+            
+            
+            
+			<li id="yJuly 2017"><a href="/2017/07">July 2017 (1)</a></li>
+				
+            
+        
+            
+            
+            
+            
+			<li id="yFebruary 2017"><a href="/2017/02">February 2017 (1)</a></li>
+				
+            
+        
+        </ol>
+    </div>
+    <div class="sidebar-module">
+        <h4>Follow me</h4>
+        <ol class="list-unstyled">
+            <li><a href="https://github.com/pvigier">GitHub</a></li>
+            <li><a href="https://pvigier.itch.io/">itch.io</a></li>
+            <li><a href="https://twitter.com/PierreVigier">Twitter</a></li>
+            <li><a href="/rss.xml">RSS</a></li>
+        </ol>
+    </div>
+</div><!-- /.blog-sidebar -->
+
+            </div><!-- /.row -->
+        </div><!-- /.container -->
+
+        <footer class="blog-footer">
+            <p>Powered by <a href="http://getbootstrap.com">Bootstrap</a> and <a href="http://jekyllrb.com">Jekyll</a>.</p>
+            <p>
+                <a href="#">Back to top</a>
+            </p>
+        </footer>
+        <!-- Javascript -->
+        <!-- jQuery -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+        <!-- Bootstrap -->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+        <!-- MathJax -->
+        <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+        <!-- Analytics -->
+        <script>
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+        ga('create', 'UA-30902264-4', 'auto');
+        ga('send', 'pageview');
+        </script>
+        <!-- Modal images -->
+        <script src="/media/js/modal.js"></script>
+    </body>
+</html>
