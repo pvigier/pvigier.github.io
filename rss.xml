@@ -3,12 +3,26 @@
 	<title>pvigier's blog</title>
 	<link href="http://pvigier.github.io/rss.xml" rel="self"/>
 	<link href="http://pvigier.github.io"/>
-	<updated>2019-05-19T12:14:43+02:00</updated>
+	<updated>2019-05-26T16:12:58+02:00</updated>
 	<id>http://pvigier.github.io</id>
 	<author>
 		<name>Pierre Vigier</name>
 		<email>pierre.vigier@ymail.com</email>
 	</author>
+	
+		<entry>
+			<title>Vagabond &#8211; Generating tiles</title>
+			<link href="http://pvigier.github.io/2019/05/19/vagabond-generating-tiles.html"/>
+			<updated>2019-05-19T00:00:00+02:00</updated>
+			<id>http://pvigier.github.io/2019/05/19/vagabond-generating-tiles</id>
+			<content type="html">&lt;p&gt;&lt;img src=&quot;/media/img/vagabond-generating-tiles/rasterization_results.gif&quot; alt=&quot;&quot; width=&quot;400&quot; class=&quot;center-image modal-image&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;This week, my goal was to generate the world in which the players will move from the symbolic map I worked on the &lt;a href=&quot;/2019/05/19/vagabond-borders-rivers-cities-roads.html&quot;&gt;last weeks&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;The examples in this article are quite small (600x600 tiles) to be able to see the whole world at once. The worlds in Vagabond will be way larger.&lt;/p&gt;
+
+</content>
+		</entry>
 	
 		<entry>
 			<title>Vagabond &#8211; Borders, Rivers, Cities and Roads</title>

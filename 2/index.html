@@ -40,6 +40,29 @@
             <div class="col-sm-8 blog-main">
 
     <div class="blog-post">
+        <h2 class="blog-post-title"><a href="/2018/11/18/fortune-algorithm-details.html">Fortune's algorithm, the details</a></h2>
+        <p class="blog-post-meta">18 Nov 2018 by <a href="/">pierre</a></p>
+        <p>The last few weeks, I worked on an implementation of the <a href="https://en.wikipedia.org/wiki/Fortune%27s_algorithm">Fortune’s algorithm</a> in C++. This algorithm takes a set of 2D points and construct the <a href="https://en.wikipedia.org/wiki/Voronoi_diagram">Voronoi diagram</a> of these points. If you wonder what is a Voronoi diagram, it looks like this:</p>
+
+<p><img src="/media/img/fortune/voronoi_intersected.png" alt="Voronoi diagram" width="400" class="center-image modal-image" /></p>
+
+<p>For each input point, which is called a site, we want to find the set of points which are nearer to this site than to any other site. These sets of points form cells as you can see on the image above.</p>
+
+<p>What is remarkable about the Fortune’s algorithm is that it constructs such diagrams in <script type="math/tex">O(n\log n)</script> time (which is optimal for an algorithm which uses comparisons) where <script type="math/tex">n</script> is the number of sites.</p>
+
+<p>I am writing this article because I find it very hard to implement this algorithm. Until now, it is surely the hardest algorithm I have ever implemented. Thus, I want to share with you the issues I faced and how I solved them.</p>
+
+<p>The code is, as usual, available on <a href="https://github.com/pvigier/FortuneAlgorithm">github</a> and you will find all the references I used at the bottom of this article.</p>
+
+
+        <p><a href="/2018/11/18/fortune-algorithm-details.html">Read more ...</a></p>
+        
+        <p>Tags: <span class="label label-primary"><a href="/tag/cpp">cpp</a></span> <span class="label label-primary"><a href="/tag/geometry">geometry</a></span> </p>
+        
+    </div>
+    <hr />
+
+    <div class="blog-post">
         <h2 class="blog-post-title"><a href="/2018/11/03/simulopolis-alpha-3.html">Simulopolis alpha 3 is released</a></h2>
         <p class="blog-post-meta">03 Nov 2018 by <a href="/">pierre</a></p>
         <p>Today, I release the third alpha version of Simulopolis.</p>
@@ -128,23 +151,6 @@
     </div>
     <hr />
 
-    <div class="blog-post">
-        <h2 class="blog-post-title"><a href="/2018/10/06/simulopolis-alpha-1.html">Simulopolis alpha is released</a></h2>
-        <p class="blog-post-meta">06 Oct 2018 by <a href="/">pierre</a></p>
-        <p><img src="/media/img/simulopolis-alpha-1/cover.png" alt="Cover" class="center-image modal-image" /></p>
-
-<p>Today, I’m happy to announce you that the first release of my city building game, Simulopolis, is available online.</p>
-
-<p>It’s been a long and chaotic journey which lasted a bit more than six months.</p>
-
-
-        <p><a href="/2018/10/06/simulopolis-alpha-1.html">Read more ...</a></p>
-        
-        <p>Tags: <span class="label label-primary"><a href="/tag/simulopolis">simulopolis</a></span> </p>
-        
-    </div>
-    <hr />
-
 <nav>
     <ul class="pager">
         
@@ -168,7 +174,7 @@
 		
 			<li><a href="/tag/cpp">cpp (4)</a></li>
 		
-			<li><a href="/tag/pcg">pcg (5)</a></li>
+			<li><a href="/tag/pcg">pcg (6)</a></li>
 		
 			<li><a href="/tag/simulopolis">simulopolis (5)</a></li>
 		
@@ -180,7 +186,7 @@
 		
 			<li><a href="/tag/git">git (1)</a></li>
 		
-			<li><a href="/tag/vagabond">vagabond (2)</a></li>
+			<li><a href="/tag/vagabond">vagabond (3)</a></li>
 		
         </ol>
     </div>
@@ -208,7 +214,12 @@
             
             
             
-			<li id="yMay 2019"><a href="/2019/05">May 2019 (4)</a></li>
+        
+            
+            
+            
+            
+			<li id="yMay 2019"><a href="/2019/05">May 2019 (5)</a></li>
 				
             
         
