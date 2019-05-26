@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="">
+        <meta name="author" content="Pierre Vigier">
+
+        <title>Vagabond &#8211; Generating tiles - pvigier's blog</title>
+        <link rel="shortcut icon" href="/media/img/favicon.png">
+        <!-- Bootstrap -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+        <!-- My themes -->
+        <link href="/media/css/style.css" rel="stylesheet">
+        <link href="/media/css/syntax.css" rel="stylesheet">
+        <link href="/media/css/modal.css" rel="stylesheet">
+        <!-- RSS -->
+        <link href="https://pvigier.github.io/rss.xml" rel="alternate" title="pvigier's blog" type="application/atom+xml" />
+    </head>
+    <body>
+        <div class="blog-masthead">
+            <div class="container">
+                <nav class="blog-nav">
+                    <a class="blog-nav-item active" href="/">Blog</a>
+                    <a class="blog-nav-item" href="/articles">Articles</a>
+                    <a class="blog-nav-item" href="/projects">Projects</a>
+                    <!--<a class="blog-nav-item" href="/best-resources">Best Resources</a>-->
+                    <!--<a class="blog-nav-item" href="/resume">Resume</a>-->
+                    <a class="blog-nav-item" href="/about">About</a>
+                </nav>
+            </div>
+        </div>
+        <div class="container">
+            <div class="blog-header">
+                <h1 class="blog-title">pvigier's blog</h1>
+                <p class="lead blog-description">computer science, programming and other ideas</p>
+            </div>
+            <div class="row">
+            <div class="col-sm-8 blog-main">
+<div class="blog-post">
+    <h2 class="blog-post-title">Vagabond &#8211; Generating tiles</h2>
+    <p class="blog-post-meta">26 May 2019 by <a href="/">pierre</a></p>
+    <p><img src="/media/img/vagabond-generating-tiles/rasterization_results.gif" alt="" width="400" class="center-image modal-image" /></p>
+
+<p>This week, my goal was to generate the world in which the players will move from the symbolic map I worked on the <a href="/2019/05/19/vagabond-borders-rivers-cities-roads.html">last weeks</a>.</p>
+
+<p>The examples in this article are quite small (600x600 tiles) to be able to see the whole world at once. The worlds in Vagabond will be way larger.</p>
+
+<!--more-->
+
+<h1 id="rasterization">Rasterization</h1>
+
+<p>The process of taking shapes and discretizing them in a 2D grid is called <a href="https://en.wikipedia.org/wiki/Rasterisation">rasterization</a>. It is exactly what your graphic card does when it takes some 3D models made of polygons as input and outputs an image which is a 2D grid of pixels.</p>
+
+<p>This is also what we want to do: we have a map as input and we want a 2D grid of tiles as output. Thus we can leverage on the techniques of rasterization to generate the tiles.</p>
+
+<p>There are two main primitives in rasterization: drawing a line and drawing a triangle. Fortunately, there are very efficient algorithms for doing that. I have put some useful resources in the last section of this article if you are interested by the theory of rasterization.</p>
+
+<p>In the <a href="/2019/05/12/vagabond-map-generation.html">first article</a> of this series, I said that I wanted my map generator to output a data structure easy to manipulate. Thus I chose to generate a polygonal map using a Voronoi diagram. Now, it proves useful as polygons are quite easy to rasterize.</p>
+
+<h1 id="rasterizing-cells">Rasterizing cells</h1>
+
+<p>The first step in rasterizing a polygon is splitting it in triangles so that we can use the triangle drawing algorithm. As our cells come from a Voronoi diagram, we know that they are convex, so it is very easy to triangulate them. One way of doing it is just taking a point inside and linking it with the edges as depicted below.</p>
+
+<p><img src="/media/img/vagabond-generating-tiles/cell_triangulation.svg" alt="" class="center-image" /></p>
+
+<p>Once it is done, we just have to run the triangle drawing algorithm on all the triangles of the cell, and assign the terrain for all the coordinates inside the triangles.</p>
+
+<p>Here is the result:</p>
+
+<p><img src="/media/img/vagabond-generating-tiles/World_cells.png" alt="" width="400" class="center-image modal-image" /></p>
+
+<p>By the way, I am using the awesome <a href="https://opengameart.org/content/lpc-terrains">LPC terrain tileset</a>.</p>
+
+<h1 id="rasterizing-borders">Rasterizing borders</h1>
+
+<p>The next step is taking care of borders between two cells. Indeed, a border belongs to the two (or more) adjacent cells. But, currently only one terrain is assigned to each tile.</p>
+
+<p>To fix this, I draw all the edges separating cells using a modified version of <a href="https://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm">Bresenham’s algorithm</a> (which does not allow to move diagonally) and assign the terrains of adjacent cells to the tiles on the border.</p>
+
+<p>Here is the result:</p>
+
+<p><img src="/media/img/vagabond-generating-tiles/World_borders.png" alt="" width="400" class="center-image modal-image" /></p>
+
+<p>By the way, another method I tried to rasterize the map was to first draw the borders of cells and then to use a <a href="https://en.wikipedia.org/wiki/Flood_fill">flood fill algorithm</a> to assign the terrain inside cells. This method is appealing as it is simpler but it proves to be slower and less robust than rasterizing the cells using triangles.</p>
+
+<p>Finally, I wanted to rasterize cells with the distorted borders I showed last week. To do that, I just use a finer triangulation that takes into account the distortion:</p>
+
+<p><img src="/media/img/vagabond-generating-tiles/cell_triangulation_nice_borders.svg" alt="" class="center-image" /></p>
+
+<p>And here is the result:</p>
+
+<p><img src="/media/img/vagabond-generating-tiles/World_nice_borders.png" alt="" width="400" class="center-image modal-image" /></p>
+
+<p>It is much more appealing than the straight borders!</p>
+
+<h1 id="conclusion">Conclusion</h1>
+
+<p>I have not progressed very quickly this week as I knew nothing about rasterization at the beginning of the week. So I had to learn and experiment a lot to obtain good results.</p>
+
+<p>If I have one piece of advice to offer: it is to use algorithms that avoid floating point numbers such as Bresenham’s algorithms as they are faster and there are no rounding issues.</p>
+
+<p>I have already started to work on rasterizing roads and rivers but it is not finished yet. I will polish that next week and generate some vegetations to fill the biomes.</p>
+
+<p>See you next week for more!</p>
+
+<h1 id="useful-links">Useful links</h1>
+
+<ul>
+  <li><a href="https://github.com/ssloy/tinyrenderer/wiki/Lesson-1:-Bresenham%E2%80%99s-Line-Drawing-Algorithm">Tiny Renderer</a> by Dmitry V. Sokolov</li>
+  <li><a href="http://www.sunshine2k.de/coding/java/TriangleRasterization/TriangleRasterization.html">Software Rasterization Algorithms for Filling Triangles</a> by Bastian Molkenthin</li>
+</ul>
+
+<p><em>If you are interested by my adventures during the development of Vagabond, you can follow me on <a href="https://twitter.com/PierreVigier">Twitter</a>.</em></p>
+
+    
+	<p>Tags: <span class="label label-primary"><a href="/tag/vagabond">vagabond</a></span> <span class="label label-primary"><a href="/tag/pcg">pcg</a></span> </p>
+	
+</div><!-- /.blog-post -->
+<hr/>
+<p>Subscribe to the newsletter if you do not want to miss any new article:</p>
+<!-- Begin Mailchimp Signup Form -->
+<link href="//cdn-images.mailchimp.com/embedcode/horizontal-slim-10_7.css" rel="stylesheet" type="text/css">
+<style type="text/css">
+	#mc_embed_signup{background:#fff; clear:left; font:14px Helvetica,Arial,sans-serif; width:100%;}
+	/* Add your own Mailchimp form style overrides in your site stylesheet or in this style block.
+	   We recommend moving this block and the preceding CSS link to the HEAD of your HTML file. */
+</style>
+<div id="mc_embed_signup">
+<form action="https://ymail.us20.list-manage.com/subscribe/post?u=7bb3b720a12ef1d8e0b48d8da&amp;id=7516dd4562" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate" target="_blank" novalidate>
+    <div id="mc_embed_signup_scroll">
+	
+	<input type="email" value="" name="EMAIL" class="email" id="mce-EMAIL" placeholder="email address" required>
+    <!-- real people should not fill this in and expect good things - do not remove this or risk form bot signups-->
+    <div style="position: absolute; left: -5000px;" aria-hidden="true"><input type="text" name="b_7bb3b720a12ef1d8e0b48d8da_7516dd4562" tabindex="-1" value=""></div>
+    <div class="clear"><input type="submit" value="Subscribe" name="subscribe" id="mc-embedded-subscribe" class="button"></div>
+    </div>
+</form>
+</div>
+<!--End mc_embed_signup-->
+<!-- Disqus -->
+<hr/>
+<div id="disqus_thread"></div>
+<script>
+
+/**
+*  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+*  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+/*
+var disqus_config = function () {
+this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+};
+*/
+(function() { // DON'T EDIT BELOW THIS LINE
+var d = document, s = d.createElement('script');
+s.src = 'https://pvigier-github-io.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div><!-- /.blog-main -->
+<div class="col-sm-3 col-sm-offset-1 blog-sidebar">
+	<div class="sidebar-module">
+        <h4>Tags</h4>
+        <ol class="list-unstyled">
+		
+			<li><a href="/tag/math">math (3)</a></li>
+		
+			<li><a href="/tag/python">python (6)</a></li>
+		
+			<li><a href="/tag/cpp">cpp (4)</a></li>
+		
+			<li><a href="/tag/pcg">pcg (6)</a></li>
+		
+			<li><a href="/tag/simulopolis">simulopolis (5)</a></li>
+		
+			<li><a href="/tag/linux">linux (1)</a></li>
+		
+			<li><a href="/tag/geometry">geometry (1)</a></li>
+		
+			<li><a href="/tag/graph">graph (1)</a></li>
+		
+			<li><a href="/tag/git">git (1)</a></li>
+		
+			<li><a href="/tag/vagabond">vagabond (3)</a></li>
+		
+        </ol>
+    </div>
+    <div class="sidebar-module">
+        <h4>Archives</h4>
+        <ol class="list-unstyled">
+		
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+			<li id="yMay 2019"><a href="/2019/05">May 2019 (5)</a></li>
+				
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+			<li id="yNovember 2018"><a href="/2018/11">November 2018 (3)</a></li>
+				
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+			<li id="yOctober 2018"><a href="/2018/10">October 2018 (3)</a></li>
+				
+            
+        
+            
+            
+            
+            
+			<li id="yJune 2018"><a href="/2018/06">June 2018 (1)</a></li>
+				
+            
+        
+            
+            
+            
+            
+			<li id="yMay 2018"><a href="/2018/05">May 2018 (1)</a></li>
+				
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+			<li id="yFebruary 2018"><a href="/2018/02">February 2018 (2)</a></li>
+				
+            
+        
+            
+            
+            
+            
+			<li id="yAugust 2017"><a href="/2017/08">August 2017 (1)</a></li>
+				
+            
+        
+            
+            
+            
+            
+			<li id="yJuly 2017"><a href="/2017/07">July 2017 (1)</a></li>
+				
+            
+        
+            
+            
+            
+            
+			<li id="yFebruary 2017"><a href="/2017/02">February 2017 (1)</a></li>
+				
+            
+        
+        </ol>
+    </div>
+    <div class="sidebar-module">
+        <h4>Follow me</h4>
+        <ol class="list-unstyled">
+            <li><a href="https://github.com/pvigier">GitHub</a></li>
+            <li><a href="https://pvigier.itch.io/">itch.io</a></li>
+            <li><a href="https://twitter.com/PierreVigier">Twitter</a></li>
+            <li><a href="/rss.xml">RSS</a></li>
+        </ol>
+    </div>
+</div><!-- /.blog-sidebar -->
+
+            </div><!-- /.row -->
+        </div><!-- /.container -->
+
+        <footer class="blog-footer">
+            <p>Powered by <a href="http://getbootstrap.com">Bootstrap</a> and <a href="http://jekyllrb.com">Jekyll</a>.</p>
+            <p>
+                <a href="#">Back to top</a>
+            </p>
+        </footer>
+        <!-- Javascript -->
+        <!-- jQuery -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+        <!-- Bootstrap -->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+        <!-- MathJax -->
+        <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+        <!-- Analytics -->
+        <script>
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+        ga('create', 'UA-30902264-4', 'auto');
+        ga('send', 'pageview');
+        </script>
+        <!-- Modal images -->
+        <script src="/media/js/modal.js"></script>
+    </body>
+</html>
