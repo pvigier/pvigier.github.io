@@ -3,12 +3,24 @@
 	<title>pvigier's blog</title>
 	<link href="http://pvigier.github.io/rss.xml" rel="self"/>
 	<link href="http://pvigier.github.io"/>
-	<updated>2019-06-02T19:04:51+02:00</updated>
+	<updated>2019-06-09T21:44:59+02:00</updated>
 	<id>http://pvigier.github.io</id>
 	<author>
 		<name>Pierre Vigier</name>
 		<email>pierre.vigier@ymail.com</email>
 	</author>
+	
+		<entry>
+			<title>Vagabond &#8211; Forest generation</title>
+			<link href="http://pvigier.github.io/2019/06/09/vagabond-forest-generation.html"/>
+			<updated>2019-06-09T00:00:00+02:00</updated>
+			<id>http://pvigier.github.io/2019/06/09/vagabond-forest-generation</id>
+			<content type="html">&lt;p&gt;&lt;img src=&quot;/media/img/vagabond-forest-generation/cell_generation.gif&quot; alt=&quot;&quot; width=&quot;400&quot; class=&quot;center-image modal-image&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;This week, I continue to work on the object placement system that I started to implement &lt;a href=&quot;/2019/06/02/vagabond-rasterizing-roads-rivers.html&quot;&gt;last week&lt;/a&gt;. I entitled this article “Forest generation” as we will place trees, but we will also place other decorations that will fill biomes such as plants, bushes, rocks, carcasses, etc.&lt;/p&gt;
+
+</content>
+		</entry>
 	
 		<entry>
 			<title>Vagabond &#8211; Rasterizing roads and rivers</title>

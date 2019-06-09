@@ -7,7 +7,7 @@
         <meta name="description" content="">
         <meta name="author" content="Pierre Vigier">
 
-        <title>Vagabond &#8211; Rasterizing roads and rivers - pvigier's blog</title>
+        <title>Vagabond &#8211; Forest generation - pvigier's blog</title>
         <link rel="shortcut icon" href="/media/img/favicon.png">
         <!-- Bootstrap -->
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
@@ -39,93 +39,62 @@
             <div class="row">
             <div class="col-sm-8 blog-main">
 <div class="blog-post">
-    <h2 class="blog-post-title">Vagabond &#8211; Rasterizing roads and rivers</h2>
-    <p class="blog-post-meta">02 Jun 2019 by <a href="/">pierre</a></p>
-    <p><img src="/media/img/vagabond-rasterizing-roads-rivers/roads_rivers.png" alt="" width="400" class="center-image modal-image" /></p>
+    <h2 class="blog-post-title">Vagabond &#8211; Forest generation</h2>
+    <p class="blog-post-meta">09 Jun 2019 by <a href="/">pierre</a></p>
+    <p><img src="/media/img/vagabond-forest-generation/cell_generation.gif" alt="" width="400" class="center-image modal-image" /></p>
 
-<p>This week, I finished the rasterization of polygonal maps that I started to implement <a href="/2019/05/26/vagabond-generating-tiles.html">last week</a>. Then, I improved my renderer to be able to display worlds way larger than before. Finally, I started to fill the biomes with some decorations and vegetation.</p>
+<p>This week, I continue to work on the object placement system that I started to implement <a href="/2019/06/02/vagabond-rasterizing-roads-rivers.html">last week</a>. I entitled this article “Forest generation” as we will place trees, but we will also place other decorations that will fill biomes such as plants, bushes, rocks, carcasses, etc.</p>
 
 <!--more-->
 
-<h1 id="rasterizing-rivers">Rasterizing rivers</h1>
+<h1 id="multi-class-poisson-disk-sampling">Multi-class Poisson disk sampling</h1>
 
-<p>The first thing I did this week was to rasterize the rivers. I reuse my line rasterization algorithm. But instead of setting only one tile per coordinates output by the algorithm, I rasterize a whole square around the coordinates. It is as if I used a brush in a graphics editor such as GIMP or Photoshop.</p>
+<p>Last week, I show an image of points sampled using Poisson disk sampling. Then I mapped these points to one of the decorations randomly.</p>
 
-<p>Moreover, I would like the rivers to be wider when many tributaries meet. So I just use a wider brush when the rivers should be larger. The width of the rivers grows as the square root of the number of tributaries.</p>
+<p><img src="/media/img/vagabond-forest-generation/poisson_disk_sampling.png" alt="" width="400" class="center-image modal-image" /></p>
 
-<p>Here are the results:</p>
+<p>The problem is that I do not want the same distribution for all the decorations. For instance, small objects such as flowers or bushes should appear more frequently but also be more tightly packed than big trees.</p>
 
-<p><img src="/media/img/vagabond-rasterizing-roads-rivers/Rivers.gif" alt="" width="400" class="center-image modal-image" /></p>
+<p>To solve this problem, I will generate several classes of points that have different properties (minimal distance to a point of the same class, minimal distance to a point of other classes, …). This problem is called multi-class Poisson disk sampling.</p>
 
-<h1 id="rasterizing-roads">Rasterizing roads</h1>
+<p>The common way to perform multi-class Poisson disk sampling is to reuse the algorithm for the one-class case to generate several layers of points (one layer for each class) and then to discard samples that overlapped. Usually, the layers are ordered so that higher layers have priority over lower layers. And we put the classes with larger minimal distances in the higher layers.</p>
 
-<p>Rasterizing roads was harder. Indeed, there are several issues I must take care of:</p>
+<p>I decided to use another method and to generate simultaneously the samples for all the classes. I have not had the time to compare both methods in term of performance and quality of the sampling yet. But if people are interested, I will write a separate article describing the algorithms in detail and analyzing the differences.</p>
 
-<ul>
-  <li>Roads should avoid sea. If you <a href="/2019/05/19/vagabond-borders-rivers-cities-roads.html">remember well</a>, a road segment joins two sites of Voronoi cells. But if we draw a straight between the sites, it may go through sea as shown on the image below.</li>
-  <li>When a road crosses a river, there should be a bridge. But a bridge should be straight (totally vertical or totally horizontal).</li>
-</ul>
+<p>Here is a picture with four classes that have different properties:</p>
 
-<p>I use a smaller number of cells so that we can clearly observe that the roads go through the sea:</p>
+<p><img src="/media/img/vagabond-forest-generation/multiclass_poisson_disk_sampling.png" alt="" width="400" class="center-image modal-image" /></p>
 
-<p><img src="/media/img/vagabond-rasterizing-roads-rivers/roads_issues.png" alt="" width="400" class="center-image modal-image" /></p>
+<h1 id="filling-the-cells">Filling the cells</h1>
 
-<p>I use A* algorithm to find paths between two sites that fulfill all the mentioned constraints. Here is the macroscopic result:</p>
+<p>Now that we have an algorithm to place objects, it is time to effectively add objects. For now, I annotate each object with two distances (one for the minimal distance with objects of the same class and the minimal distance with objects of other classes). But I may change the system where a same class can represent several objects because I have many objects that have the same properties. For instance, all the variations of the same flower have the same properties.</p>
 
-<p><img src="/media/img/vagabond-rasterizing-roads-rivers/Roads.png" alt="" width="400" class="center-image modal-image" /></p>
+<p>Here is an example of a cell filled with multi-class Poisson disk sampling where I displayed the disk of each object:</p>
 
-<p>And here are some of the generated bridges:</p>
+<p><img src="/media/img/vagabond-forest-generation/desert_disks.png" alt="" width="400" class="center-image modal-image" /></p>
 
-<p><img src="/media/img/vagabond-rasterizing-roads-rivers/Bridges.gif" alt="" width="400" class="center-image modal-image" /></p>
-
-<p>You can see that there are still some problems with the rasterization. I did not fix that yet because I am not happy with the method I used. While A* algorithm outputs a path that is valid, it is a list of coordinates which is not easy to work with. In particular, it is not appropriate to place inns or small villages along the roads. Or even for NPCs to follow the roads.</p>
-
-<p>The fundamental reason is that the description of the road is given in the world space (made of tiles) by A* star algorithm. However for things like village placement, we would like to use the map space (made of shapes) which is more adapted.</p>
-
-<p>Thus, I think I will use another method which will not necessarily give the shortest path but something more easy to manipulate. I am currently thinking about using distorted lines as I used for rivers and cell borders or Bezier curves which is a common technique to model roads.</p>
-
-<h1 id="bigger-worlds">Bigger worlds</h1>
-
-<p>Usually, rendering is not a big issue for tile-based video games as only a small portion of the world is displayed. But in my editor/generator, I want to be able to explore the entire world. For small worlds, there is no problem with the naive approach of drawing a grid of tiles. Indeed, for 600x600x4 (I use 4 layers of tiles to display the terrains) worlds which means 1 440 400 tiles, my laptop has no problem. But for 3000x3000x4 worlds which means 36 000 000 tiles the application slows down seriously.</p>
-
-<p>The solution I chose was to simplify the geometry. To do that, I use a popular technique in the voxel game development community: <a href="https://0fps.net/2012/06/30/meshing-in-a-minecraft-game/">greedy meshing</a>. The idea is quite simple: you just merge as many as possible similar adjacent tiles to reduce the number of faces. With greedy meshing, it takes less than one million faces to display 3000x3000x4 worlds, it is a big improvement!</p>
-
-<p>If you want to get the impression of what a 3000x3000 world looks like, here is a small animation:</p>
-
-<p><img src="/media/img/vagabond-rasterizing-roads-rivers/Big.gif" alt="" width="400" class="center-image modal-image" /></p>
-
-<h1 id="filling-the-biomes">Filling the biomes</h1>
-
-<p>Finally, I started to work on filling the cells that are currently so empty. The goal is not to add points of interest such as ruins, dungeon entries or small villages but to fill the cells with some monotonous decorations and vegetation.</p>
-
-<p>I use a popular method in the procedural generation community to do object placement called Poisson disk sampling. I like it because it is simple, fast and controllable. I have put some links at the end of this article, If you want to know more.</p>
-
-<p>Here is an example of points generating by Poisson disk sampling:</p>
-
-<p><img src="/media/img/vagabond-rasterizing-roads-rivers/poisson_disk_sampling.png" alt="" width="400" class="center-image modal-image" /></p>
-
-<p>By the way, if you are a C++ developer and are looking for a good pseudorandom number generator, I advise you to use the <a href="http://www.pcg-random.org/">PCG</a> generators which are compatible with the standard random library, faster than standard PRNGs and produce high quality random numbers.</p>
-
-<p>Then I map each point to an object, here is the result for the desert biome:</p>
-
-<p><img src="/media/img/vagabond-rasterizing-roads-rivers/Desert.gif" alt="" width="400" class="center-image modal-image" /></p>
-
-<p>I have not done the other biomes yet.</p>
+<p>We can check that no center of a disk is inside another disk.</p>
 
 <h1 id="conclusion">Conclusion</h1>
 
-<p>That’s all for this week. I spent a lot of time refactoring my code to be able to add new features. A lot of things such as biomes and terrains were hardcoded in the generator. But when the moment of adding decorations and vegetation arrived it was not manageable anymore thus I moved all the data to XML files.</p>
+<p>That’s all for this week. It took me some time to design the algorithm, ingest all the objects in the editor and tweak the parameters for the generation. But I also started to code some parts of the game engine and to design other generators.</p>
 
-<p>The next steps are refining the object placement algorithm and adding decorations and vegetation for other biomes.</p>
+<p>Next, I think I will work on the dungeon and cave generator.</p>
 
-<p>See you <a href="/2019/06/09/vagabond-forest-generation.html">next week</a> for more!</p>
+<p>See you next week for more!</p>
 
-<h1 id="useful-links">Useful links</h1>
+<h1 id="credits">Credits</h1>
+
+<p>Here are the links to all the tilesets I used in this article:</p>
 
 <ul>
-  <li><a href="https://0fps.net/2012/06/30/meshing-in-a-minecraft-game/">Meshing in a Minecraft Game</a> by 0fps</li>
-  <li><a href="https://web.archive.org/web/20150817064406/http://devmag.org.za/2009/05/03/poisson-disk-sampling/">Poisson Disk Sampling</a> by Herman Tulleken</li>
-  <li><a href="https://www.cs.ubc.ca/~rbridson/docs/bridson-siggraph07-poissondisk.pdf">Fast Poisson Disk Sampling in Arbitrary Dimensions</a> by Robert Bridson</li>
+  <li><a href="https://opengameart.org/content/lpc-terrains">[LPC] Terrains</a></li>
+  <li><a href="https://opengameart.org/content/lpc-beach-desert">[LPC] Beach / Desert</a></li>
+  <li><a href="https://opengameart.org/content/lpc-jungle">[LPC] Jungle</a></li>
+  <li><a href="https://opengameart.org/content/lpc-conifers">[LPC] Conifers</a></li>
+  <li><a href="https://opengameart.org/content/lpc-trees">[LPC] Trees</a></li>
+  <li><a href="https://opengameart.org/content/lpc-flowers-plants-fungi-wood">[LPC] Flowers / Plants / Fungi / Wood</a></li>
+  <li><a href="https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles">Liberated Pixel Cup (LPC) Base Assets (sprites &amp; map tiles)</a></li>
 </ul>
 
 <p><em>If you are interested by my adventures during the development of Vagabond, you can follow me on <a href="https://twitter.com/PierreVigier">Twitter</a>.</em></p>

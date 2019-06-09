@@ -40,6 +40,27 @@
             <div class="col-sm-8 blog-main">
 
     <div class="blog-post">
+        <h2 class="blog-post-title"><a href="/2019/05/06/commit-graph-drawing-algorithms.html">Commit graph drawing algorithms</a></h2>
+        <p class="blog-post-meta">06 May 2019 by <a href="/">pierre</a></p>
+        <p><img src="/media/img/commit-graph/many_merges/gitamine.png" alt="A commit graph drawn by gitamine" width="300px" class="center-image modal-image" /></p>
+
+<p><em>This article is one chapter of my master thesis entitled “Design and implementation of a graphical user interface for git”. It describes the algorithm I designed to draw the commit graph in my own prototype git client called <a href="https://github.com/pvigier/gitamine">gitamine</a>. I have adapted the content so that it fits better with this blog.</em></p>
+
+<p>Drawing graphs is a very complex topic in general but here we want to draw a specific type of graphs: commit graphs. Commit graphs have several several pieces of information that simplify the problem. The most important ones are that the graph is directed and acyclic and that the commits have timestamps.</p>
+
+<p>Moreover, among the many ways we can draw a directed acyclic graph some are more appropriate for commit graphs. Indeed, programmers manipulate the branches of the graph thus it will be more convenient for them if the representation allows to visualize them easily.</p>
+
+<p>We will first study the different types of graph drawing algorithms used in other clients. Then, we will describe how to place the nodes so that the commit graph is nicely drawable. Finally, we will cover some optimizations done in gitamine to draw and browse the graph in real time.</p>
+
+
+        <p><a href="/2019/05/06/commit-graph-drawing-algorithms.html">Read more ...</a></p>
+        
+        <p>Tags: <span class="label label-primary"><a href="/tag/graph">graph</a></span> <span class="label label-primary"><a href="/tag/git">git</a></span> </p>
+        
+    </div>
+    <hr />
+
+    <div class="blog-post">
         <h2 class="blog-post-title"><a href="/2019/05/05/simulopolis-is-dead.html">Simulopolis is dead</a></h2>
         <p class="blog-post-meta">05 May 2019 by <a href="/">pierre</a></p>
         <p>As some of you noticed, Simulopolis is not active since last November. I had still many ideas and many things to do before the game was finished. I started to work on the version 0.0.4 and even had some small features ready.</p>
@@ -117,31 +138,6 @@
     </div>
     <hr />
 
-    <div class="blog-post">
-        <h2 class="blog-post-title"><a href="/2018/10/08/terrain-generation-simulopolis.html">Terrain generation in Simulopolis</a></h2>
-        <p class="blog-post-meta">08 Oct 2018 by <a href="/">pierre</a></p>
-        <p>Hi!</p>
-
-<p>Today I will describe the generator of terrains I made for Simulopolis.</p>
-
-<p>Here are some screenshots of terrains from the game.</p>
-
-<p><img src="/media/img/terrain-generation-simulopolis/terrain_pcg_gif.gif" alt="Cover" class="center-image modal-image" /></p>
-
-<p>In this article, I will not describe the C++ code used in the game as it is verbose and unnecessarily complicated. Instead, I will use the Python code I used to design the generator.</p>
-
-<p>Indeed, I found much more pleasant to use Python for prototyping as it is really fast to write something which works, there are good libraries and we do not have to wait for compilation every time we make a change. It is especially true for procedural content generation where we have to iterate a lot before obtaining something decent.</p>
-
-<p>The code I will present is the exact translation in Python of what is currently implemented in the game. It is based on the implementation of Perlin noise I described previously in this <a href="/2018/06/13/perlin-noise-numpy.html">article</a>. As usual, you can find the whole project on <a href="https://github.com/pvigier/simulopolis-terrain-generator">github</a>.</p>
-
-
-        <p><a href="/2018/10/08/terrain-generation-simulopolis.html">Read more ...</a></p>
-        
-        <p>Tags: <span class="label label-primary"><a href="/tag/pcg">pcg</a></span> <span class="label label-primary"><a href="/tag/simulopolis">simulopolis</a></span> </p>
-        
-    </div>
-    <hr />
-
 <nav>
     <ul class="pager">
         
@@ -165,7 +161,7 @@
 		
 			<li><a href="/tag/cpp">cpp (4)</a></li>
 		
-			<li><a href="/tag/pcg">pcg (7)</a></li>
+			<li><a href="/tag/pcg">pcg (8)</a></li>
 		
 			<li><a href="/tag/simulopolis">simulopolis (5)</a></li>
 		
@@ -177,7 +173,7 @@
 		
 			<li><a href="/tag/git">git (1)</a></li>
 		
-			<li><a href="/tag/vagabond">vagabond (4)</a></li>
+			<li><a href="/tag/vagabond">vagabond (5)</a></li>
 		
         </ol>
     </div>
@@ -190,7 +186,12 @@
             
             
             
-			<li id="yJune 2019"><a href="/2019/06">June 2019 (1)</a></li>
+        
+            
+            
+            
+            
+			<li id="yJune 2019"><a href="/2019/06">June 2019 (2)</a></li>
 				
             
         
