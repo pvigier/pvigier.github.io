@@ -7,7 +7,7 @@
         <meta name="description" content="">
         <meta name="author" content="Pierre Vigier">
 
-        <title>Simulopolis is dead - pvigier's blog</title>
+        <title>Vagabond &#8211; Dungeon and cave generation - pvigier's blog</title>
         <link rel="shortcut icon" href="/media/img/favicon.png">
         <!-- Bootstrap -->
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
@@ -39,22 +39,98 @@
             <div class="row">
             <div class="col-sm-8 blog-main">
 <div class="blog-post">
-    <h2 class="blog-post-title">Simulopolis is dead</h2>
-    <p class="blog-post-meta">05 May 2019 by <a href="/">pierre</a></p>
-    <p>As some of you noticed, Simulopolis is not active since last November. I had still many ideas and many things to do before the game was finished. I started to work on the version 0.0.4 and even had some small features ready.</p>
+    <h2 class="blog-post-title">Vagabond &#8211; Dungeon and cave generation</h2>
+    <p class="blog-post-meta">23 Jun 2019 by <a href="/">pierre</a></p>
+    <p><img src="/media/img/vagabond-dungeon-cave-generation/cave_generation.gif" alt="" width="400" class="center-image modal-image" /></p>
 
-<p>However, the internship and the master thesis (see <a href="/2019/05/06/commit-graph-drawing-algorithms.html">next article</a>) for more info) I was doing since September were not going well. Thus, I had to completely stop working on Simulopolis on my free time and work on my master thesis instead to have a little chance to see my thesis accepted by the jury. It was exhausting but eventually I succeeded!</p>
+<p>I am sorry, there was no article last week as I was on vacation.</p>
 
-<p>My oral defense was in April so I did not work on Simulopolis for five months. Then, I had to take decisions concerning my future. I chose to leave Paris and to join my girlfriend in a smaller city in the center of France. Moreover, I decided that I did not want to work in a big company. Indeed, I am still young and relatively free from any constraint so I think it is the right moment in order to take my chance as an indie developer.</p>
-
-<p>The bad news is, as you have guessed with the title, that I am not going to resume the development of Simulopolis. But the good news is that I have already started to work on a new project. It is called <em>Vagabond</em> (the name can still change). I will try to blog as much as possible about it so stay tuned! :)</p>
+<p>But, this week I started working on a new topic: dungeon and cave generation. I used space partitioning to generate rooms, maze generation algorithms to generate the corridors and cellular automata to have a more organic look and feel for caves. Let’s dive in the details!</p>
 
 <!--more-->
+
+<h1 id="space-partitioning">Space partitioning</h1>
+
+<p>There are many ways (<a href="https://gamedevelopment.tutsplus.com/tutorials/create-a-procedurally-generated-dungeon-cave-system--gamedev-10099">random placement</a>, <a href="http://pcgbook.com/wp-content/uploads/chapter03.pdf">agent based</a>, using <a href="https://www.reddit.com/r/roguelikes/comments/1dodsv/my_procedural_dungeon_generation_algorithm/">separation steering behavior</a> or <a href="https://www.gamasutra.com/blogs/AAdonaac/20150903/252889/Procedural_Dungeon_Generation_Algorithm.php">a physics engine</a>, etc.) to create rooms for a dungeon. But my favorite method is space partitioning because it is controllable and easily expandable.</p>
+
+<p>There are also many ways to split the space: grid partitioning, binary space partitioning, quad tree space partitioning, Voronoi diagrams, etc. I chose to use binary space partitioning this time as it is well suited to generate rectangular rooms. This method was popularized by an <a href="http://roguebasin.roguelikedevelopment.org/index.php?title=Basic_BSP_Dungeon_generation">article</a> on RogueBasin.</p>
+
+<p>The only difficulty with this algorithm is to choose the split position. Indeed, if we do not set any constraint on the split position, we obtain weird space partitions:</p>
+
+<p><img src="/media/img/vagabond-dungeon-cave-generation/bsp_no_constraint.gif" alt="" width="400" class="center-image modal-image" /></p>
+
+<p>There are several ways to avoid this behavior. One is to constrain the split to be between two ratios of the side length for instance between 30% and 70% or 40% and 60%. Another method is to use a normal or a binomial distribution instead of a uniform distribution, it is then more likely to split near the center of the side than its extremities. These methods fix the issue but it is hard to understand exactly how the parameters modify the final result.</p>
+
+<p>So I use another method that has the advantage of having only one parameter which is easily understandable: the maximum allowed ratio between the length and the width of cells. When I sample a new split, I firstly compute the minimum value and the maximum value it can take so that the two new cells have their ratio below the limit then I sample uniformly between the two bounds. Here is the result when I vary the maximum allowed ratio:</p>
+
+<p><img src="/media/img/vagabond-dungeon-cave-generation/bsp_varying_ratio.gif" alt="" width="400" class="center-image modal-image" /></p>
+
+<p>A maximum ratio between 2.0 and 3.0 gives good results:</p>
+
+<p><img src="/media/img/vagabond-dungeon-cave-generation/bsp.gif" alt="" width="400" class="center-image modal-image" /></p>
+
+<h1 id="room-generation">Room generation</h1>
+
+<p>The next step is to generate a room inside each cell. There is no special issue here, I just set some constraints so that the rooms are not too small nor too close to the walls of the cells.</p>
+
+<p>Here are the results:</p>
+
+<p><img src="/media/img/vagabond-dungeon-cave-generation/rooms.gif" alt="" width="400" class="center-image modal-image" /></p>
+
+<h1 id="edge-selection">Edge selection</h1>
+
+<p>Commonly in dungeon generators based on binary space partitioning, the binary tree used during space partitioning is used again for corridor generation. I did not do that because, in my opinion, it is quite limited.</p>
+
+<p>Instead, during space partitioning, I maintain a <a href="https://en.wikipedia.org/wiki/Doubly_connected_edge_list">half-edge data structure</a> which allows to know which cells are next to each other. Thus, I have graphs like that:</p>
+
+<p><img src="/media/img/vagabond-dungeon-cave-generation/graphs.gif" alt="" width="400" class="center-image modal-image" /></p>
+
+<p>There are three advantages with this approach. The first one is that if later I want to change the method used for space partitioning, the rest of the generator is still valid as it only takes a half-edge data structure as input. The second one is that I can now use any <a href="https://en.wikipedia.org/wiki/Maze_generation_algorithm">maze generation algorithm</a> to select the edges that will become corridors. The third one is that if I want to add cycles in the dungeon, I can easily do so.</p>
+
+<p>For now, I simply use Kruskal algorithm with Manhattan distance to select the edges. Here are the results:</p>
+
+<p><img src="/media/img/vagabond-dungeon-cave-generation/selected_edges.gif" alt="" width="400" class="center-image modal-image" /></p>
+
+<h1 id="corridor-generation">Corridor generation</h1>
+
+<p>The next step is the generation of corridors from the selected edges. This is maybe the trickiest part of the generator as we need to be careful that no corridor crosses another one.</p>
+
+<p>Here are the results:</p>
+
+<p><img src="/media/img/vagabond-dungeon-cave-generation/corridors.gif" alt="" width="400" class="center-image modal-image" /></p>
+
+<h1 id="cave-generation">Cave generation</h1>
+
+<p>The previous results are fine for dungeons, crypts or other man-made structures but I would like a more organic aspect for caves or mines. The classic method to generate caves is to use a cellular automaton as described in <a href="http://www.roguebasin.com/index.php?title=Cellular_Automata_Method_for_Generating_Random_Cave-Like_Levels">this article</a> on RogueBasin. The big issue with cellular automata is that the results are not really controllable.</p>
+
+<p>My idea is to still use cellular automata to obtain an organic look but I set constraints to have a controllable result. Instead of using only two states: dead or alive, I use four: definitively dead, dead, alive, definitively alive. The “definitively” states cannot change from one step to another, they serve to constrain the result.</p>
+
+<p>The rooms and the corridors we have generated in the previous steps are filled with definitively alive cells. Thus, we are still have a notion rooms and we are sure that they are connected to each other. The edges that were not selected are filled with definitively dead cells to make sure that no new path from one room to another appears. Finally around the rooms and the corridors we randomly set some cells to alive. Here is the initial configuration:</p>
+
+<p><img src="/media/img/vagabond-dungeon-cave-generation/cave_initial_configuration.png" alt="" width="400" class="center-image modal-image" /></p>
+
+<p>Then we run the cellular automaton to obtain the desired organic look:</p>
+
+<p><img src="/media/img/vagabond-dungeon-cave-generation/cellular_automaton.gif" alt="" width="400" class="center-image modal-image" /></p>
+
+<p>Here are some more results:</p>
+
+<p><img src="/media/img/vagabond-dungeon-cave-generation/caves.gif" alt="" width="400" class="center-image modal-image" /></p>
+
+<p>One thing that I will surely implement later is a flood fill to remove unreachable parts.</p>
+
+<h1 id="conclusion">Conclusion</h1>
+
+<p>This is the first leg of the long journey of building an interesting dungeon generator. I am happy with the results so far. I am especially proud of the constrained cellular automaton method to have controllable and organic caves. I also like the fact that each step of the generation is separated from the others and can be modified independently.</p>
+
+<p>The next step is to generate tiles from the output of this generator to have much more appealing dungeons.</p>
+
+<p>See you next week for more!</p>
 
 <p><em>If you are interested by my adventures during the development of Vagabond, you can follow me on <a href="https://twitter.com/PierreVigier">Twitter</a>.</em></p>
 
     
-	<p>Tags: <span class="label label-primary"><a href="/tag/simulopolis">simulopolis</a></span> </p>
+	<p>Tags: <span class="label label-primary"><a href="/tag/vagabond">vagabond</a></span> <span class="label label-primary"><a href="/tag/pcg">pcg</a></span> </p>
 	
 </div><!-- /.blog-post -->
 <hr/>
