@@ -61,7 +61,7 @@
 
 <p>There are several ways to avoid this behavior. One is to constrain the split to be between two ratios of the side length for instance between 30% and 70% or 40% and 60%. Another method is to use a normal or a binomial distribution instead of a uniform distribution, it is then more likely to split near the center of the side than its extremities. These methods fix the issue but it is hard to understand exactly how the parameters modify the final result.</p>
 
-<p>So I use another method that has the advantage of having only one parameter which is easily understandable: the maximum allowed ratio between the length and the width of cells. When I sample a new split, I firstly compute the minimum value and the maximum value it can take so that the two new cells have their ratio below the limit then I sample uniformly between the two bounds. Here is the result when I vary the maximum allowed ratio:</p>
+<p>So I used another method that has the advantage of having only one parameter which is easily understandable: the maximum allowed ratio between the length and the width of cells. When I sample a new split, I firstly compute the minimum value and the maximum value it can take so that the two new cells have their ratio below the limit then I sample uniformly between the two bounds. Here is the result when I vary the maximum allowed ratio:</p>
 
 <p><img src="/media/img/vagabond-dungeon-cave-generation/bsp_varying_ratio.gif" alt="" width="400" class="center-image modal-image" /></p>
 
@@ -105,7 +105,7 @@
 
 <p>My idea is to still use cellular automata to obtain an organic look but I set constraints to have a controllable result. Instead of using only two states: dead or alive, I use four: definitively dead, dead, alive, definitively alive. The “definitively” states cannot change from one step to another, they serve to constrain the result.</p>
 
-<p>The rooms and the corridors we have generated in the previous steps are filled with definitively alive cells. Thus, we are still have a notion rooms and we are sure that they are connected to each other. The edges that were not selected are filled with definitively dead cells to make sure that no new path from one room to another appears. Finally around the rooms and the corridors we randomly set some cells to alive. Here is the initial configuration:</p>
+<p>The rooms and the corridors we have generated in the previous steps are filled with definitively alive cells. Thus, we still have a notion rooms and we are sure that they are connected to each other. The edges that were not selected are filled with definitively dead cells to make sure that no new path from one room to another appears. Finally around the rooms and the corridors we randomly set some cells to alive. Here is the initial configuration:</p>
 
 <p><img src="/media/img/vagabond-dungeon-cave-generation/cave_initial_configuration.png" alt="" width="400" class="center-image modal-image" /></p>
 
