@@ -7,7 +7,7 @@
         <meta name="description" content="">
         <meta name="author" content="Pierre Vigier">
 
-        <title>Simulopolis is dead - pvigier's blog</title>
+        <title>Vagabond &#8211; Dungeon and cave generation &#8211; Part 2 - pvigier's blog</title>
         <link rel="shortcut icon" href="/media/img/favicon.png">
         <!-- Bootstrap -->
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
@@ -39,22 +39,68 @@
             <div class="row">
             <div class="col-sm-8 blog-main">
 <div class="blog-post">
-    <h2 class="blog-post-title">Simulopolis is dead</h2>
-    <p class="blog-post-meta">05 May 2019 by <a href="/">pierre</a></p>
-    <p>As some of you noticed, Simulopolis is not active since last November. I had still many ideas and many things to do before the game was finished. I started to work on the version 0.0.4 and even had some small features ready.</p>
+    <h2 class="blog-post-title">Vagabond &#8211; Dungeon and cave generation &#8211; Part 2</h2>
+    <p class="blog-post-meta">30 Jun 2019 by <a href="/">pierre</a></p>
+    <p><img src="/media/img/vagabond-dungeon-cave-generation-part2/banner.png" alt="" width="400" class="center-image modal-image" /></p>
 
-<p>However, the internship and the master thesis (see <a href="/2019/05/06/commit-graph-drawing-algorithms.html">next article</a>) for more info) I was doing since September were not going well. Thus, I had to completely stop working on Simulopolis on my free time and work on my master thesis instead to have a little chance to see my thesis accepted by the jury. It was exhausting but eventually I succeeded!</p>
-
-<p>My oral defense was in April so I did not work on Simulopolis for five months. Then, I had to take decisions concerning my future. I chose to leave Paris and to join my girlfriend in a smaller city in the center of France. Moreover, I decided that I did not want to work in a big company. Indeed, I am still young and relatively free from any constraint so I think it is the right moment in order to take my chance as an indie developer.</p>
-
-<p>The bad news is, as you have guessed with the title, that I am not going to resume the development of Simulopolis. But the good news is that I have already started to work on a new project. It is called <em>Vagabond</em> (the name can still change). I will try to blog as much as possible about it so stay tuned! :)</p>
+<p>This week, I continued to work on the <a href="/2019/06/23/vagabond-dungeon-cave-generation.html">dungeon and cave generator</a>. I refined some things I had started last week and then I started generating tiles from the output of the generator.</p>
 
 <!--more-->
+
+<h1 id="removing-isolated-cells">Removing isolated cells</h1>
+
+<p>The first thing I did is implementing a flood fill to remove unreachable cells:</p>
+
+<p><img src="/media/img/vagabond-dungeon-cave-generation-part2/flood_fill.gif" alt="" width="400" class="center-image modal-image" /></p>
+
+<h1 id="multiple-corridors-between-rooms">Multiple corridors between rooms</h1>
+
+<p>Something really nice that I discovered when playing with the parameters of the generator is that if we make the noise around the rooms touching, interesting things happen.</p>
+
+<p>Here is the difference of results just before the noise of rooms touch each other and just after, the parameter varies only by one unit:</p>
+
+<p><img src="/media/img/vagabond-dungeon-cave-generation-part2/0_9_30.png" alt="" width="400" class="center-image modal-image" /></p>
+
+<p><img src="/media/img/vagabond-dungeon-cave-generation-part2/0_10_30.png" alt="" width="400" class="center-image modal-image" /></p>
+
+<p>If we make the rooms a bit larger, it is even more interesting:</p>
+
+<p><img src="/media/img/vagabond-dungeon-cave-generation-part2/0_10_00.png" alt="" width="400" class="center-image modal-image" /></p>
+
+<p>What is nice is that we have more randomness and nice structures that appear but we still have the graph structure and the notion of rooms that are useful:</p>
+
+<p><img src="/media/img/vagabond-dungeon-cave-generation-part2/0_10_00_rooms.png" alt="" width="400" class="center-image modal-image" /></p>
+
+<h1 id="generating-tiles-for-caves">Generating tiles for caves</h1>
+
+<p>I spent almost all my time working on the generation of tiles. It is not really difficult but a bit tricky to have everything right.</p>
+
+<p>Here are some results:</p>
+
+<p><img src="/media/img/vagabond-dungeon-cave-generation-part2/tiles.gif" alt="" width="400" class="center-image modal-image" /></p>
+
+<p>What is really cool is that it is super easy to switch from a rock cavern to a sand cavern or an ice cavern:</p>
+
+<p><img src="/media/img/vagabond-dungeon-cave-generation-part2/tilesets.gif" alt="" width="400" class="center-image modal-image" /></p>
+
+<h1 id="conclusion">Conclusion</h1>
+
+<p>I did not do a lot of interesting things this week. Moreover, there was a heatwave, here, in France and it was quite hard to work.</p>
+
+<p>The next steps for the dungeon generation is adding decorations and monsters. I will not do that next week as I will start to work more on the game engine now that I have some interesting things to feed it with.</p>
+
+<p>See you next week for more!</p>
+
+<h1 id="credits">Credits</h1>
+
+<ul>
+  <li><a href="https://opengameart.org/content/lpc-mountains">[LPC] Mountains</a></li>
+</ul>
 
 <p><em>If you are interested by my adventures during the development of Vagabond, you can follow me on <a href="https://twitter.com/PierreVigier">Twitter</a>.</em></p>
 
     
-	<p>Tags: <span class="label label-primary"><a href="/tag/simulopolis">simulopolis</a></span> </p>
+	<p>Tags: <span class="label label-primary"><a href="/tag/vagabond">vagabond</a></span> <span class="label label-primary"><a href="/tag/pcg">pcg</a></span> </p>
 	
 </div><!-- /.blog-post -->
 <hr/>

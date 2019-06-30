@@ -3,12 +3,24 @@
 	<title>pvigier's blog</title>
 	<link href="http://pvigier.github.io/rss.xml" rel="self"/>
 	<link href="http://pvigier.github.io"/>
-	<updated>2019-06-23T18:30:38+02:00</updated>
+	<updated>2019-06-30T22:38:48+02:00</updated>
 	<id>http://pvigier.github.io</id>
 	<author>
 		<name>Pierre Vigier</name>
 		<email>pierre.vigier@ymail.com</email>
 	</author>
+	
+		<entry>
+			<title>Vagabond &#8211; Dungeon and cave generation &#8211; Part 2</title>
+			<link href="http://pvigier.github.io/2019/06/30/vagabond-dungeon-cave-generation-part2.html"/>
+			<updated>2019-06-30T00:00:00+02:00</updated>
+			<id>http://pvigier.github.io/2019/06/30/vagabond-dungeon-cave-generation-part2</id>
+			<content type="html">&lt;p&gt;&lt;img src=&quot;/media/img/vagabond-dungeon-cave-generation-part2/banner.png&quot; alt=&quot;&quot; width=&quot;400&quot; class=&quot;center-image modal-image&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;This week, I continued to work on the &lt;a href=&quot;/2019/06/23/vagabond-dungeon-cave-generation.html&quot;&gt;dungeon and cave generator&lt;/a&gt;. I refined some things I had started last week and then I started generating tiles from the output of the generator.&lt;/p&gt;
+
+</content>
+		</entry>
 	
 		<entry>
 			<title>Vagabond &#8211; Dungeon and cave generation</title>
