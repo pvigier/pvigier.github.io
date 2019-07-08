@@ -632,7 +632,7 @@
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p><code class="highlighter-rouge">createSystem</code> creates a new system of the given types and set its type:</p>
+<p><code class="highlighter-rouge">createSystem</code> creates a new system of the given type and sets its type:</p>
 
 <div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="p">,</span> <span class="k">typename</span> <span class="p">...</span><span class="n">Args</span><span class="o">&gt;</span>
 <span class="n">T</span><span class="o">*</span> <span class="n">createSystem</span><span class="p">(</span><span class="n">Args</span><span class="o">&amp;&amp;</span> <span class="p">...</span><span class="n">args</span><span class="p">)</span>
@@ -675,7 +675,7 @@
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p><code class="highlighter-rouge">hasComponents</code> uses a fold expression to create a bit set that represents the required components and then use it against the entity’s bit set to assess if the entity has all the required components:</p>
+<p><code class="highlighter-rouge">hasComponents</code> uses a fold expression to create a bit set that represents the required components and then uses it against the entity’s bit set to assess if the entity has all the required components:</p>
 
 <div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="p">...</span><span class="n">Ts</span><span class="o">&gt;</span>
 <span class="kt">bool</span> <span class="n">hasComponents</span><span class="p">(</span><span class="n">Entity</span> <span class="n">entity</span><span class="p">)</span> <span class="k">const</span>
