@@ -142,7 +142,7 @@
 
 <h2 id="dynamic-number-of-components-and-systems">Dynamic number of components and systems</h2>
 
-<p>It is a bit cumbersome too to have to specify in advance the maximum number of components and systems as template parameters. I think it would be possible to replace the <code class="highlighter-rouge">std::array</code>s in <code class="highlighter-rouge">EntityManager</code> by <code class="highlighter-rouge">std::vector</code>s without a big penalty in performance.</p>
+<p>It is not convenient to have to specify in advance the maximum number of components and systems as template parameters. I think it would be possible to replace the <code class="highlighter-rouge">std::array</code>s in <code class="highlighter-rouge">EntityManager</code> by <code class="highlighter-rouge">std::vector</code>s without a big penalty in performance.</p>
 
 <p>However, <code class="highlighter-rouge">std::bitset</code> requires to know its number of bits at compile time. Currently, my idea to fix this issue is that instead of having a <code class="highlighter-rouge">std::vector&lt;bitset&lt;ComponentCount&gt;&gt;</code> in <code class="highlighter-rouge">EntityContainer</code>, we just use a <code class="highlighter-rouge">std::vector&lt;char&gt;</code> and we allocate enough bytes to represent the bit sets of all the entities. Then, we implement a lightweight class <code class="highlighter-rouge">BitsetView</code> that takes as input a pair of pointers for the beginning and the end of the bit set and we perform all the useful operations of <code class="highlighter-rouge">std::bitset</code> in this range of memory.</p>
 
@@ -183,7 +183,7 @@
 
 <p>My last idea induces more changes in the design of the library.</p>
 
-<p>Instead that it is systems that manages their sets of entities, it would be the role of the entity manager. The advantage would be that if two systems are interested in the same set of components, we do not duplicate the subset of entities that satisfy these requirements.</p>
+<p>Instead that it is systems that manage their sets of entities, it would be the role of the entity manager. The advantage would be that if two systems are interested in the same set of components, we do not duplicate the subset of entities that satisfy these requirements.</p>
 
 <p>The systems would just declare their requirements to the entity manager. Then the entity manager will maintain all the different subsets of entities. Finally, the systems would request entities with a syntax like this one:</p>
 
