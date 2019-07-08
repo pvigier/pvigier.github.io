@@ -40,6 +40,48 @@
             <div class="col-sm-8 blog-main">
 
     <div class="blog-post">
+        <h2 class="blog-post-title"><a href="/2019/05/05/simulopolis-is-dead.html">Simulopolis is dead</a></h2>
+        <p class="blog-post-meta">05 May 2019 by <a href="/">pierre</a></p>
+        <p>As some of you noticed, Simulopolis is not active since last November. I had still many ideas and many things to do before the game was finished. I started to work on the version 0.0.4 and even had some small features ready.</p>
+
+<p>However, the internship and the master thesis (see <a href="/2019/05/06/commit-graph-drawing-algorithms.html">next article</a>) for more info) I was doing since September were not going well. Thus, I had to completely stop working on Simulopolis on my free time and work on my master thesis instead to have a little chance to see my thesis accepted by the jury. It was exhausting but eventually I succeeded!</p>
+
+<p>My oral defense was in April so I did not work on Simulopolis for five months. Then, I had to take decisions concerning my future. I chose to leave Paris and to join my girlfriend in a smaller city in the center of France. Moreover, I decided that I did not want to work in a big company. Indeed, I am still young and relatively free from any constraint so I think it is the right moment in order to take my chance as an indie developer.</p>
+
+<p>The bad news is, as you have guessed with the title, that I am not going to resume the development of Simulopolis. But the good news is that I have already started to work on a new project. It is called <em>Vagabond</em> (the name can still change). I will try to blog as much as possible about it so stay tuned! :)</p>
+
+
+        <p><a href="/2019/05/05/simulopolis-is-dead.html">Read more ...</a></p>
+        
+        <p>Tags: <span class="label label-primary"><a href="/tag/simulopolis">simulopolis</a></span> </p>
+        
+    </div>
+    <hr />
+
+    <div class="blog-post">
+        <h2 class="blog-post-title"><a href="/2018/11/18/fortune-algorithm-details.html">Fortune's algorithm, the details</a></h2>
+        <p class="blog-post-meta">18 Nov 2018 by <a href="/">pierre</a></p>
+        <p>The last few weeks, I worked on an implementation of the <a href="https://en.wikipedia.org/wiki/Fortune%27s_algorithm">Fortune’s algorithm</a> in C++. This algorithm takes a set of 2D points and construct the <a href="https://en.wikipedia.org/wiki/Voronoi_diagram">Voronoi diagram</a> of these points. If you wonder what is a Voronoi diagram, it looks like this:</p>
+
+<p><img src="/media/img/fortune/voronoi_intersected.png" alt="Voronoi diagram" width="400" class="center-image modal-image" /></p>
+
+<p>For each input point, which is called a site, we want to find the set of points which are nearer to this site than to any other site. These sets of points form cells as you can see on the image above.</p>
+
+<p>What is remarkable about the Fortune’s algorithm is that it constructs such diagrams in <script type="math/tex">O(n\log n)</script> time (which is optimal for an algorithm which uses comparisons) where <script type="math/tex">n</script> is the number of sites.</p>
+
+<p>I am writing this article because I find it very hard to implement this algorithm. Until now, it is surely the hardest algorithm I have ever implemented. Thus, I want to share with you the issues I faced and how I solved them.</p>
+
+<p>The code is, as usual, available on <a href="https://github.com/pvigier/FortuneAlgorithm">github</a> and you will find all the references I used at the bottom of this article.</p>
+
+
+        <p><a href="/2018/11/18/fortune-algorithm-details.html">Read more ...</a></p>
+        
+        <p>Tags: <span class="label label-primary"><a href="/tag/cpp">cpp</a></span> <span class="label label-primary"><a href="/tag/geometry">geometry</a></span> </p>
+        
+    </div>
+    <hr />
+
+    <div class="blog-post">
         <h2 class="blog-post-title"><a href="/2018/11/03/simulopolis-alpha-3.html">Simulopolis alpha 3 is released</a></h2>
         <p class="blog-post-meta">03 Nov 2018 by <a href="/">pierre</a></p>
         <p>Today, I release the third alpha version of Simulopolis.</p>
@@ -100,51 +142,6 @@
     </div>
     <hr />
 
-    <div class="blog-post">
-        <h2 class="blog-post-title"><a href="/2018/10/07/distributing-c++-program-linux.html">Distributing a C++ program on Linux</a></h2>
-        <p class="blog-post-meta">07 Oct 2018 by <a href="/">pierre</a></p>
-        <p>Hi!</p>
-
-<p>Today I will tackle a problem I faced when I wanted to distribute the alpha version of Simulopolis two weeks ago: distributing a C++ binary on different Linux distributions.</p>
-
-<p>So, two weeks ago, I was happy as I had a version of Simulopolis which ran smoothly on my laptop. And I thought it was time to share it with people to have some feedback. Very naively, I took the binary and the assets, put them on a new folder and uploaded the whole thing on itch.io.</p>
-
-<p>Then, I sent a message to my big brother telling him that he can try my game. He downloaded the game and when he tried to run the game, he obtained this error message:</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>./Simulopolis: error while loading shared libraries: libboost_serialization.so.1.65.1: cannot open shared object file: No such file or directory
-</code></pre></div></div>
-
-<p>Uhh, this was not expected!</p>
-
-<p><img src="https://media.giphy.com/media/U4VXRfcY3zxTi/giphy.gif" alt="Disappointed gif" class="center-image modal-image" /></p>
-
-<p>We read the error message, it tells that a dependency I use to build the game is missing on my brother’s system. So he tried to install Boost Serialization, SFML and TinyXML the three libraries I use in Simulopolis. But that did not solve the problem because the program is looking for a specific version of the dependency (here the version 1.65.1 of Boost serialization). And as he was on a different Linux distribution, Fedora, than me, Ubuntu, it was not the same version of Boost Serialization that was available in its package manager.</p>
-
-
-        <p><a href="/2018/10/07/distributing-c++-program-linux.html">Read more ...</a></p>
-        
-        <p>Tags: <span class="label label-primary"><a href="/tag/cpp">cpp</a></span> <span class="label label-primary"><a href="/tag/linux">linux</a></span> <span class="label label-primary"><a href="/tag/simulopolis">simulopolis</a></span> </p>
-        
-    </div>
-    <hr />
-
-    <div class="blog-post">
-        <h2 class="blog-post-title"><a href="/2018/10/06/simulopolis-alpha-1.html">Simulopolis alpha is released</a></h2>
-        <p class="blog-post-meta">06 Oct 2018 by <a href="/">pierre</a></p>
-        <p><img src="/media/img/simulopolis-alpha-1/cover.png" alt="Cover" class="center-image modal-image" /></p>
-
-<p>Today, I’m happy to announce you that the first release of my city building game, Simulopolis, is available online.</p>
-
-<p>It’s been a long and chaotic journey which lasted a bit more than six months.</p>
-
-
-        <p><a href="/2018/10/06/simulopolis-alpha-1.html">Read more ...</a></p>
-        
-        <p>Tags: <span class="label label-primary"><a href="/tag/simulopolis">simulopolis</a></span> </p>
-        
-    </div>
-    <hr />
-
 <nav>
     <ul class="pager">
         
@@ -166,7 +163,7 @@
 		
 			<li><a href="/tag/python">python (6)</a></li>
 		
-			<li><a href="/tag/cpp">cpp (4)</a></li>
+			<li><a href="/tag/cpp">cpp (6)</a></li>
 		
 			<li><a href="/tag/pcg">pcg (10)</a></li>
 		
@@ -180,7 +177,9 @@
 		
 			<li><a href="/tag/git">git (1)</a></li>
 		
-			<li><a href="/tag/vagabond">vagabond (7)</a></li>
+			<li><a href="/tag/vagabond">vagabond (9)</a></li>
+		
+			<li><a href="/tag/ecs">ecs (2)</a></li>
 		
         </ol>
     </div>
@@ -188,6 +187,19 @@
         <h4>Archives</h4>
         <ol class="list-unstyled">
 		
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+			<li id="yJuly 2019"><a href="/2019/07">July 2019 (2)</a></li>
+				
+            
         
             
             

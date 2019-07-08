@@ -1,0 +1,1110 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="">
+        <meta name="author" content="Pierre Vigier">
+
+        <title>Entity-component-system &#8211; Part 1 - pvigier's blog</title>
+        <link rel="shortcut icon" href="/media/img/favicon.png">
+        <!-- Bootstrap -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+        <!-- My themes -->
+        <link href="/media/css/style.css" rel="stylesheet">
+        <link href="/media/css/syntax.css" rel="stylesheet">
+        <link href="/media/css/modal.css" rel="stylesheet">
+        <!-- RSS -->
+        <link href="https://pvigier.github.io/rss.xml" rel="alternate" title="pvigier's blog" type="application/atom+xml" />
+    </head>
+    <body>
+        <div class="blog-masthead">
+            <div class="container">
+                <nav class="blog-nav">
+                    <a class="blog-nav-item active" href="/">Blog</a>
+                    <a class="blog-nav-item" href="/articles">Articles</a>
+                    <a class="blog-nav-item" href="/projects">Projects</a>
+                    <!--<a class="blog-nav-item" href="/best-resources">Best Resources</a>-->
+                    <!--<a class="blog-nav-item" href="/resume">Resume</a>-->
+                    <a class="blog-nav-item" href="/about">About</a>
+                </nav>
+            </div>
+        </div>
+        <div class="container">
+            <div class="blog-header">
+                <h1 class="blog-title">pvigier's blog</h1>
+                <p class="lead blog-description">computer science, programming and other ideas</p>
+            </div>
+            <div class="row">
+            <div class="col-sm-8 blog-main">
+<div class="blog-post">
+    <h2 class="blog-post-title">Entity-component-system &#8211; Part 1</h2>
+    <p class="blog-post-meta">07 Jul 2019 by <a href="/">pierre</a></p>
+    <p>This week, I have started working on my game engine for my game Vagabond. I have worked on an implementation of the <a href="https://en.wikipedia.org/wiki/Entity_component_system">entity-component-system</a> pattern.</p>
+
+<p>In this article, I want to share with you my implementation which is freely available on <a href="https://github.com/pvigier/ecs">GitHub</a>. But instead of just commenting the code, I want to explain how I designed it. Thus, I will start with the first implementation I coded, analyze its strengths and weaknesses and then show how I improved it. Finally, I will give a list of things that still could be improved.</p>
+
+<!--more-->
+
+<h1 id="introduction">Introduction</h1>
+
+<h2 id="motivation">Motivation</h2>
+
+<p>I won’t go over all the benefits of ECS over the object oriented approach as many people have already done it very well. Historically, Scott Bilas was one of the first to speak about ECS at <a href="https://web.archive.org/web/20101011021902/http://scottbilas.com/files/2002/gdc_san_jose/game_objects_slides.pdf">GDC 2002</a>. Other famous introductions are <a href="http://cowboyprogramming.com/2007/01/05/evolve-your-heirachy/">Evolve Your Hierarchy </a> by Mike West and the chapter <a href="http://gameprogrammingpatterns.com/component.html">Components</a> in the awesome book <a href="http://gameprogrammingpatterns.com/">Game Programming Patterns</a> by Robert Nystrom.</p>
+
+<p>To sum up briefly, the goal of ECS is to offer a data oriented approach to game entities and a nice separation between data and logic. Entities are made up of components which contain the data. And systems, which contain the logic, process the components.</p>
+
+<p>In more technical details, ECS relies on <a href="https://en.wikipedia.org/wiki/Object_composition">composition</a> instead of <a href="https://en.wikipedia.org/wiki/Inheritance_(object-oriented_programming)">inheritance</a> to build entities. Moreover, this data-oriented approach allows to be cache-friendly and consequently to achieve great performance.</p>
+
+<h2 id="examples">Examples</h2>
+
+<p>Before diving in the code, I want to give you a glimpse of what we are going to build.</p>
+
+<p>To define components, it is really easy:</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">struct</span> <span class="n">Position</span> <span class="o">:</span> <span class="k">public</span> <span class="n">Component</span><span class="o">&lt;</span><span class="n">Position</span><span class="o">&gt;</span>
+<span class="p">{</span>
+    <span class="kt">float</span> <span class="n">x</span><span class="p">;</span>
+    <span class="kt">float</span> <span class="n">y</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="k">struct</span> <span class="n">Velocity</span> <span class="o">:</span> <span class="k">public</span> <span class="n">Component</span><span class="o">&lt;</span><span class="n">Velocity</span><span class="o">&gt;</span>
+<span class="p">{</span>
+    <span class="kt">float</span> <span class="n">x</span><span class="p">;</span>
+    <span class="kt">float</span> <span class="n">y</span><span class="p">;</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>As you can see, we will rely on the <a href="https://en.wikipedia.org/wiki/Curiously_recurring_template_pattern">CRTP</a>.</p>
+
+<p>Then for technical reasons, that you will discover later, we have to fix the number of components and the number of systems:</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">constexpr</span> <span class="k">auto</span> <span class="n">ComponentCount</span> <span class="o">=</span> <span class="mi">32</span><span class="p">;</span>
+<span class="k">constexpr</span> <span class="k">auto</span> <span class="n">SystemCount</span> <span class="o">=</span> <span class="mi">8</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>Now, we can define a system that will take all the entities that have both components and update their positions:</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">PhysicsSystem</span> <span class="o">:</span> <span class="k">public</span> <span class="n">System</span><span class="o">&lt;</span><span class="n">ComponentCount</span><span class="p">,</span> <span class="n">SystemCount</span><span class="o">&gt;</span>
+<span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+    <span class="n">PhysicsSystem</span><span class="p">(</span><span class="n">EntityManager</span><span class="o">&lt;</span><span class="n">ComponentCount</span><span class="p">,</span> <span class="n">SystemCount</span><span class="o">&gt;&amp;</span> <span class="n">entityManager</span><span class="p">)</span> <span class="o">:</span> <span class="n">mEntityManager</span><span class="p">(</span><span class="n">entityManager</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">setRequirements</span><span class="o">&lt;</span><span class="n">Position</span><span class="p">,</span> <span class="n">Velocity</span><span class="o">&gt;</span><span class="p">();</span>
+    <span class="p">}</span>
+
+    <span class="kt">void</span> <span class="n">update</span><span class="p">(</span><span class="kt">float</span> <span class="n">dt</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="n">entity</span> <span class="o">:</span> <span class="n">getManagedEntities</span><span class="p">())</span>
+        <span class="p">{</span>
+            <span class="k">auto</span> <span class="p">[</span><span class="n">position</span><span class="p">,</span> <span class="n">velocity</span><span class="p">]</span> <span class="o">=</span> <span class="n">mEntityManager</span><span class="p">.</span><span class="n">getComponents</span><span class="o">&lt;</span><span class="n">Position</span><span class="p">,</span> <span class="n">Velocity</span><span class="o">&gt;</span><span class="p">(</span><span class="n">entity</span><span class="p">);</span>
+            <span class="n">position</span><span class="p">.</span><span class="n">x</span> <span class="o">+=</span> <span class="n">velocity</span><span class="p">.</span><span class="n">x</span> <span class="o">*</span> <span class="n">dt</span><span class="p">;</span>
+            <span class="n">position</span><span class="p">.</span><span class="n">y</span> <span class="o">+=</span> <span class="n">velocity</span><span class="p">.</span><span class="n">y</span> <span class="o">*</span> <span class="n">dt</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+<span class="k">private</span><span class="o">:</span>
+    <span class="n">EntityManager</span><span class="o">&lt;</span><span class="n">ComponentCount</span><span class="p">,</span> <span class="n">SystemCount</span><span class="o">&gt;&amp;</span> <span class="n">mEntityManager</span><span class="p">;</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>To declare the components by which it is interested, the system just uses the method <code class="highlighter-rouge">setRequirements</code>. Then in the <code class="highlighter-rouge">update</code> method, it can call the method <code class="highlighter-rouge">getManagedEntities</code> to iterate over all the entities that satisfy the requirements.</p>
+
+<p>Finally, let us create an entity manager, register the components, create a system and some entities, and update the positions using the system:</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">auto</span> <span class="n">manager</span> <span class="o">=</span> <span class="n">EntityManager</span><span class="o">&lt;</span><span class="n">ComponentCount</span><span class="p">,</span> <span class="n">SystemCount</span><span class="o">&gt;</span><span class="p">();</span>
+<span class="n">manager</span><span class="p">.</span><span class="n">registerComponent</span><span class="o">&lt;</span><span class="n">Position</span><span class="o">&gt;</span><span class="p">();</span>
+<span class="n">manager</span><span class="p">.</span><span class="n">registerComponent</span><span class="o">&lt;</span><span class="n">Velocity</span><span class="o">&gt;</span><span class="p">();</span>
+<span class="k">auto</span> <span class="n">system</span> <span class="o">=</span> <span class="n">manager</span><span class="p">.</span><span class="n">createSystem</span><span class="o">&lt;</span><span class="n">PhysicsSystem</span><span class="o">&gt;</span><span class="p">(</span><span class="n">manager</span><span class="p">);</span>
+<span class="k">for</span> <span class="p">(</span><span class="k">auto</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">auto</span> <span class="n">entity</span> <span class="o">=</span> <span class="n">manager</span><span class="p">.</span><span class="n">createEntity</span><span class="p">();</span>
+    <span class="n">manager</span><span class="p">.</span><span class="n">addComponent</span><span class="o">&lt;</span><span class="n">Position</span><span class="o">&gt;</span><span class="p">(</span><span class="n">entity</span><span class="p">);</span>
+    <span class="n">manager</span><span class="p">.</span><span class="n">addComponent</span><span class="o">&lt;</span><span class="n">Velocity</span><span class="o">&gt;</span><span class="p">(</span><span class="n">entity</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="k">auto</span> <span class="n">dt</span> <span class="o">=</span> <span class="mf">1.0</span><span class="n">f</span> <span class="o">/</span> <span class="mf">60.0</span><span class="n">f</span><span class="p">;</span>
+<span class="k">while</span> <span class="p">(</span><span class="nb">true</span><span class="p">)</span>
+    <span class="n">system</span><span class="o">-&gt;</span><span class="n">update</span><span class="p">(</span><span class="n">dt</span><span class="p">);</span>
+</code></pre></div></div>
+
+<h3 id="benchmarks">Benchmarks</h3>
+
+<p>I do not pretend that we will make the best ECS library. I was just eager to try to build my own. In addition, I only worked on it for one week.</p>
+
+<p>However, that is not a reason for creating something totally inefficient. Thus, I have set up some benchmarks:</p>
+
+<ul>
+  <li>one that will create entities;</li>
+  <li>another one that uses a system to iterate over the entities;</li>
+  <li>the last one that creates and destroys entities;</li>
+</ul>
+
+<p>All these benchmarks are parameterized with the number of entities, the number of components that each entity has, the maximum number of components and the maximum number of systems. Thus, we will be able to see how the implementation scale. In particular, I will show the results for three different profiles:</p>
+
+<ul>
+  <li>A with 32 components and 16 systems;</li>
+  <li>AA with 128 components and 32 systems;</li>
+  <li>AAA with 512 components and 64 systems.</li>
+</ul>
+
+<p>While these benchmarks give an idea of how well the implementation is, they are quite simple. For instance, in the benchmarks we only use homogeneous entities and the components are small.</p>
+
+<h1 id="implementation">Implementation</h1>
+
+<h2 id="entity">Entity</h2>
+
+<p>In my implementation, an entity is just an id, nothing more:</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">using</span> <span class="n">Entity</span> <span class="o">=</span> <span class="kt">uint32_t</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>Moreover, in <a href="">Entity.h</a>, we will also define an alias <code class="highlighter-rouge">Index</code> that will be useful later:</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">using</span> <span class="n">Index</span> <span class="o">=</span> <span class="kt">uint32_t</span><span class="p">;</span>
+<span class="k">static</span> <span class="k">constexpr</span> <span class="k">auto</span> <span class="n">InvalidIndex</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">numeric_limits</span><span class="o">&lt;</span><span class="n">Index</span><span class="o">&gt;::</span><span class="n">max</span><span class="p">();</span>
+</code></pre></div></div>
+
+<p>I choose to use an <code class="highlighter-rouge">uint32_t</code> instead of a 64 bits type or <code class="highlighter-rouge">std::size_t</code> to save some space and improve cache friendliness. And we do not lose much as it is very unlikely that someone has billions of entities.</p>
+
+<h2 id="component">Component</h2>
+
+<p>Now let us define the base class for components:</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="p">,</span> <span class="k">auto</span> <span class="n">Type</span><span class="o">&gt;</span>
+<span class="k">class</span> <span class="nc">Component</span>
+<span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+    <span class="k">static</span> <span class="k">constexpr</span> <span class="k">auto</span> <span class="n">type</span> <span class="o">=</span> <span class="k">static_cast</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="o">&gt;</span><span class="p">(</span><span class="n">Type</span><span class="p">);</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>The template class is really simple, it just stores a type id that will be used later to index some data structures by component type.</p>
+
+<p>The first template parameter is the type of the component. The second one is a value convertible to <code class="highlighter-rouge">std::size_t</code> and will serve to set the component’s type id.</p>
+
+<p>For instance, we can define a <code class="highlighter-rouge">Position</code> component like that:</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">struct</span> <span class="n">Positon</span> <span class="o">:</span> <span class="n">Component</span><span class="o">&lt;</span><span class="n">Position</span><span class="p">,</span> <span class="mi">0</span><span class="o">&gt;</span>
+<span class="p">{</span>
+    <span class="kt">float</span> <span class="n">x</span><span class="p">;</span>
+    <span class="kt">float</span> <span class="n">y</span><span class="p">;</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>However, it may be more convenient to use an enumeration:</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">enum</span> <span class="k">class</span> <span class="nc">ComponentType</span>
+<span class="p">{</span>
+    <span class="n">Position</span>
+<span class="p">};</span>
+
+<span class="k">struct</span> <span class="n">Positon</span> <span class="o">:</span> <span class="n">Component</span><span class="o">&lt;</span><span class="n">Position</span><span class="p">,</span> <span class="n">ComponentType</span><span class="o">::</span><span class="n">Position</span><span class="o">&gt;</span>
+<span class="p">{</span>
+    <span class="kt">float</span> <span class="n">x</span><span class="p">;</span>
+    <span class="kt">float</span> <span class="n">y</span><span class="p">;</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>In the introductory example, there was only one template parameter: we did not have to specify the type id manually. We will see later how to improve that and generate automatically the type ids.</p>
+
+<h2 id="entitycontainer">EntityContainer</h2>
+
+<p>The <code class="highlighter-rouge">EntityContainer</code> class will be responsible for managing the entities and storing a <a href="https://en.cppreference.com/w/cpp/utility/bitset"><code class="highlighter-rouge">std::bitset</code></a> for each one. This bit set will represent the components that are owned by an entity.</p>
+
+<p>As we will use entities to index containers and especially <code class="highlighter-rouge">std::vector</code>s we would like the ids to be as small as possible to allocate as little memory as possible. Consequently, we will recycle the id of an entity when it is destroyed. To do that, we will store the free ids in a container called <code class="highlighter-rouge">mFreeEntities</code>.</p>
+
+<p>Here is the declaration of <code class="highlighter-rouge">EntityContainer</code>:</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">template</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">ComponentCount</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">SystemCount</span><span class="o">&gt;</span>
+<span class="k">class</span> <span class="nc">EntityContainer</span>
+<span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+    <span class="kt">void</span> <span class="n">reserve</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">size</span><span class="p">);</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">bitset</span><span class="o">&lt;</span><span class="n">ComponentCount</span><span class="o">&gt;&gt;&amp;</span> <span class="n">getEntityToBitset</span><span class="p">();</span>
+    <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">bitset</span><span class="o">&lt;</span><span class="n">ComponentCount</span><span class="o">&gt;&amp;</span> <span class="n">getBitset</span><span class="p">(</span><span class="n">Entity</span> <span class="n">entity</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+    <span class="n">Entity</span> <span class="n">create</span><span class="p">();</span>
+    <span class="kt">void</span> <span class="n">remove</span><span class="p">(</span><span class="n">Entity</span> <span class="n">entity</span><span class="p">);</span>
+
+<span class="k">private</span><span class="o">:</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">bitset</span><span class="o">&lt;</span><span class="n">ComponentCount</span><span class="o">&gt;&gt;</span> <span class="n">mEntityToBitset</span><span class="p">;</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Entity</span><span class="o">&gt;</span> <span class="n">mFreeEntities</span><span class="p">;</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>Let us take a look at the implementation of methods.</p>
+
+<p><code class="highlighter-rouge">getEntityToBitset</code> and <code class="highlighter-rouge">getBitset</code> are just two simple getters:</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">bitset</span><span class="o">&lt;</span><span class="n">ComponentCount</span><span class="o">&gt;&gt;&amp;</span> <span class="n">getEntityToBitset</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="k">return</span> <span class="n">mEntityToBitset</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">bitset</span><span class="o">&lt;</span><span class="n">ComponentCount</span><span class="o">&gt;&amp;</span> <span class="n">getBitset</span><span class="p">(</span><span class="n">Entity</span> <span class="n">entity</span><span class="p">)</span> <span class="k">const</span>
+<span class="p">{</span>
+    <span class="k">return</span> <span class="n">mEntityToBitset</span><span class="p">[</span><span class="n">entity</span><span class="p">];</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>The <code class="highlighter-rouge">create</code> method is more interesting:</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Entity</span> <span class="nf">create</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="k">auto</span> <span class="n">entity</span> <span class="o">=</span> <span class="n">Entity</span><span class="p">();</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">mFreeEntities</span><span class="p">.</span><span class="n">empty</span><span class="p">())</span>
+    <span class="p">{</span>
+        <span class="n">entity</span> <span class="o">=</span> <span class="k">static_cast</span><span class="o">&lt;</span><span class="n">Entity</span><span class="o">&gt;</span><span class="p">(</span><span class="n">mEntityToBitset</span><span class="p">.</span><span class="n">size</span><span class="p">());</span>
+        <span class="n">mEntityToBitset</span><span class="p">.</span><span class="n">emplace_back</span><span class="p">();</span>
+    <span class="p">}</span>
+    <span class="k">else</span>
+    <span class="p">{</span>
+        <span class="n">entity</span> <span class="o">=</span> <span class="n">mFreeEntities</span><span class="p">.</span><span class="n">back</span><span class="p">();</span>
+        <span class="n">mFreeEntities</span><span class="p">.</span><span class="n">pop_back</span><span class="p">();</span>
+        <span class="n">mEntityToBitset</span><span class="p">[</span><span class="n">entity</span><span class="p">].</span><span class="n">reset</span><span class="p">();</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="n">entity</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>If there is a free entity, it recycles it. Otherwise, it creates a new one.</p>
+
+<p>The <code class="highlighter-rouge">remove</code> method just add the entity to remove in <code class="highlighter-rouge">mFreeEntities</code>:</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="nf">remove</span><span class="p">(</span><span class="n">Entity</span> <span class="n">entity</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">mFreeEntities</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">entity</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>The last method is <code class="highlighter-rouge">reserve</code>, its purpose is to reserve memory for the different containers. As you may know, memory allocation is an expansive operation, so if you roughly know how many entities there will be in your game, reserving the memory can speed up things:</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="nf">reserve</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">size</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">mFreeEntities</span><span class="p">.</span><span class="n">resize</span><span class="p">(</span><span class="n">size</span><span class="p">);</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">iota</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">begin</span><span class="p">(</span><span class="n">mFreeEntities</span><span class="p">),</span> <span class="n">std</span><span class="o">::</span><span class="n">end</span><span class="p">(</span><span class="n">mFreeEntities</span><span class="p">),</span> <span class="mi">0</span><span class="p">);</span>
+    <span class="n">mEntityToBitset</span><span class="p">.</span><span class="n">resize</span><span class="p">(</span><span class="n">size</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>More than just reserving the memory, we also fill <code class="highlighter-rouge">mFreeEntities</code>.</p>
+
+<h2 id="componentcontainer">ComponentContainer</h2>
+
+<p>The <code class="highlighter-rouge">ComponentContainer</code> class will be responsible for storing all the components of a given type.</p>
+
+<p>In my architecture, all the components of a given type are stored contiguously. Thus, there is one big array for each component type, it is called <code class="highlighter-rouge">mComponents</code>.</p>
+
+<p>Moreover, to be able to add, get or remove a component from an entity in constant time, we need to have a way to go from an entity to a component and from a component to an entity. To do that, we need two more data structures called <code class="highlighter-rouge">mComponentToEntity</code> and <code class="highlighter-rouge">mEntityToComponent</code>.</p>
+
+<p>Here is the declaration of <code class="highlighter-rouge">ComponentContainer</code>:</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">ComponentCount</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">SystemCount</span><span class="o">&gt;</span>
+<span class="k">class</span> <span class="nc">ComponentContainer</span> <span class="o">:</span> <span class="k">public</span> <span class="n">BaseComponentContainer</span>
+<span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+    <span class="n">ComponentContainer</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">bitset</span><span class="o">&lt;</span><span class="n">ComponentCount</span><span class="o">&gt;&gt;&amp;</span> <span class="n">entityToBitset</span><span class="p">);</span>
+
+    <span class="k">virtual</span> <span class="kt">void</span> <span class="n">reserve</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">size</span><span class="p">)</span> <span class="k">override</span><span class="p">;</span>
+
+    <span class="n">T</span><span class="o">&amp;</span> <span class="n">get</span><span class="p">(</span><span class="n">Entity</span> <span class="n">entity</span><span class="p">);</span>
+    <span class="k">const</span> <span class="n">T</span><span class="o">&amp;</span> <span class="n">get</span><span class="p">(</span><span class="n">Entity</span> <span class="n">entity</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+    <span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span><span class="p">...</span> <span class="n">Args</span><span class="o">&gt;</span>
+    <span class="kt">void</span> <span class="n">add</span><span class="p">(</span><span class="n">Entity</span> <span class="n">entity</span><span class="p">,</span> <span class="n">Args</span><span class="o">&amp;&amp;</span><span class="p">...</span> <span class="n">args</span><span class="p">);</span>
+    <span class="kt">void</span> <span class="n">remove</span><span class="p">(</span><span class="n">Entity</span> <span class="n">entity</span><span class="p">);</span>
+    <span class="k">virtual</span> <span class="kt">bool</span> <span class="n">tryRemove</span><span class="p">(</span><span class="n">Entity</span> <span class="n">entity</span><span class="p">)</span> <span class="k">override</span><span class="p">;</span>
+    <span class="n">Entity</span> <span class="n">getOwner</span><span class="p">(</span><span class="k">const</span> <span class="n">T</span><span class="o">&amp;</span> <span class="n">component</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+
+<span class="k">private</span><span class="o">:</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">mComponents</span><span class="p">;</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Entity</span><span class="o">&gt;</span> <span class="n">mComponentToEntity</span><span class="p">;</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">unordered_map</span><span class="o">&lt;</span><span class="n">Entity</span><span class="p">,</span> <span class="n">Index</span><span class="o">&gt;</span> <span class="n">mEntityToComponent</span><span class="p">;</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">bitset</span><span class="o">&lt;</span><span class="n">ComponentCount</span><span class="o">&gt;&gt;&amp;</span> <span class="n">mEntityToBitset</span><span class="p">;</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>You can notice that it inherits from <code class="highlighter-rouge">BaseComponentContainer</code> which is defined by:</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">BaseComponentContainer</span>
+<span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+    <span class="k">virtual</span> <span class="o">~</span><span class="n">BaseComponentContainer</span><span class="p">()</span> <span class="o">=</span> <span class="k">default</span><span class="p">;</span>
+
+    <span class="k">virtual</span> <span class="kt">void</span> <span class="n">reserve</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">size</span><span class="p">)</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="k">virtual</span> <span class="kt">bool</span> <span class="n">tryRemove</span><span class="p">(</span><span class="n">Entity</span> <span class="n">entity</span><span class="p">)</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>The only purpose of this base class is to be able to store all the <code class="highlighter-rouge">ComponentContainer</code> instances in a container.</p>
+
+<p>Now let us see the definition of the methods.</p>
+
+<p>Firstly, the constructor, it takes a reference to the container which contains the bit sets of the entities. This class will use it to check if an entity has a component and to update the bit set of an entity when a component is added or removed:</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">ComponentContainer</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">bitset</span><span class="o">&lt;</span><span class="n">ComponentCount</span><span class="o">&gt;&gt;&amp;</span> <span class="n">entityToBitset</span><span class="p">)</span> <span class="o">:</span>
+    <span class="n">mEntityToBitset</span><span class="p">(</span><span class="n">entityToBitset</span><span class="p">)</span>
+<span class="p">{</span>
+
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>The <code class="highlighter-rouge">get</code> method is simple, we just use <code class="highlighter-rouge">mEntityToComponent</code> to find the index of <code class="highlighter-rouge">entity</code>’s component in <code class="highlighter-rouge">mComponents</code>:</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">T</span><span class="o">&amp;</span> <span class="n">get</span><span class="p">(</span><span class="n">Entity</span> <span class="n">entity</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">return</span> <span class="n">mComponents</span><span class="p">[</span><span class="n">mEntityToComponent</span><span class="p">[</span><span class="n">entity</span><span class="p">]];</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>The <code class="highlighter-rouge">add</code> method uses its arguments to emplace a new component at the end of <code class="highlighter-rouge">mComponents</code> then it sets up the links to go from the entity to the component and from the component to the entity. Finally, it sets the bit corresponding to the component to <code class="highlighter-rouge">true</code> in <code class="highlighter-rouge">entity</code>’s bitset:</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span><span class="p">...</span> <span class="n">Args</span><span class="o">&gt;</span>
+<span class="kt">void</span> <span class="n">add</span><span class="p">(</span><span class="n">Entity</span> <span class="n">entity</span><span class="p">,</span> <span class="n">Args</span><span class="o">&amp;&amp;</span><span class="p">...</span> <span class="n">args</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">auto</span> <span class="n">index</span> <span class="o">=</span> <span class="k">static_cast</span><span class="o">&lt;</span><span class="n">Index</span><span class="o">&gt;</span><span class="p">(</span><span class="n">mComponents</span><span class="p">.</span><span class="n">size</span><span class="p">());</span>
+    <span class="n">mComponents</span><span class="p">.</span><span class="n">emplace_back</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">forward</span><span class="o">&lt;</span><span class="n">Args</span><span class="o">&gt;</span><span class="p">(</span><span class="n">args</span><span class="p">)...);</span>
+    <span class="n">mComponentToEntity</span><span class="p">.</span><span class="n">emplace_back</span><span class="p">(</span><span class="n">entity</span><span class="p">);</span>
+    <span class="n">mEntityToComponent</span><span class="p">[</span><span class="n">entity</span><span class="p">]</span> <span class="o">=</span> <span class="n">index</span><span class="p">;</span>
+    <span class="n">mEntityToBitset</span><span class="p">[</span><span class="n">entity</span><span class="p">][</span><span class="n">T</span><span class="o">::</span><span class="n">type</span><span class="p">]</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>The <code class="highlighter-rouge">remove</code> method sets the bit corresponding to the component to <code class="highlighter-rouge">false</code>, then it moves the last component in <code class="highlighter-rouge">mComponents</code> to the index of the one we want to remove. It updates the links of the component we just moved and removes the one of the component we want to destroy:</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="nf">remove</span><span class="p">(</span><span class="n">Entity</span> <span class="n">entity</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">mEntityToBitset</span><span class="p">[</span><span class="n">entity</span><span class="p">][</span><span class="n">T</span><span class="o">::</span><span class="n">type</span><span class="p">]</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
+    <span class="k">auto</span> <span class="n">index</span> <span class="o">=</span> <span class="n">mEntityToComponent</span><span class="p">[</span><span class="n">entity</span><span class="p">];</span>
+    <span class="c1">// Update mComponents</span>
+    <span class="n">mComponents</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">mComponents</span><span class="p">.</span><span class="n">back</span><span class="p">());</span>
+    <span class="n">mComponents</span><span class="p">.</span><span class="n">pop_back</span><span class="p">();</span>
+    <span class="c1">// Update mEntityToComponent</span>
+    <span class="n">mEntityToComponent</span><span class="p">[</span><span class="n">mComponentToEntity</span><span class="p">.</span><span class="n">back</span><span class="p">()]</span> <span class="o">=</span> <span class="n">index</span><span class="p">;</span>
+    <span class="n">mEntityToComponent</span><span class="p">.</span><span class="n">erase</span><span class="p">(</span><span class="n">entity</span><span class="p">);</span>
+    <span class="c1">// Update mComponentToEntity</span>
+    <span class="n">mComponentToEntity</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="n">mComponentToEntity</span><span class="p">.</span><span class="n">back</span><span class="p">();</span>
+    <span class="n">mComponentToEntity</span><span class="p">.</span><span class="n">pop_back</span><span class="p">();</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Moving the last component to the index of the one we want to destroy is what allows us to perform removal in constant time. Indeed, then we just have to remove the last component which can be done in constant time in a <code class="highlighter-rouge">std::vector</code>.</p>
+
+<p>The <code class="highlighter-rouge">tryRemove</code> method tests if the entity has the component before trying to remove it:</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">virtual</span> <span class="kt">bool</span> <span class="nf">tryRemove</span><span class="p">(</span><span class="n">Entity</span> <span class="n">entity</span><span class="p">)</span> <span class="k">override</span>
+<span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">mEntityToBitset</span><span class="p">[</span><span class="n">entity</span><span class="p">][</span><span class="n">T</span><span class="o">::</span><span class="n">type</span><span class="p">])</span>
+    <span class="p">{</span>
+        <span class="n">remove</span><span class="p">(</span><span class="n">entity</span><span class="p">);</span>
+        <span class="k">return</span> <span class="nb">true</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>The <code class="highlighter-rouge">getOwner</code> method returns the entity that owns a component, it uses pointer arithmetic and <code class="highlighter-rouge">mComponentToEntity</code> to do so:</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Entity</span> <span class="n">getOwner</span><span class="p">(</span><span class="k">const</span> <span class="n">T</span><span class="o">&amp;</span> <span class="n">component</span><span class="p">)</span> <span class="k">const</span>
+<span class="p">{</span>
+    <span class="k">auto</span> <span class="n">begin</span> <span class="o">=</span> <span class="n">mComponents</span><span class="p">.</span><span class="n">data</span><span class="p">();</span>
+    <span class="k">auto</span> <span class="n">index</span> <span class="o">=</span> <span class="k">static_cast</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="o">&gt;</span><span class="p">(</span><span class="o">&amp;</span><span class="n">component</span> <span class="o">-</span> <span class="n">begin</span><span class="p">);</span>
+    <span class="k">return</span> <span class="n">mComponentToEntity</span><span class="p">[</span><span class="n">index</span><span class="p">];</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>The last method is <code class="highlighter-rouge">reserve</code> which has the same purpose as <code class="highlighter-rouge">EntityContainer</code>’s one:</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">virtual</span> <span class="kt">void</span> <span class="n">reserve</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">size</span><span class="p">)</span> <span class="k">override</span>
+<span class="p">{</span>
+    <span class="n">mComponents</span><span class="p">.</span><span class="n">reserve</span><span class="p">(</span><span class="n">size</span><span class="p">);</span>
+    <span class="n">mComponentToEntity</span><span class="p">.</span><span class="n">reserve</span><span class="p">(</span><span class="n">size</span><span class="p">);</span>
+    <span class="n">mEntityToComponent</span><span class="p">.</span><span class="n">reserve</span><span class="p">(</span><span class="n">size</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="system">System</h2>
+
+<p>Now let us take a look at the <code class="highlighter-rouge">System</code> class.</p>
+
+<p>Each system has a bit set <code class="highlighter-rouge">mRequirements</code> which describes the components it requires. Then, it will maintain a set of entities that satisfy these requirements called <code class="highlighter-rouge">mManagedEntities</code>. Again to be able to implement all the operations in constant time, we will need a way to go from an entity to its index in <code class="highlighter-rouge">mManagedEntities</code>. To do so, we use an <code class="highlighter-rouge">std::unordered_map</code> called <code class="highlighter-rouge">mEntityToManagedEntity</code>.</p>
+
+<p>Here is the declaration of <code class="highlighter-rouge">System</code>:</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">template</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">ComponentCount</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">SystemCount</span><span class="o">&gt;</span>
+<span class="k">class</span> <span class="nc">System</span>
+<span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+    <span class="k">virtual</span> <span class="o">~</span><span class="n">System</span><span class="p">()</span> <span class="o">=</span> <span class="k">default</span><span class="p">;</span>
+
+<span class="k">protected</span><span class="o">:</span>
+    <span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="p">...</span><span class="n">Ts</span><span class="o">&gt;</span>
+    <span class="kt">void</span> <span class="n">setRequirements</span><span class="p">();</span>
+    <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Entity</span><span class="o">&gt;&amp;</span> <span class="n">getManagedEntities</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+    <span class="k">virtual</span> <span class="kt">void</span> <span class="n">onManagedEntityAdded</span><span class="p">([[</span><span class="n">maybe_unused</span><span class="p">]]</span> <span class="n">Entity</span> <span class="n">entity</span><span class="p">);</span>
+    <span class="k">virtual</span> <span class="kt">void</span> <span class="n">onManagedEntityRemoved</span><span class="p">([[</span><span class="n">maybe_unused</span><span class="p">]]</span> <span class="n">Entity</span> <span class="n">entity</span><span class="p">);</span>
+
+<span class="k">private</span><span class="o">:</span>
+    <span class="k">friend</span> <span class="n">EntityManager</span><span class="o">&lt;</span><span class="n">ComponentCount</span><span class="p">,</span> <span class="n">SystemCount</span><span class="o">&gt;</span><span class="p">;</span>
+
+    <span class="n">std</span><span class="o">::</span><span class="n">bitset</span><span class="o">&lt;</span><span class="n">ComponentCount</span><span class="o">&gt;</span> <span class="n">mRequirements</span><span class="p">;</span>
+    <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">mType</span><span class="p">;</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Entity</span><span class="o">&gt;</span> <span class="n">mManagedEntities</span><span class="p">;</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">unordered_map</span><span class="o">&lt;</span><span class="n">Entity</span><span class="p">,</span> <span class="n">Index</span><span class="o">&gt;</span> <span class="n">mEntityToManagedEntity</span><span class="p">;</span>
+
+    <span class="kt">void</span> <span class="n">setUp</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">type</span><span class="p">);</span>
+    <span class="kt">void</span> <span class="n">onEntityUpdated</span><span class="p">(</span><span class="n">Entity</span> <span class="n">entity</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">bitset</span><span class="o">&lt;</span><span class="n">ComponentCount</span><span class="o">&gt;&amp;</span> <span class="n">components</span><span class="p">);</span>
+    <span class="kt">void</span> <span class="n">onEntityRemoved</span><span class="p">(</span><span class="n">Entity</span> <span class="n">entity</span><span class="p">);</span>
+    <span class="kt">void</span> <span class="n">addEntity</span><span class="p">(</span><span class="n">Entity</span> <span class="n">entity</span><span class="p">);</span>
+    <span class="kt">void</span> <span class="n">removeEntity</span><span class="p">(</span><span class="n">Entity</span> <span class="n">entity</span><span class="p">);</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p><code class="highlighter-rouge">setRequirements</code> takes advantage of a <a href="https://en.cppreference.com/w/cpp/language/fold">fold expression</a> to set the bits:</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="p">...</span><span class="n">Ts</span><span class="o">&gt;</span>
+<span class="kt">void</span> <span class="n">setRequirements</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="p">(</span><span class="n">mRequirements</span><span class="p">.</span><span class="n">set</span><span class="p">(</span><span class="n">Ts</span><span class="o">::</span><span class="n">type</span><span class="p">),</span> <span class="p">...);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p><code class="highlighter-rouge">getManagedEntities</code> is the getter that will be used by the derived classes to access to the managed entities:</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Entity</span><span class="o">&gt;&amp;</span> <span class="n">getManagedEntities</span><span class="p">()</span> <span class="k">const</span>
+<span class="p">{</span>
+    <span class="k">return</span> <span class="n">mManagedEntities</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>It returns a constant reference to ensure that the derived class won’t try to modify <code class="highlighter-rouge">mManagedEntities</code>.</p>
+
+<p><code class="highlighter-rouge">onManagedEntityAdded</code> and <code class="highlighter-rouge">onManagedEntityRemoved</code> are empty. They are aimed to be overrided. They will be called respectively when an entity is added to or removed from <code class="highlighter-rouge">mManagedEntities</code>.</p>
+
+<p>The next methods are private and only accessible by <code class="highlighter-rouge">EntityManager</code> which is declared as a friend class.</p>
+
+<p><code class="highlighter-rouge">setUp</code> will be called by the entity manager to assign an id to the system. It may then use it to index arrays:</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="nf">setUp</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">type</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">mType</span> <span class="o">=</span> <span class="n">type</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p><code class="highlighter-rouge">onEntityUpdated</code> is called when an entity is modified i.e. a component is added or removed. The system checks if the requirements are satisfied and if the entity is already managed. If it satisfies the requirements and does not already manage it, it will add it. However, if it does not satisfy the requirements and it was managed, it will remove it. In the other cases, the system does nothing:</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="nf">onEntityUpdated</span><span class="p">(</span><span class="n">Entity</span> <span class="n">entity</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">bitset</span><span class="o">&lt;</span><span class="n">ComponentCount</span><span class="o">&gt;&amp;</span> <span class="n">components</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">auto</span> <span class="n">satisfied</span> <span class="o">=</span> <span class="p">(</span><span class="n">mRequirements</span> <span class="o">&amp;</span> <span class="n">components</span><span class="p">)</span> <span class="o">==</span> <span class="n">mRequirements</span><span class="p">;</span>
+    <span class="k">auto</span> <span class="n">managed</span> <span class="o">=</span> <span class="n">mEntityToManagedEntity</span><span class="p">.</span><span class="n">find</span><span class="p">(</span><span class="n">entity</span><span class="p">)</span> <span class="o">!=</span> <span class="n">std</span><span class="o">::</span><span class="n">end</span><span class="p">(</span><span class="n">mEntityToManagedEntity</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">satisfied</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">managed</span><span class="p">)</span>
+        <span class="n">addEntity</span><span class="p">(</span><span class="n">entity</span><span class="p">);</span>
+    <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">satisfied</span> <span class="o">&amp;&amp;</span> <span class="n">managed</span><span class="p">)</span>
+        <span class="n">removeEntity</span><span class="p">(</span><span class="n">entity</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p><code class="highlighter-rouge">onEntityRemoved</code> is called by the entity manager when an entity is removed. If the entity was managed by the system, it removes it:</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="nf">onEntityRemoved</span><span class="p">(</span><span class="n">Entity</span> <span class="n">entity</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">mEntityToManagedEntity</span><span class="p">.</span><span class="n">find</span><span class="p">(</span><span class="n">entity</span><span class="p">)</span> <span class="o">!=</span> <span class="n">std</span><span class="o">::</span><span class="n">end</span><span class="p">(</span><span class="n">mEntityToManagedEntity</span><span class="p">))</span>
+        <span class="n">removeEntity</span><span class="p">(</span><span class="n">entity</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Finally <code class="highlighter-rouge">addEntity</code> and <code class="highlighter-rouge">removeEntity</code> are just utility methods.</p>
+
+<p><code class="highlighter-rouge">addEntity</code> sets up the link to go from the added entity to its index in <code class="highlighter-rouge">mManagedEntities</code>, it adds entity and finally calls <code class="highlighter-rouge">onManagedEntityAdded</code>:</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="nf">addEntity</span><span class="p">(</span><span class="n">Entity</span> <span class="n">entity</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">mEntityToManagedEntity</span><span class="p">[</span><span class="n">entity</span><span class="p">]</span> <span class="o">=</span> <span class="k">static_cast</span><span class="o">&lt;</span><span class="n">Index</span><span class="o">&gt;</span><span class="p">(</span><span class="n">mManagedEntities</span><span class="p">.</span><span class="n">size</span><span class="p">());</span>
+    <span class="n">mManagedEntities</span><span class="p">.</span><span class="n">emplace_back</span><span class="p">(</span><span class="n">entity</span><span class="p">);</span>
+    <span class="n">onManagedEntityAdded</span><span class="p">(</span><span class="n">entity</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p><code class="highlighter-rouge">removeEntity</code> firstly calls <code class="highlighter-rouge">onManagedEntityRemoved</code>. Then it moves the last managed entity to the index of the one to remove. It updates the link of the moved entity. Finally it removes the entity to remove from <code class="highlighter-rouge">mManagedEntities</code> and <code class="highlighter-rouge">mEntityToManagedEntity</code>:</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="nf">removeEntity</span><span class="p">(</span><span class="n">Entity</span> <span class="n">entity</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">onManagedEntityRemoved</span><span class="p">(</span><span class="n">entity</span><span class="p">);</span>
+    <span class="k">auto</span> <span class="n">index</span> <span class="o">=</span> <span class="n">mEntityToManagedEntity</span><span class="p">[</span><span class="n">entity</span><span class="p">];</span>
+    <span class="n">mEntityToManagedEntity</span><span class="p">[</span><span class="n">mManagedEntities</span><span class="p">.</span><span class="n">back</span><span class="p">()]</span> <span class="o">=</span> <span class="n">index</span><span class="p">;</span>
+    <span class="n">mEntityToManagedEntity</span><span class="p">.</span><span class="n">erase</span><span class="p">(</span><span class="n">entity</span><span class="p">);</span>
+    <span class="n">mManagedEntities</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="n">mManagedEntities</span><span class="p">.</span><span class="n">back</span><span class="p">();</span>
+    <span class="n">mManagedEntities</span><span class="p">.</span><span class="n">pop_back</span><span class="p">();</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="entitymanager">EntityManager</h2>
+
+<p>All the important logic is in the other classes, the entity manager just tie all the pieces together.</p>
+
+<p>Let us look at its declaration:</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">template</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">ComponentCount</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">SystemCount</span><span class="o">&gt;</span>
+<span class="k">class</span> <span class="nc">EntityManager</span>
+<span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+    <span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span>
+    <span class="kt">void</span> <span class="n">registerComponent</span><span class="p">();</span>
+    <span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="p">,</span> <span class="k">typename</span> <span class="p">...</span><span class="n">Args</span><span class="o">&gt;</span>
+    <span class="n">T</span><span class="o">*</span> <span class="n">createSystem</span><span class="p">(</span><span class="n">Args</span><span class="o">&amp;&amp;</span> <span class="p">...</span><span class="n">args</span><span class="p">);</span>
+    <span class="kt">void</span> <span class="n">reserve</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">size</span><span class="p">);</span>
+    <span class="n">Entity</span> <span class="n">createEntity</span><span class="p">();</span>
+    <span class="kt">void</span> <span class="n">removeEntity</span><span class="p">(</span><span class="n">Entity</span> <span class="n">entity</span><span class="p">);</span>
+    <span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span>
+    <span class="kt">bool</span> <span class="n">hasComponent</span><span class="p">(</span><span class="n">Entity</span> <span class="n">entity</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+    <span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="p">...</span><span class="n">Ts</span><span class="o">&gt;</span>
+    <span class="kt">bool</span> <span class="n">hasComponents</span><span class="p">(</span><span class="n">Entity</span> <span class="n">entity</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+    <span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span>
+    <span class="n">T</span><span class="o">&amp;</span> <span class="n">getComponent</span><span class="p">(</span><span class="n">Entity</span> <span class="n">entity</span><span class="p">);</span>
+    <span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span>
+    <span class="k">const</span> <span class="n">T</span><span class="o">&amp;</span> <span class="n">getComponent</span><span class="p">(</span><span class="n">Entity</span> <span class="n">entity</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+    <span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="p">...</span><span class="n">Ts</span><span class="o">&gt;</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">tuple</span><span class="o">&lt;</span><span class="n">Ts</span><span class="o">&amp;</span><span class="p">...</span><span class="o">&gt;</span> <span class="n">getComponents</span><span class="p">(</span><span class="n">Entity</span> <span class="n">entity</span><span class="p">);</span>
+    <span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="p">...</span><span class="n">Ts</span><span class="o">&gt;</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">tuple</span><span class="o">&lt;</span><span class="k">const</span> <span class="n">Ts</span><span class="o">&amp;</span><span class="p">...</span><span class="o">&gt;</span> <span class="n">getComponents</span><span class="p">(</span><span class="n">Entity</span> <span class="n">entity</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+    <span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="p">,</span> <span class="k">typename</span><span class="p">...</span> <span class="n">Args</span><span class="o">&gt;</span>
+    <span class="kt">void</span> <span class="n">addComponent</span><span class="p">(</span><span class="n">Entity</span> <span class="n">entity</span><span class="p">,</span> <span class="n">Args</span><span class="o">&amp;&amp;</span><span class="p">...</span> <span class="n">args</span><span class="p">);</span>
+    <span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span>
+    <span class="kt">void</span> <span class="n">removeComponent</span><span class="p">(</span><span class="n">Entity</span> <span class="n">entity</span><span class="p">);</span>
+    <span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span>
+    <span class="n">Entity</span> <span class="n">getOwner</span><span class="p">(</span><span class="k">const</span> <span class="n">T</span><span class="o">&amp;</span> <span class="n">component</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+
+<span class="k">private</span><span class="o">:</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">BaseComponentContainer</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">ComponentCount</span><span class="o">&gt;</span> <span class="n">mComponentContainers</span><span class="p">;</span>
+    <span class="n">EntityContainer</span><span class="o">&lt;</span><span class="n">ComponentCount</span><span class="p">,</span> <span class="n">SystemCount</span><span class="o">&gt;</span> <span class="n">mEntities</span><span class="p">;</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">System</span><span class="o">&lt;</span><span class="n">ComponentCount</span><span class="p">,</span> <span class="n">SystemCount</span><span class="o">&gt;&gt;&gt;</span> <span class="n">mSystems</span><span class="p">;</span>
+
+    <span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span>
+    <span class="kt">void</span> <span class="n">checkComponentType</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+    <span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="p">...</span><span class="n">Ts</span><span class="o">&gt;</span>
+    <span class="kt">void</span> <span class="n">checkComponentTypes</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+
+    <span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span>
+    <span class="k">auto</span> <span class="n">getComponentContainer</span><span class="p">();</span>
+    <span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span>
+    <span class="k">auto</span> <span class="n">getComponentContainer</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>The <code class="highlighter-rouge">EntityManager</code> class has three member variables: <code class="highlighter-rouge">mComponentContainers</code> which stores <code class="highlighter-rouge">std::unique_ptr</code>s to <code class="highlighter-rouge">BaseComponentContainer</code>, <code class="highlighter-rouge">mEntities</code> which is just an instance of <code class="highlighter-rouge">EntityContainer</code> and <code class="highlighter-rouge">mSystems</code> which stores <code class="highlighter-rouge">unique_ptr</code>s to <code class="highlighter-rouge">System</code>.</p>
+
+<p>The class has a lot of methods but they all are really simple.</p>
+
+<p>Let us first look at <code class="highlighter-rouge">getComponentContainer</code> which returns a pointer to the component container which manages the components of type <code class="highlighter-rouge">T</code>:</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span>
+<span class="k">auto</span> <span class="n">getComponentContainer</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="k">return</span> <span class="k">static_cast</span><span class="o">&lt;</span><span class="n">ComponentContainer</span><span class="o">&lt;</span><span class="n">T</span><span class="p">,</span> <span class="n">ComponentCount</span><span class="p">,</span> <span class="n">SystemCount</span><span class="o">&gt;*&gt;</span><span class="p">(</span><span class="n">mComponentContainers</span><span class="p">[</span><span class="n">T</span><span class="o">::</span><span class="n">type</span><span class="p">].</span><span class="n">get</span><span class="p">());</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>The other utility function is <code class="highlighter-rouge">checkComponentType</code> which just checks that the component type id is below the maximum number of components:</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span>
+<span class="kt">void</span> <span class="n">checkComponentType</span><span class="p">()</span> <span class="k">const</span>
+<span class="p">{</span>
+    <span class="k">static_assert</span><span class="p">(</span><span class="n">T</span><span class="o">::</span><span class="n">type</span> <span class="o">&lt;</span> <span class="n">ComponentCount</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p><code class="highlighter-rouge">checkComponentTypes</code> just uses a fold expression to make the check for several types:</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="p">...</span><span class="n">Ts</span><span class="o">&gt;</span>
+<span class="kt">void</span> <span class="n">checkComponentTypes</span><span class="p">()</span> <span class="k">const</span>
+<span class="p">{</span>
+    <span class="p">(</span><span class="n">checkComponentType</span><span class="o">&lt;</span><span class="n">Ts</span><span class="o">&gt;</span><span class="p">(),</span> <span class="p">...);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p><code class="highlighter-rouge">registerComponent</code> creates a new component container for the given type:</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span>
+<span class="kt">void</span> <span class="n">registerComponent</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">checkComponentType</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="p">();</span>
+    <span class="n">mComponentContainers</span><span class="p">[</span><span class="n">T</span><span class="o">::</span><span class="n">type</span><span class="p">]</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">make_unique</span><span class="o">&lt;</span><span class="n">ComponentContainer</span><span class="o">&lt;</span><span class="n">T</span><span class="p">,</span> <span class="n">ComponentCount</span><span class="p">,</span> <span class="n">SystemCount</span><span class="o">&gt;&gt;</span><span class="p">(</span>
+        <span class="n">mEntities</span><span class="p">.</span><span class="n">getEntityToBitset</span><span class="p">());</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p><code class="highlighter-rouge">createSystem</code> creates a new system of the given types and set its type:</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="p">,</span> <span class="k">typename</span> <span class="p">...</span><span class="n">Args</span><span class="o">&gt;</span>
+<span class="n">T</span><span class="o">*</span> <span class="n">createSystem</span><span class="p">(</span><span class="n">Args</span><span class="o">&amp;&amp;</span> <span class="p">...</span><span class="n">args</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">auto</span> <span class="n">type</span> <span class="o">=</span> <span class="n">mSystems</span><span class="p">.</span><span class="n">size</span><span class="p">();</span>
+    <span class="k">auto</span><span class="o">&amp;</span> <span class="n">system</span> <span class="o">=</span> <span class="n">mSystems</span><span class="p">.</span><span class="n">emplace_back</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">make_unique</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">forward</span><span class="o">&lt;</span><span class="n">Args</span><span class="o">&gt;</span><span class="p">(</span><span class="n">args</span><span class="p">)...));</span>
+    <span class="n">system</span><span class="o">-&gt;</span><span class="n">setUp</span><span class="p">(</span><span class="n">type</span><span class="p">);</span>
+    <span class="k">return</span> <span class="k">static_cast</span><span class="o">&lt;</span><span class="n">T</span><span class="o">*&gt;</span><span class="p">(</span><span class="n">system</span><span class="p">.</span><span class="n">get</span><span class="p">());</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>The <code class="highlighter-rouge">reserve</code> method just calls the <code class="highlighter-rouge">reserve</code> methods of <code class="highlighter-rouge">ComponentContainer</code> and <code class="highlighter-rouge">EntityContainer</code>:</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="nf">reserve</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">size</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">for</span> <span class="p">(</span><span class="k">auto</span> <span class="n">i</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">ComponentCount</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">mComponentContainers</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="n">mComponentContainers</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">-&gt;</span><span class="n">reserve</span><span class="p">(</span><span class="n">size</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="n">mEntities</span><span class="p">.</span><span class="n">reserve</span><span class="p">(</span><span class="n">size</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>The <code class="highlighter-rouge">createEntity</code> method just returns the result of <code class="highlighter-rouge">EntityManager</code>’s <code class="highlighter-rouge">create</code> method:</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Entity</span> <span class="nf">createEntity</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="k">return</span> <span class="n">mEntities</span><span class="p">.</span><span class="n">create</span><span class="p">();</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p><code class="highlighter-rouge">hasComponent</code> uses the bit set of an entity to quickly check if this entity has a component of the given type:</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span>
+<span class="kt">bool</span> <span class="n">hasComponent</span><span class="p">(</span><span class="n">Entity</span> <span class="n">entity</span><span class="p">)</span> <span class="k">const</span>
+<span class="p">{</span>
+    <span class="n">checkComponentType</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="p">();</span>
+    <span class="k">return</span> <span class="n">mEntities</span><span class="p">.</span><span class="n">getBitset</span><span class="p">(</span><span class="n">entity</span><span class="p">)[</span><span class="n">T</span><span class="o">::</span><span class="n">type</span><span class="p">];</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p><code class="highlighter-rouge">hasComponents</code> uses a fold expression to create a bit set that represents the required components and then use it against the entity’s bit set to assess if the entity has all the required components:</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="p">...</span><span class="n">Ts</span><span class="o">&gt;</span>
+<span class="kt">bool</span> <span class="n">hasComponents</span><span class="p">(</span><span class="n">Entity</span> <span class="n">entity</span><span class="p">)</span> <span class="k">const</span>
+<span class="p">{</span>
+    <span class="n">checkComponentTypes</span><span class="o">&lt;</span><span class="n">Ts</span><span class="p">...</span><span class="o">&gt;</span><span class="p">();</span>
+    <span class="k">auto</span> <span class="n">requirements</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">bitset</span><span class="o">&lt;</span><span class="n">ComponentCount</span><span class="o">&gt;</span><span class="p">();</span>
+    <span class="p">(</span><span class="n">requirements</span><span class="p">.</span><span class="n">set</span><span class="p">(</span><span class="n">Ts</span><span class="o">::</span><span class="n">type</span><span class="p">),</span> <span class="p">...);</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">requirements</span> <span class="o">&amp;</span> <span class="n">mEntities</span><span class="p">.</span><span class="n">getBitset</span><span class="p">(</span><span class="n">entity</span><span class="p">))</span> <span class="o">==</span> <span class="n">requirements</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p><code class="highlighter-rouge">getComponent</code> just forwards the request to the right component container:</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span>
+<span class="n">T</span><span class="o">&amp;</span> <span class="n">getComponent</span><span class="p">(</span><span class="n">Entity</span> <span class="n">entity</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">checkComponentType</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="p">();</span>
+    <span class="k">return</span> <span class="n">getComponentContainer</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">get</span><span class="p">(</span><span class="n">entity</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p><code class="highlighter-rouge">getComponents</code> returns a tuple of references to the requested components. It uses <a href="https://en.cppreference.com/w/cpp/utility/tuple/tie"><code class="highlighter-rouge">std::tie</code></a> and a fold expression again to achieve that:</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="p">...</span><span class="n">Ts</span><span class="o">&gt;</span>
+<span class="n">std</span><span class="o">::</span><span class="n">tuple</span><span class="o">&lt;</span><span class="n">Ts</span><span class="o">&amp;</span><span class="p">...</span><span class="o">&gt;</span> <span class="n">getComponents</span><span class="p">(</span><span class="n">Entity</span> <span class="n">entity</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">checkComponentTypes</span><span class="o">&lt;</span><span class="n">Ts</span><span class="p">...</span><span class="o">&gt;</span><span class="p">();</span>
+    <span class="k">return</span> <span class="n">std</span><span class="o">::</span><span class="n">tie</span><span class="p">(</span><span class="n">getComponentContainer</span><span class="o">&lt;</span><span class="n">Ts</span><span class="o">&gt;</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">get</span><span class="p">(</span><span class="n">entity</span><span class="p">)...);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p><code class="highlighter-rouge">addComponent</code> and <code class="highlighter-rouge">removeComponent</code> forward the request to the right component container and then call systems’ <code class="highlighter-rouge">onEntityUpdated</code>:</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="p">,</span> <span class="k">typename</span><span class="p">...</span> <span class="n">Args</span><span class="o">&gt;</span>
+<span class="kt">void</span> <span class="n">addComponent</span><span class="p">(</span><span class="n">Entity</span> <span class="n">entity</span><span class="p">,</span> <span class="n">Args</span><span class="o">&amp;&amp;</span><span class="p">...</span> <span class="n">args</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">checkComponentType</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="p">();</span>
+    <span class="n">getComponentContainer</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">add</span><span class="p">(</span><span class="n">entity</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">forward</span><span class="o">&lt;</span><span class="n">Args</span><span class="o">&gt;</span><span class="p">(</span><span class="n">args</span><span class="p">)...);</span>
+    <span class="c1">// Send message to systems</span>
+    <span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="n">bitset</span> <span class="o">=</span> <span class="n">mEntities</span><span class="p">.</span><span class="n">getBitset</span><span class="p">(</span><span class="n">entity</span><span class="p">);</span>
+    <span class="k">for</span> <span class="p">(</span><span class="k">auto</span><span class="o">&amp;</span> <span class="n">system</span> <span class="o">:</span> <span class="n">mSystems</span><span class="p">)</span>
+        <span class="n">system</span><span class="o">-&gt;</span><span class="n">onEntityUpdated</span><span class="p">(</span><span class="n">entity</span><span class="p">,</span> <span class="n">bitset</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span>
+<span class="kt">void</span> <span class="n">removeComponent</span><span class="p">(</span><span class="n">Entity</span> <span class="n">entity</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">checkComponentType</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="p">();</span>
+    <span class="n">getComponentContainer</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">remove</span><span class="p">(</span><span class="n">entity</span><span class="p">);</span>
+    <span class="c1">// Send message to systems</span>
+    <span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="n">bitset</span> <span class="o">=</span> <span class="n">mEntities</span><span class="p">.</span><span class="n">getBitset</span><span class="p">(</span><span class="n">entity</span><span class="p">);</span>
+    <span class="k">for</span> <span class="p">(</span><span class="k">auto</span><span class="o">&amp;</span> <span class="n">system</span> <span class="o">:</span> <span class="n">mSystems</span><span class="p">)</span>
+        <span class="n">system</span><span class="o">-&gt;</span><span class="n">onEntityUpdated</span><span class="p">(</span><span class="n">entity</span><span class="p">,</span> <span class="n">bitset</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Finally, <code class="highlighter-rouge">getOwner</code> forwards the request to the right component container:</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span>
+<span class="n">Entity</span> <span class="n">getOwner</span><span class="p">(</span><span class="k">const</span> <span class="n">T</span><span class="o">&amp;</span> <span class="n">component</span><span class="p">)</span> <span class="k">const</span>
+<span class="p">{</span>
+    <span class="n">checkComponentType</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="p">();</span>
+    <span class="k">return</span> <span class="n">getComponentContainer</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">getOwner</span><span class="p">(</span><span class="n">component</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>That’s all for this first implementation. It only has 357 lines of code. You can find all the code in this <a href="https://github.com/pvigier/ecs/tree/unordered_map">branch</a>.</p>
+
+<h1 id="profiling-and-benchmarks">Profiling and benchmarks</h1>
+
+<h2 id="benchmarks-1">Benchmarks</h2>
+
+<p>Now it is time to run the benchmarks on this first implementation!</p>
+
+<p>Here are the results:</p>
+
+<p><img src="/media/img/ecs/unordered_map/create.png" alt="" />
+<img src="/media/img/ecs/unordered_map/iterate.png" alt="" />
+<img src="/media/img/ecs/unordered_map/create_and_remove.png" alt="" /></p>
+
+<p>It scales pretty well! The number of components processed by second is roughly the same when the number of entities increases and for the different profiles (A, AA, and AAA).</p>
+
+<p>It also scales well with the number of components in the entities. When we iterate over entities with three components, it is three times slower than iterating over entities with one component which is expected as we must retrieve the three components.</p>
+
+<h2 id="cache-misses">Cache misses</h2>
+
+<p>I run the example available <a href="https://github.com/pvigier/ecs/blob/master/examples/physics.cpp">here</a> with <a href="http://valgrind.org/docs/manual/cg-manual.html">cachegrind</a> to measure the number of cache misses.</p>
+
+<p>Here is the result with 10000 entities:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>==1652== D   refs:      277,577,353  (254,775,159 rd   + 22,802,194 wr)
+==1652== D1  misses:     20,814,368  ( 20,759,914 rd   +     54,454 wr)
+==1652== LLd misses:         43,483  (      7,847 rd   +     35,636 wr)
+==1652== D1  miss rate:         7.5% (        8.1%     +        0.2%  )
+==1652== LLd miss rate:         0.0% (        0.0%     +        0.2%  )
+</code></pre></div></div>
+
+<p>Here is the result with 100000 entities:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>==1738== D   refs:      2,762,879,670  (2,539,368,564 rd   + 223,511,106 wr)
+==1738== D1  misses:      207,415,181  (  206,902,072 rd   +     513,109 wr)
+==1738== LLd misses:      207,274,328  (  206,789,289 rd   +     485,039 wr)
+==1738== D1  miss rate:           7.5% (          8.1%     +         0.2%  )
+==1738== LLd miss rate:           7.5% (          8.1%     +         0.2%  )
+</code></pre></div></div>
+
+<p>The results are relatively good. That is just a bit weird that they are so much LLd misses with 100000 entities.</p>
+
+<h2 id="profiling">Profiling</h2>
+
+<p>To have an idea of which parts of the current implementation are taking time, I profiled the example with <a href="https://sourceware.org/binutils/docs/gprof/">gprof</a>.</p>
+
+<p>Here is the result:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Flat profile:
+
+Each sample counts as 0.01 seconds.
+  %   cumulative   self              self     total
+ time   seconds   seconds    calls  ms/call  ms/call  name
+ 57.45      1.16     1.16 200300000     0.00     0.00  std::__detail::_Map_base&lt;unsigned int, std::pair&lt;unsigned int const, unsigned int&gt;, std::allocator&lt;std::pair&lt;unsigned int const, unsigned int&gt; &gt;, std::__detail::_Select1st, std::equal_to&lt;unsigned int&gt;, std::hash&lt;unsigned int&gt;, std::__detail::_Mod_range_hashing, std::__detail::_Default_ranged_hash, std::__detail::_Prime_rehash_policy, std::__detail::_Hashtable_traits&lt;false, false, true&gt;, true&gt;::operator[](unsigned int const&amp;)
+ 19.31      1.55     0.39                             main
+ 16.34      1.88     0.33 200500000     0.00     0.00  std::_Hashtable&lt;unsigned int, std::pair&lt;unsigned int const, unsigned int&gt;, std::allocator&lt;std::pair&lt;unsigned int const, unsigned int&gt; &gt;, std::__detail::_Select1st, std::equal_to&lt;unsigned int&gt;, std::hash&lt;unsigned int&gt;, std::__detail::_Mod_range_hashing, std::__detail::_Default_ranged_hash, std::__detail::_Prime_rehash_policy, std::__detail::_Hashtable_traits&lt;false, false, true&gt; &gt;::_M_find_before_node(unsigned long, unsigned int const&amp;, unsigned long) const
+  3.96      1.96     0.08   300000     0.00     0.00  std::_Hashtable&lt;unsigned int, std::pair&lt;unsigned int const, unsigned int&gt;, std::allocator&lt;std::pair&lt;unsigned int const, unsigned int&gt; &gt;, std::__detail::_Select1st, std::equal_to&lt;unsigned int&gt;, std::hash&lt;unsigned int&gt;, std::__detail::_Mod_range_hashing, std::__detail::_Default_ranged_hash, std::__detail::_Prime_rehash_policy, std::__detail::_Hashtable_traits&lt;false, false, true&gt; &gt;::_M_insert_unique_node(unsigned long, unsigned long, std::__detail::_Hash_node&lt;std::pair&lt;unsigned int const, unsigned int&gt;, false&gt;*)
+  2.48      2.01     0.05   300000     0.00     0.00  unsigned int&amp; std::vector&lt;unsigned int, std::allocator&lt;unsigned int&gt; &gt;::emplace_back&lt;unsigned int&amp;&gt;(unsigned int&amp;)
+  0.50      2.02     0.01        3     3.33     3.33  std::_Hashtable&lt;unsigned int, std::pair&lt;unsigned int const, unsigned int&gt;, std::allocator&lt;std::pair&lt;unsigned int const, unsigned int&gt; &gt;, std::__detail::_Select1st, std::equal_to&lt;unsigned int&gt;, std::hash&lt;unsigned int&gt;, std::__detail::_Mod_range_hashing, std::__detail::_Default_ranged_hash, std::__detail::_Prime_rehash_policy, std::__detail::_Hashtable_traits&lt;false, false, true&gt; &gt;::~_Hashtable()
+  0.00      2.02     0.00   200000     0.00     0.00  std::_Hashtable&lt;unsigned int, std::pair&lt;unsigned int const, unsigned int&gt;, std::allocator&lt;std::pair&lt;unsigned int const, unsigned int&gt; &gt;, std::__detail::_Select1st, std::equal_to&lt;unsigned int&gt;, std::hash&lt;unsigned int&gt;, std::__detail::_Mod_range_hashing, std::__detail::_Default_ranged_hash, std::__detail::_Prime_rehash_policy, std::__detail::_Hashtable_traits&lt;false, false, true&gt; &gt;::find(unsigned int const&amp;)
+</code></pre></div></div>
+
+<p>The results may be a bit biased as I compiled with <code class="highlighter-rouge">-O1</code> flag so that gprof outputs something sensible. With a higher level of optimization, the compiler seems to aggressively inline everything and gprof reports almost nothing.</p>
+
+<p>According to gprof, it seems that the <code class="highlighter-rouge">std::unordered_map</code>s are clearly the bottleneck of this implementation. If we want to optimize it, we may want to get rid of them.</p>
+
+<h2 id="comparison-with-stdmap">Comparison with <code class="highlighter-rouge">std::map</code></h2>
+
+<p>I was curious to see the difference of performance between <code class="highlighter-rouge">unordered_map</code> and <code class="highlighter-rouge">map</code> so I replaced <code class="highlighter-rouge">unordered_map</code>s by <code class="highlighter-rouge">map</code>s in the code. This implementation is available <a href="https://github.com/pvigier/ecs/tree/map">here</a></p>
+
+<p>Here are the results on the benchmarks:</p>
+
+<p><img src="/media/img/ecs/map/create.png" alt="" />
+<img src="/media/img/ecs/map/iterate.png" alt="" />
+<img src="/media/img/ecs/map/create_and_remove.png" alt="" /></p>
+
+<p>We can observe that this time, it scales badly with the number of entities. And even with 1000 entities, it is twice slower on iteration than the version with <code class="highlighter-rouge">std::unordered_map</code>s.</p>
+
+<h1 id="conclusion">Conclusion</h1>
+
+<p>It is the end of the first part of this series. We have built a simple but already useful entity-component-system library. We will use it as a baseline for later improvements and optimizations.</p>
+
+<p>In the <a href="/2019/07/08/entity-component-system-part2.html">next part</a>, we will show how to improve the performance by replacing the <code class="highlighter-rouge">std::unordered_map</code>s by <code class="highlighter-rouge">std::vector</code>s. In addition, we will show how to automatically assign a type id to components.</p>
+
+<p>See you there!</p>
+
+<p><em>If you are interested by my adventures during the development of Vagabond, you can follow me on <a href="https://twitter.com/PierreVigier">Twitter</a>.</em></p>
+
+    
+	<p>Tags: <span class="label label-primary"><a href="/tag/vagabond">vagabond</a></span> <span class="label label-primary"><a href="/tag/ecs">ecs</a></span> <span class="label label-primary"><a href="/tag/cpp">cpp</a></span> </p>
+	
+</div><!-- /.blog-post -->
+<hr/>
+<p>Subscribe to the newsletter if you do not want to miss any new article:</p>
+<!-- Begin Mailchimp Signup Form -->
+<link href="//cdn-images.mailchimp.com/embedcode/horizontal-slim-10_7.css" rel="stylesheet" type="text/css">
+<style type="text/css">
+	#mc_embed_signup{background:#fff; clear:left; font:14px Helvetica,Arial,sans-serif; width:100%;}
+	/* Add your own Mailchimp form style overrides in your site stylesheet or in this style block.
+	   We recommend moving this block and the preceding CSS link to the HEAD of your HTML file. */
+</style>
+<div id="mc_embed_signup">
+<form action="https://ymail.us20.list-manage.com/subscribe/post?u=7bb3b720a12ef1d8e0b48d8da&amp;id=7516dd4562" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate" target="_blank" novalidate>
+    <div id="mc_embed_signup_scroll">
+	
+	<input type="email" value="" name="EMAIL" class="email" id="mce-EMAIL" placeholder="email address" required>
+    <!-- real people should not fill this in and expect good things - do not remove this or risk form bot signups-->
+    <div style="position: absolute; left: -5000px;" aria-hidden="true"><input type="text" name="b_7bb3b720a12ef1d8e0b48d8da_7516dd4562" tabindex="-1" value=""></div>
+    <div class="clear"><input type="submit" value="Subscribe" name="subscribe" id="mc-embedded-subscribe" class="button"></div>
+    </div>
+</form>
+</div>
+<!--End mc_embed_signup-->
+<!-- Disqus -->
+<hr/>
+<div id="disqus_thread"></div>
+<script>
+
+/**
+*  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+*  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+/*
+var disqus_config = function () {
+this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+};
+*/
+(function() { // DON'T EDIT BELOW THIS LINE
+var d = document, s = d.createElement('script');
+s.src = 'https://pvigier-github-io.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div><!-- /.blog-main -->
+<div class="col-sm-3 col-sm-offset-1 blog-sidebar">
+	<div class="sidebar-module">
+        <h4>Tags</h4>
+        <ol class="list-unstyled">
+		
+			<li><a href="/tag/math">math (3)</a></li>
+		
+			<li><a href="/tag/python">python (6)</a></li>
+		
+			<li><a href="/tag/cpp">cpp (6)</a></li>
+		
+			<li><a href="/tag/pcg">pcg (10)</a></li>
+		
+			<li><a href="/tag/simulopolis">simulopolis (5)</a></li>
+		
+			<li><a href="/tag/linux">linux (1)</a></li>
+		
+			<li><a href="/tag/geometry">geometry (1)</a></li>
+		
+			<li><a href="/tag/graph">graph (1)</a></li>
+		
+			<li><a href="/tag/git">git (1)</a></li>
+		
+			<li><a href="/tag/vagabond">vagabond (9)</a></li>
+		
+			<li><a href="/tag/ecs">ecs (2)</a></li>
+		
+        </ol>
+    </div>
+    <div class="sidebar-module">
+        <h4>Archives</h4>
+        <ol class="list-unstyled">
+		
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+			<li id="yJuly 2019"><a href="/2019/07">July 2019 (2)</a></li>
+				
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+			<li id="yJune 2019"><a href="/2019/06">June 2019 (4)</a></li>
+				
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+			<li id="yMay 2019"><a href="/2019/05">May 2019 (5)</a></li>
+				
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+			<li id="yNovember 2018"><a href="/2018/11">November 2018 (3)</a></li>
+				
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+			<li id="yOctober 2018"><a href="/2018/10">October 2018 (3)</a></li>
+				
+            
+        
+            
+            
+            
+            
+			<li id="yJune 2018"><a href="/2018/06">June 2018 (1)</a></li>
+				
+            
+        
+            
+            
+            
+            
+			<li id="yMay 2018"><a href="/2018/05">May 2018 (1)</a></li>
+				
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+			<li id="yFebruary 2018"><a href="/2018/02">February 2018 (2)</a></li>
+				
+            
+        
+            
+            
+            
+            
+			<li id="yAugust 2017"><a href="/2017/08">August 2017 (1)</a></li>
+				
+            
+        
+            
+            
+            
+            
+			<li id="yJuly 2017"><a href="/2017/07">July 2017 (1)</a></li>
+				
+            
+        
+            
+            
+            
+            
+			<li id="yFebruary 2017"><a href="/2017/02">February 2017 (1)</a></li>
+				
+            
+        
+        </ol>
+    </div>
+    <div class="sidebar-module">
+        <h4>Follow me</h4>
+        <ol class="list-unstyled">
+            <li><a href="https://github.com/pvigier">GitHub</a></li>
+            <li><a href="https://pvigier.itch.io/">itch.io</a></li>
+            <li><a href="https://twitter.com/PierreVigier">Twitter</a></li>
+            <li><a href="/rss.xml">RSS</a></li>
+        </ol>
+    </div>
+</div><!-- /.blog-sidebar -->
+
+            </div><!-- /.row -->
+        </div><!-- /.container -->
+
+        <footer class="blog-footer">
+            <p>Powered by <a href="http://getbootstrap.com">Bootstrap</a> and <a href="http://jekyllrb.com">Jekyll</a>.</p>
+            <p>
+                <a href="#">Back to top</a>
+            </p>
+        </footer>
+        <!-- Javascript -->
+        <!-- jQuery -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+        <!-- Bootstrap -->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+        <!-- MathJax -->
+        <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+        <!-- Analytics -->
+        <script>
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+        ga('create', 'UA-30902264-4', 'auto');
+        ga('send', 'pageview');
+        </script>
+        <!-- Modal images -->
+        <script src="/media/js/modal.js"></script>
+    </body>
+</html>

@@ -3,12 +3,34 @@
 	<title>pvigier's blog</title>
 	<link href="http://pvigier.github.io/rss.xml" rel="self"/>
 	<link href="http://pvigier.github.io"/>
-	<updated>2019-06-30T22:38:48+02:00</updated>
+	<updated>2019-07-08T15:06:39+02:00</updated>
 	<id>http://pvigier.github.io</id>
 	<author>
 		<name>Pierre Vigier</name>
 		<email>pierre.vigier@ymail.com</email>
 	</author>
+	
+		<entry>
+			<title>Entity-component-system &#8211; Part 2</title>
+			<link href="http://pvigier.github.io/2019/07/08/entity-component-system-part2.html"/>
+			<updated>2019-07-08T00:00:00+02:00</updated>
+			<id>http://pvigier.github.io/2019/07/08/entity-component-system-part2</id>
+			<content type="html">&lt;p&gt;In this article, we will take back our entity-component-system implementation where we left it in the &lt;a href=&quot;/2019/07/07/entity-component-system-part1.html&quot;&gt;previous article&lt;/a&gt; and try to improve it.&lt;/p&gt;
+
+</content>
+		</entry>
+	
+		<entry>
+			<title>Entity-component-system &#8211; Part 1</title>
+			<link href="http://pvigier.github.io/2019/07/07/entity-component-system-part1.html"/>
+			<updated>2019-07-07T00:00:00+02:00</updated>
+			<id>http://pvigier.github.io/2019/07/07/entity-component-system-part1</id>
+			<content type="html">&lt;p&gt;This week, I have started working on my game engine for my game Vagabond. I have worked on an implementation of the &lt;a href=&quot;https://en.wikipedia.org/wiki/Entity_component_system&quot;&gt;entity-component-system&lt;/a&gt; pattern.&lt;/p&gt;
+
+&lt;p&gt;In this article, I want to share with you my implementation which is freely available on &lt;a href=&quot;https://github.com/pvigier/ecs&quot;&gt;GitHub&lt;/a&gt;. But instead of just commenting the code, I want to explain how I designed it. Thus, I will start with the first implementation I coded, analyze its strengths and weaknesses and then show how I improved it. Finally, I will give a list of things that still could be improved.&lt;/p&gt;
+
+</content>
+		</entry>
 	
 		<entry>
 			<title>Vagabond &#8211; Dungeon and cave generation &#8211; Part 2</title>

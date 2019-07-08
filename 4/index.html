@@ -40,6 +40,51 @@
             <div class="col-sm-8 blog-main">
 
     <div class="blog-post">
+        <h2 class="blog-post-title"><a href="/2018/10/07/distributing-c++-program-linux.html">Distributing a C++ program on Linux</a></h2>
+        <p class="blog-post-meta">07 Oct 2018 by <a href="/">pierre</a></p>
+        <p>Hi!</p>
+
+<p>Today I will tackle a problem I faced when I wanted to distribute the alpha version of Simulopolis two weeks ago: distributing a C++ binary on different Linux distributions.</p>
+
+<p>So, two weeks ago, I was happy as I had a version of Simulopolis which ran smoothly on my laptop. And I thought it was time to share it with people to have some feedback. Very naively, I took the binary and the assets, put them on a new folder and uploaded the whole thing on itch.io.</p>
+
+<p>Then, I sent a message to my big brother telling him that he can try my game. He downloaded the game and when he tried to run the game, he obtained this error message:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>./Simulopolis: error while loading shared libraries: libboost_serialization.so.1.65.1: cannot open shared object file: No such file or directory
+</code></pre></div></div>
+
+<p>Uhh, this was not expected!</p>
+
+<p><img src="https://media.giphy.com/media/U4VXRfcY3zxTi/giphy.gif" alt="Disappointed gif" class="center-image modal-image" /></p>
+
+<p>We read the error message, it tells that a dependency I use to build the game is missing on my brother’s system. So he tried to install Boost Serialization, SFML and TinyXML the three libraries I use in Simulopolis. But that did not solve the problem because the program is looking for a specific version of the dependency (here the version 1.65.1 of Boost serialization). And as he was on a different Linux distribution, Fedora, than me, Ubuntu, it was not the same version of Boost Serialization that was available in its package manager.</p>
+
+
+        <p><a href="/2018/10/07/distributing-c++-program-linux.html">Read more ...</a></p>
+        
+        <p>Tags: <span class="label label-primary"><a href="/tag/cpp">cpp</a></span> <span class="label label-primary"><a href="/tag/linux">linux</a></span> <span class="label label-primary"><a href="/tag/simulopolis">simulopolis</a></span> </p>
+        
+    </div>
+    <hr />
+
+    <div class="blog-post">
+        <h2 class="blog-post-title"><a href="/2018/10/06/simulopolis-alpha-1.html">Simulopolis alpha is released</a></h2>
+        <p class="blog-post-meta">06 Oct 2018 by <a href="/">pierre</a></p>
+        <p><img src="/media/img/simulopolis-alpha-1/cover.png" alt="Cover" class="center-image modal-image" /></p>
+
+<p>Today, I’m happy to announce you that the first release of my city building game, Simulopolis, is available online.</p>
+
+<p>It’s been a long and chaotic journey which lasted a bit more than six months.</p>
+
+
+        <p><a href="/2018/10/06/simulopolis-alpha-1.html">Read more ...</a></p>
+        
+        <p>Tags: <span class="label label-primary"><a href="/tag/simulopolis">simulopolis</a></span> </p>
+        
+    </div>
+    <hr />
+
+    <div class="blog-post">
         <h2 class="blog-post-title"><a href="/2018/06/13/perlin-noise-numpy.html">Perlin noise with numpy</a></h2>
         <p class="blog-post-meta">13 Jun 2018 by <a href="/">pierre</a></p>
         <p>Hi everyone, I have written an implementation of Perlin noise with numpy that is pretty fast, and I want to share it with you. The code is available <a href="https://github.com/pvigier/perlin-numpy">here</a>.</p>
@@ -169,50 +214,6 @@
     </div>
     <hr />
 
-    <div class="blog-post">
-        <h2 class="blog-post-title"><a href="/2018/02/09/dependency-graph.html">Circular dependencies in C++</a></h2>
-        <p class="blog-post-meta">09 Feb 2018 by <a href="/">pierre</a></p>
-        <p>Hi guys, it has been a while since the last post.</p>
-
-<p>I write this short post to tell you about a small script I coded recently. You can find it <a href="https://github.com/pvigier/dependency-graph">here</a> on my github account.</p>
-
-<p>Its goal is to draw the “include” dependencies between classes in a C++ project. In particular, it allows to detect circular dependencies very easily or to check the architecture of a project.</p>
-
-<p>You can see the output of the script on a project of mine:</p>
-
-<p><img src="https://github.com/pvigier/dependency-graph/raw/master/examples/example1.png" alt="Dependency graph" class="center-image modal-image" /></p>
-
-<p>I really like this visual representation which allows to see how classes interact.</p>
-
-<p>However, the true reason why I created this tool is not because I like to see beautiful graphs but because I hate circular dependencies (note that there is none in the graph above). I consider circular dependencies as design flaws. But sometimes in a large project, it could happen that accidentally I create circular dependencies …</p>
-
-
-        <p><a href="/2018/02/09/dependency-graph.html">Read more ...</a></p>
-        
-        <p>Tags: <span class="label label-primary"><a href="/tag/cpp">cpp</a></span> <span class="label label-primary"><a href="/tag/python">python</a></span> </p>
-        
-    </div>
-    <hr />
-
-    <div class="blog-post">
-        <h2 class="blog-post-title"><a href="/2017/08/13/pychain-part2-mnist.html">Pychain Part 2 - Application: MNIST</a></h2>
-        <p class="blog-post-meta">13 Aug 2017 by <a href="/">pierre</a></p>
-        <p>In <a href="/2017/07/21/pychain-part1-computational-graphs.html">part 1</a>, we have created a fully functional library which is able to create and train neural networks using computational graphs. We used them on very simple examples. Today, we are going to try it on a more serious problem: character recognition.</p>
-
-<p>We are going to use a well-known database in the machine learning and deep learning world named MNIST. The database is available on <a href="http://yann.lecun.com/exdb/mnist/">Yann LeCun’s website</a>. If you have read a bit about neural networks before you should have already seen his name. He is a French scientist who is one of the pioneers of neural networks and inventors of convolutional neural networks and he is now the director of AI at Facebook.</p>
-
-<p>Character recognition is an emblematic problem for two reasons. Firstly, it is one of the first successes and industrial applications of neural networks. It was used since the 90’s to read checks. Secondly, computer vision has always been a leading application domain for neural networks.</p>
-
-<p>In this part, we are going to briefly discover the MNIST database. Then, we are going to train some networks on it and finally, we are going to explore a bit how a neural network works.</p>
-
-
-        <p><a href="/2017/08/13/pychain-part2-mnist.html">Read more ...</a></p>
-        
-        <p>Tags: <span class="label label-primary"><a href="/tag/math">math</a></span> <span class="label label-primary"><a href="/tag/python">python</a></span> </p>
-        
-    </div>
-    <hr />
-
 <nav>
     <ul class="pager">
         
@@ -234,7 +235,7 @@
 		
 			<li><a href="/tag/python">python (6)</a></li>
 		
-			<li><a href="/tag/cpp">cpp (4)</a></li>
+			<li><a href="/tag/cpp">cpp (6)</a></li>
 		
 			<li><a href="/tag/pcg">pcg (10)</a></li>
 		
@@ -248,7 +249,9 @@
 		
 			<li><a href="/tag/git">git (1)</a></li>
 		
-			<li><a href="/tag/vagabond">vagabond (7)</a></li>
+			<li><a href="/tag/vagabond">vagabond (9)</a></li>
+		
+			<li><a href="/tag/ecs">ecs (2)</a></li>
 		
         </ol>
     </div>
@@ -256,6 +259,19 @@
         <h4>Archives</h4>
         <ol class="list-unstyled">
 		
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+			<li id="yJuly 2019"><a href="/2019/07">July 2019 (2)</a></li>
+				
+            
         
             
             

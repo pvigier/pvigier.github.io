@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="">
+        <meta name="author" content="Pierre Vigier">
+
+        <title>Entity-component-system &#8211; Part 2 - pvigier's blog</title>
+        <link rel="shortcut icon" href="/media/img/favicon.png">
+        <!-- Bootstrap -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+        <!-- My themes -->
+        <link href="/media/css/style.css" rel="stylesheet">
+        <link href="/media/css/syntax.css" rel="stylesheet">
+        <link href="/media/css/modal.css" rel="stylesheet">
+        <!-- RSS -->
+        <link href="https://pvigier.github.io/rss.xml" rel="alternate" title="pvigier's blog" type="application/atom+xml" />
+    </head>
+    <body>
+        <div class="blog-masthead">
+            <div class="container">
+                <nav class="blog-nav">
+                    <a class="blog-nav-item active" href="/">Blog</a>
+                    <a class="blog-nav-item" href="/articles">Articles</a>
+                    <a class="blog-nav-item" href="/projects">Projects</a>
+                    <!--<a class="blog-nav-item" href="/best-resources">Best Resources</a>-->
+                    <!--<a class="blog-nav-item" href="/resume">Resume</a>-->
+                    <a class="blog-nav-item" href="/about">About</a>
+                </nav>
+            </div>
+        </div>
+        <div class="container">
+            <div class="blog-header">
+                <h1 class="blog-title">pvigier's blog</h1>
+                <p class="lead blog-description">computer science, programming and other ideas</p>
+            </div>
+            <div class="row">
+            <div class="col-sm-8 blog-main">
+<div class="blog-post">
+    <h2 class="blog-post-title">Entity-component-system &#8211; Part 2</h2>
+    <p class="blog-post-meta">08 Jul 2019 by <a href="/">pierre</a></p>
+    <p>In this article, we will take back our entity-component-system implementation where we left it in the <a href="/2019/07/07/entity-component-system-part1.html">previous article</a> and try to improve it.</p>
+
+<!--more-->
+
+<h1 id="replacing-stdunordered_maps-by-stdvectors">Replacing <code class="highlighter-rouge">std::unordered_map</code>s by <code class="highlighter-rouge">std::vector</code>s</h1>
+
+<p>As we saw in the last article, <code class="highlighter-rouge">std::unordered_map</code>s were the bottleneck of our implementation. Thus, instead of using <code class="highlighter-rouge">std::unordered_map</code>s for <code class="highlighter-rouge">mEntityToComponent</code> in <code class="highlighter-rouge">ComponentContainer</code> and <code class="highlighter-rouge">mEntityToManagedEntity</code> in <code class="highlighter-rouge">System</code>, we will use <code class="highlighter-rouge">std::vector</code>s.</p>
+
+<h2 id="changes">Changes</h2>
+
+<p>The changes are really simple, you can review them <a href="https://github.com/pvigier/ecs/commit/290099e821036225b9d7fe75ca7ffcbb2c0ae7a4">here</a>.</p>
+
+<p>The only subtlety is that we have to ensure that the <code class="highlighter-rouge">vector</code>s <code class="highlighter-rouge">mEntityToComponent</code> and <code class="highlighter-rouge">mEntityToManagedEntity</code> are long enough to be indexed by any entity. To be able to do that easily, I chose to store those <code class="highlighter-rouge">vector</code>s in <code class="highlighter-rouge">EntityContainer</code> where we know the maximum entity id. Then I pass the <code class="highlighter-rouge">vector</code>s to component containers and systems by reference or pointer in the entity manager.</p>
+
+<p>You can find the code after the changes in this <a href="https://github.com/pvigier/ecs/tree/vector">branch</a>.</p>
+
+<h2 id="results">Results</h2>
+
+<p>Let us see if this version performs better than the previous one:</p>
+
+<p><img src="/media/img/ecs/vector/create.png" alt="" />
+<img src="/media/img/ecs/vector/iterate.png" alt="" />
+<img src="/media/img/ecs/vector/create_and_remove.png" alt="" /></p>
+
+<p>We can see that creation and removal is a bit slower when there are lots of components and systems.</p>
+
+<p>However, iteration is a lot faster, nearly ten times faster! And it scales very well. This speedup largely counterbalances the slowdown in creation and removal. Indeed, an entity will be iterated a large number of times while it is created and removed only once.</p>
+
+<p>Now let us see, if it also reduces the number of cache misses.</p>
+
+<p>Here is the output of cachegrind with 10000 entities:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>==1374== D   refs:       94,563,949  (72,082,880 rd   + 22,481,069 wr)
+==1374== D1  misses:      4,813,780  ( 4,417,702 rd   +    396,078 wr)
+==1374== LLd misses:        378,905  (     9,626 rd   +    369,279 wr)
+==1374== D1  miss rate:         5.1% (       6.1%     +        1.8%  )
+==1374== LLd miss rate:         0.4% (       0.0%     +        1.6%  )
+</code></pre></div></div>
+
+<p>And the output with 100000 entities:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>==1307== D   refs:        938,405,796  (715,424,940 rd   + 222,980,856 wr)
+==1307== D1  misses:       51,034,738  ( 44,045,090 rd   +   6,989,648 wr)
+==1307== LLd misses:        5,866,508  (  1,997,948 rd   +   3,868,560 wr)
+==1307== D1  miss rate:           5.4% (        6.2%     +         3.1%  )
+==1307== LLd miss rate:           0.6% (        0.3%     +         1.7%  )
+</code></pre></div></div>
+
+<p>We can observe that this version does approximately three times less references and four times less cache misses.</p>
+
+<h1 id="automatic-types">Automatic types</h1>
+
+<p>The last improvement I will present is the automatic generation of type ids for the components.</p>
+
+<h2 id="changes-1">Changes</h2>
+
+<p>You can review all the changes to achieve automatic generation of type ids <a href="https://github.com/pvigier/ecs/commit/09b2b8b6aa4abe65255ac716a85dcf8d25a7e586">here</a>.</p>
+
+<p>The idea to be able to assign one different id to each component type is to take advantage of CRTP and a function with a static counter:</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span>
+<span class="k">class</span> <span class="nc">Component</span>
+<span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+    <span class="k">static</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">type</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">generateComponentType</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="k">static</span> <span class="k">auto</span> <span class="n">counter</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+    <span class="k">return</span> <span class="n">counter</span><span class="o">++</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span>
+<span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">Component</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;::</span><span class="n">type</span> <span class="o">=</span> <span class="n">generateComponentType</span><span class="p">();</span>
+</code></pre></div></div>
+
+<p>We can notice that the type id is now generated at run time while before it was known at compile time.</p>
+
+<p>You can find the code after the changes in this <a href="https://github.com/pvigier/ecs/tree/automatic_component_type">branch</a>.</p>
+
+<h2 id="results-1">Results</h2>
+
+<p>I ran the benchmarks on this version to check the performance:</p>
+
+<p><img src="/media/img/ecs/automatic_type/create.png" alt="" />
+<img src="/media/img/ecs/automatic_type/iterate.png" alt="" />
+<img src="/media/img/ecs/automatic_type/create_and_remove.png" alt="" /></p>
+
+<p>The results are roughly the same for creation and removal. However, we can notice that iteration is a bit slower, roughly 10% slower.</p>
+
+<p>We can explain this slowdown by the fact that previously the compiler known the type ids at compile time and consequently was able to better optimize the code.</p>
+
+<p>It is a bit cumbersome and error-prone to have to specify the type ids of components manually. Thus, even if we lose a bit of performance it is still an improvement in the usability of our entity-component-system library.</p>
+
+<h1 id="ideas-for-improvements">Ideas for improvements</h1>
+
+<p>Before finishing this article, I would like to share with you some ideas for improvements. I have not implemented them yet but I may do it in the future.</p>
+
+<h2 id="dynamic-number-of-components-and-systems">Dynamic number of components and systems</h2>
+
+<p>It is a bit cumbersome too to have to specify in advance the maximum number of components and systems as template parameters. I think it would be possible to replace the <code class="highlighter-rouge">std::array</code>s in <code class="highlighter-rouge">EntityManager</code> by <code class="highlighter-rouge">std::vector</code>s without a big penalty in performance.</p>
+
+<p>However, <code class="highlighter-rouge">std::bitset</code> requires to know its number of bits at compile time. Currently, my idea to fix this issue is that instead of having a <code class="highlighter-rouge">std::vector&lt;bitset&lt;ComponentCount&gt;&gt;</code> in <code class="highlighter-rouge">EntityContainer</code>, we just use a <code class="highlighter-rouge">std::vector&lt;char&gt;</code> and we allocate enough bytes to represent the bit sets of all the entities. Then, we implement a lightweight class <code class="highlighter-rouge">BitsetView</code> that takes as input a pair of pointers for the beginning and the end of the bit set and we perform all the useful operations of <code class="highlighter-rouge">std::bitset</code> in this range of memory.</p>
+
+<p>Another idea is to not use bit sets anymore and just rely on <code class="highlighter-rouge">mEntityToComponent</code> to determine if an entity has a component or not.</p>
+
+<h2 id="easier-iteration-of-components">Easier iteration of components</h2>
+
+<p>For now, if a system wants to iterate the components of its managed entities, we have to do as follow:</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="n">entity</span> <span class="o">:</span> <span class="n">getManagedEntities</span><span class="p">())</span>
+<span class="p">{</span>
+    <span class="k">auto</span> <span class="p">[</span><span class="n">position</span><span class="p">,</span> <span class="n">velocity</span><span class="p">]</span> <span class="o">=</span> <span class="n">mEntityManager</span><span class="p">.</span><span class="n">getComponents</span><span class="o">&lt;</span><span class="n">Position</span><span class="p">,</span> <span class="n">Velocity</span><span class="o">&gt;</span><span class="p">(</span><span class="n">entity</span><span class="p">);</span>
+    <span class="p">...</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>It would be nicer and simpler, if we can do something like that:</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">for</span> <span class="p">(</span><span class="k">auto</span><span class="o">&amp;</span> <span class="p">[</span><span class="n">position</span><span class="p">,</span> <span class="n">velocity</span><span class="p">]</span> <span class="o">:</span> <span class="n">mEntityManager</span><span class="p">.</span><span class="n">getComponents</span><span class="o">&lt;</span><span class="n">Position</span><span class="p">,</span> <span class="n">Velocity</span><span class="o">&gt;</span><span class="p">(</span><span class="n">mManagedEntities</span><span class="p">))</span>
+<span class="p">{</span>
+    <span class="p">...</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>This will be a piece of cake with C++20 <code class="highlighter-rouge">std::view::transform</code> from the <a href="https://en.cppreference.com/w/cpp/ranges">ranges library</a>.</p>
+
+<p>Unfortunately, this is not ready yet. I could have used Eric Niebler’s <a href="https://github.com/ericniebler/range-v3">range library</a> but I do not want to add a dependency.</p>
+
+<p>The solution would be implement a class <code class="highlighter-rouge">EntityRangeView</code> that would take as template parameters the component types to retrieve and as constructor parameter a reference to a <code class="highlighter-rouge">std::vector</code> of entities. Then, we just have to implement <code class="highlighter-rouge">begin</code>, <code class="highlighter-rouge">end</code> and an iterator type to be able to obtain the desired behavior. It is not really difficult but a bit cumbersome to write.</p>
+
+<h2 id="optimization-of-event-dispatching">Optimization of event dispatching</h2>
+
+<p>Currently, when we add or remove a component to an entity, we call the <code class="highlighter-rouge">onEntityUpdated</code> of all systems. It is a bit inefficient as many systems are not interested by the component type that just has been modified.</p>
+
+<p>To mitigate that, we can store pointers to systems interested by a given component type in a data structure like <code class="highlighter-rouge">std::array&lt;std::vector&lt;System&lt;ComponentCount, SystemCount&gt;&gt;, ComponentCount&gt;</code>. Then, when we add or remove a component, we just call the method <code class="highlighter-rouge">onEntityUpdated</code> of the systems that are interested by this component.</p>
+
+<h2 id="subsets-of-entities-managed-by-the-entity-manager-instead-of-systems">Subsets of entities managed by the entity manager instead of systems</h2>
+
+<p>My last idea induces more changes in the design of the library.</p>
+
+<p>Instead that it is systems that manages their sets of entities, it would be the role of the entity manager. The advantage would be that if two systems are interested in the same set of components, we do not duplicate the subset of entities that satisfy these requirements.</p>
+
+<p>The systems would just declare their requirements to the entity manager. Then the entity manager will maintain all the different subsets of entities. Finally, the systems would request entities with a syntax like this one:</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="n">entity</span> <span class="o">:</span> <span class="n">mEntityManager</span><span class="p">.</span><span class="n">getEntitiesWith</span><span class="o">&lt;</span><span class="n">Position</span><span class="p">,</span> <span class="n">Velocity</span><span class="o">&gt;</span><span class="p">())</span>
+<span class="p">{</span>
+    <span class="p">...</span>
+<span class="p">}</span>
+</code></pre></div></div>
+<h1 id="conclusion">Conclusion</h1>
+
+<p>It is the end, for now, of this series of article on my entity-component-system implementation. I may write new articles if I make some improvements in the future.</p>
+
+<p>The implementation described here while simple: it has less than 500 lines of code, it also has good performance. All operations are implemented in (amortized) constant time. Moreover, in practice, it is cache-friendly and is very fast to retrieve and iterate entities.</p>
+
+<p>I hope you find these articles interesting or even useful for you.</p>
+
+<p>See you next week for more!</p>
+
+<h1 id="to-go-further">To go further</h1>
+
+<p>Here are some useful resources to dive deeper in entity-component-systems:</p>
+
+<ul>
+  <li>Michele Caini, the creator of <a href="https://github.com/skypjack/entt">entt</a>, is writing a very interesting series of articles on entity-component-system called <a href="https://skypjack.github.io/2019-02-14-ecs-baf-part-1/">ECS back and forth</a>.</li>
+  <li>The <a href="http://entity-systems.wikidot.com/">Entity Systems Wiki</a> also contains very useful information and links.</li>
+</ul>
+
+<p><em>If you are interested by my adventures during the development of Vagabond, you can follow me on <a href="https://twitter.com/PierreVigier">Twitter</a>.</em></p>
+
+    
+	<p>Tags: <span class="label label-primary"><a href="/tag/vagabond">vagabond</a></span> <span class="label label-primary"><a href="/tag/ecs">ecs</a></span> <span class="label label-primary"><a href="/tag/cpp">cpp</a></span> </p>
+	
+</div><!-- /.blog-post -->
+<hr/>
+<p>Subscribe to the newsletter if you do not want to miss any new article:</p>
+<!-- Begin Mailchimp Signup Form -->
+<link href="//cdn-images.mailchimp.com/embedcode/horizontal-slim-10_7.css" rel="stylesheet" type="text/css">
+<style type="text/css">
+	#mc_embed_signup{background:#fff; clear:left; font:14px Helvetica,Arial,sans-serif; width:100%;}
+	/* Add your own Mailchimp form style overrides in your site stylesheet or in this style block.
+	   We recommend moving this block and the preceding CSS link to the HEAD of your HTML file. */
+</style>
+<div id="mc_embed_signup">
+<form action="https://ymail.us20.list-manage.com/subscribe/post?u=7bb3b720a12ef1d8e0b48d8da&amp;id=7516dd4562" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate" target="_blank" novalidate>
+    <div id="mc_embed_signup_scroll">
+	
+	<input type="email" value="" name="EMAIL" class="email" id="mce-EMAIL" placeholder="email address" required>
+    <!-- real people should not fill this in and expect good things - do not remove this or risk form bot signups-->
+    <div style="position: absolute; left: -5000px;" aria-hidden="true"><input type="text" name="b_7bb3b720a12ef1d8e0b48d8da_7516dd4562" tabindex="-1" value=""></div>
+    <div class="clear"><input type="submit" value="Subscribe" name="subscribe" id="mc-embedded-subscribe" class="button"></div>
+    </div>
+</form>
+</div>
+<!--End mc_embed_signup-->
+<!-- Disqus -->
+<hr/>
+<div id="disqus_thread"></div>
+<script>
+
+/**
+*  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+*  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+/*
+var disqus_config = function () {
+this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+};
+*/
+(function() { // DON'T EDIT BELOW THIS LINE
+var d = document, s = d.createElement('script');
+s.src = 'https://pvigier-github-io.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div><!-- /.blog-main -->
+<div class="col-sm-3 col-sm-offset-1 blog-sidebar">
+	<div class="sidebar-module">
+        <h4>Tags</h4>
+        <ol class="list-unstyled">
+		
+			<li><a href="/tag/math">math (3)</a></li>
+		
+			<li><a href="/tag/python">python (6)</a></li>
+		
+			<li><a href="/tag/cpp">cpp (6)</a></li>
+		
+			<li><a href="/tag/pcg">pcg (10)</a></li>
+		
+			<li><a href="/tag/simulopolis">simulopolis (5)</a></li>
+		
+			<li><a href="/tag/linux">linux (1)</a></li>
+		
+			<li><a href="/tag/geometry">geometry (1)</a></li>
+		
+			<li><a href="/tag/graph">graph (1)</a></li>
+		
+			<li><a href="/tag/git">git (1)</a></li>
+		
+			<li><a href="/tag/vagabond">vagabond (9)</a></li>
+		
+			<li><a href="/tag/ecs">ecs (2)</a></li>
+		
+        </ol>
+    </div>
+    <div class="sidebar-module">
+        <h4>Archives</h4>
+        <ol class="list-unstyled">
+		
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+			<li id="yJuly 2019"><a href="/2019/07">July 2019 (2)</a></li>
+				
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+			<li id="yJune 2019"><a href="/2019/06">June 2019 (4)</a></li>
+				
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+			<li id="yMay 2019"><a href="/2019/05">May 2019 (5)</a></li>
+				
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+			<li id="yNovember 2018"><a href="/2018/11">November 2018 (3)</a></li>
+				
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+			<li id="yOctober 2018"><a href="/2018/10">October 2018 (3)</a></li>
+				
+            
+        
+            
+            
+            
+            
+			<li id="yJune 2018"><a href="/2018/06">June 2018 (1)</a></li>
+				
+            
+        
+            
+            
+            
+            
+			<li id="yMay 2018"><a href="/2018/05">May 2018 (1)</a></li>
+				
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+			<li id="yFebruary 2018"><a href="/2018/02">February 2018 (2)</a></li>
+				
+            
+        
+            
+            
+            
+            
+			<li id="yAugust 2017"><a href="/2017/08">August 2017 (1)</a></li>
+				
+            
+        
+            
+            
+            
+            
+			<li id="yJuly 2017"><a href="/2017/07">July 2017 (1)</a></li>
+				
+            
+        
+            
+            
+            
+            
+			<li id="yFebruary 2017"><a href="/2017/02">February 2017 (1)</a></li>
+				
+            
+        
+        </ol>
+    </div>
+    <div class="sidebar-module">
+        <h4>Follow me</h4>
+        <ol class="list-unstyled">
+            <li><a href="https://github.com/pvigier">GitHub</a></li>
+            <li><a href="https://pvigier.itch.io/">itch.io</a></li>
+            <li><a href="https://twitter.com/PierreVigier">Twitter</a></li>
+            <li><a href="/rss.xml">RSS</a></li>
+        </ol>
+    </div>
+</div><!-- /.blog-sidebar -->
+
+            </div><!-- /.row -->
+        </div><!-- /.container -->
+
+        <footer class="blog-footer">
+            <p>Powered by <a href="http://getbootstrap.com">Bootstrap</a> and <a href="http://jekyllrb.com">Jekyll</a>.</p>
+            <p>
+                <a href="#">Back to top</a>
+            </p>
+        </footer>
+        <!-- Javascript -->
+        <!-- jQuery -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+        <!-- Bootstrap -->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+        <!-- MathJax -->
+        <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+        <!-- Analytics -->
+        <script>
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+        ga('create', 'UA-30902264-4', 'auto');
+        ga('send', 'pageview');
+        </script>
+        <!-- Modal images -->
+        <script src="/media/js/modal.js"></script>
+    </body>
+</html>
