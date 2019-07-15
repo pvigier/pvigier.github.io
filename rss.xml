@@ -3,12 +3,26 @@
 	<title>pvigier's blog</title>
 	<link href="http://pvigier.github.io/rss.xml" rel="self"/>
 	<link href="http://pvigier.github.io"/>
-	<updated>2019-07-08T15:36:18+02:00</updated>
+	<updated>2019-07-15T12:11:58+02:00</updated>
 	<id>http://pvigier.github.io</id>
 	<author>
 		<name>Pierre Vigier</name>
 		<email>pierre.vigier@ymail.com</email>
 	</author>
+	
+		<entry>
+			<title>Vagabond &#8211; Game engine foundations</title>
+			<link href="http://pvigier.github.io/2019/07/14/vagabond-game-engine-foundations.html"/>
+			<updated>2019-07-14T00:00:00+02:00</updated>
+			<id>http://pvigier.github.io/2019/07/14/vagabond-game-engine-foundations</id>
+			<content type="html">&lt;p&gt;This week, I have continued to develop my game engine. I have laid the foundation for a certain number of engines and systems.&lt;/p&gt;
+
+&lt;p&gt;As you may know, I am using SFML and C++ to create my game. However, building a game directly with SFML is a bit tough as SFML is a low-level library. Thus I have decided to build a small game engine to help me later on. Nothing too fancy or general, just the necessary to be able to power Vagabond.&lt;/p&gt;
+
+&lt;p&gt;But, I did not do everything from scratch. I used the experience I acquired during the development of &lt;a href=&quot;https://github.com/pvigier/Simulopolis&quot;&gt;Simulopolis&lt;/a&gt;. Moreover, when I finished developing Simulopolis, I read two books &lt;a href=&quot;https://www.packtpub.com/game-development/sfml-game-development&quot;&gt;SFML Game Development&lt;/a&gt; and &lt;a href=&quot;https://www.packtpub.com/game-development/sfml-game-development-example&quot;&gt;SFML Game Development By Example&lt;/a&gt; to compare their approaches and mine. It was really instructive.&lt;/p&gt;
+
+</content>
+		</entry>
 	
 		<entry>
 			<title>Entity-component-system &#8211; Part 2</title>

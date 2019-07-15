@@ -40,6 +40,68 @@
             <div class="col-sm-8 blog-main">
 
     <div class="blog-post">
+        <h2 class="blog-post-title"><a href="/2018/02/15/non-empty-destructors.html">Non empty destructors in C++</a></h2>
+        <p class="blog-post-meta">15 Feb 2018 by <a href="/">pierre</a></p>
+        <p>Have you already faced problems with nontrivial destructors?</p>
+
+<p>I face one recently which was really annoying. In this article, I want to share with you my knowledge of this problem and the solutions I use to address it.</p>
+
+<h1 id="the-problem">The problem</h1>
+
+<p>The problem is not really that the destructor is nonempty but that the destructor is nontrivial: there is a release of memory or some states are changed in another part of the app.</p>
+
+<p>Let us take a very simple example with a class that does dynamic allocation to explain the problem:</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">A</span>
+<span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+	<span class="n">A</span><span class="p">()</span> <span class="o">:</span> <span class="n">mPointer</span><span class="p">(</span><span class="k">new</span> <span class="kt">int</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+	<span class="p">{</span>
+
+	<span class="p">}</span>
+
+	<span class="o">~</span><span class="n">A</span><span class="p">()</span>
+	<span class="p">{</span>
+		<span class="k">delete</span> <span class="n">mPointer</span><span class="p">;</span>
+	<span class="p">}</span>
+
+<span class="k">private</span><span class="o">:</span>
+	<span class="kt">int</span><span class="o">*</span> <span class="n">mPointer</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>As we allocate an integer in the constructor, the natural solution for memory management is to free it in the destructor. However, this will have terrible consequences.</p>
+
+<p>For instance, if we do this:</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+	<span class="n">A</span> <span class="n">a</span><span class="p">;</span>
+	<span class="n">A</span> <span class="n">anotherA</span><span class="p">(</span><span class="n">a</span><span class="p">);</span>
+
+	<span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>A <code class="highlighter-rouge">Segmentation fault</code> will occur.</p>
+
+<p>Why?</p>
+
+<p>Because when the <code class="highlighter-rouge">main</code> function ends, the destructor of <code class="highlighter-rouge">A</code> is called to delete <code class="highlighter-rouge">a</code> and <code class="highlighter-rouge">anotherA</code>. When <code class="highlighter-rouge">a</code> is destroyed the memory cell to which <code class="highlighter-rouge">a</code>’s <code class="highlighter-rouge">mPointer</code> points to is freed. Then, when <code class="highlighter-rouge">anotherA</code> is destroyed, we try to free the memory to which <code class="highlighter-rouge">anotherA</code>’s <code class="highlighter-rouge">mPointer</code> points to. But as <code class="highlighter-rouge">anotherA</code> is a copy of <code class="highlighter-rouge">a</code>, its <code class="highlighter-rouge">mPointer</code> points to the same memory cell as <code class="highlighter-rouge">a</code>’s <code class="highlighter-rouge">mPointer</code>. Thus, we try to free twice the same memory cell which causes the <code class="highlighter-rouge">Segmentation fault</code>.</p>
+
+<p>So, the problem is that because of the copy the destructor is called twice on the same attributes.</p>
+
+<p>Note that the copy or move constructors are often called when we use containers. For instance, there is a copy or a move when the <code class="highlighter-rouge">std::vector</code>’s <code class="highlighter-rouge">push_back</code> is called.</p>
+
+
+        <p><a href="/2018/02/15/non-empty-destructors.html">Read more ...</a></p>
+        
+        <p>Tags: <span class="label label-primary"><a href="/tag/cpp">cpp</a></span> </p>
+        
+    </div>
+    <hr />
+
+    <div class="blog-post">
         <h2 class="blog-post-title"><a href="/2018/02/09/dependency-graph.html">Circular dependencies in C++</a></h2>
         <p class="blog-post-meta">09 Feb 2018 by <a href="/">pierre</a></p>
         <p>Hi guys, it has been a while since the last post.</p>
@@ -171,9 +233,11 @@
 		
 			<li><a href="/tag/git">git (1)</a></li>
 		
-			<li><a href="/tag/vagabond">vagabond (9)</a></li>
+			<li><a href="/tag/vagabond">vagabond (10)</a></li>
 		
 			<li><a href="/tag/ecs">ecs (2)</a></li>
+		
+			<li><a href="/tag/game-engine">game-engine (1)</a></li>
 		
         </ol>
     </div>
@@ -191,7 +255,12 @@
             
             
             
-			<li id="yJuly 2019"><a href="/2019/07">July 2019 (2)</a></li>
+        
+            
+            
+            
+            
+			<li id="yJuly 2019"><a href="/2019/07">July 2019 (3)</a></li>
 				
             
         
