@@ -71,7 +71,7 @@
 
 <p>The next step is to choose a formula to describe the color received by a point from the light.</p>
 
-<p>As a point light emit the same light in all the directions, the color received only depends on the distance. Hence, we can use a formula which looks like that:</p>
+<p>As a point light emits the same light in all the directions, the color received only depends on the distance. Hence, we can use a formula which looks like that:</p>
 
 <script type="math/tex; mode=display">C(d) = attenuation(d) \times I \times C_{light}</script>
 
@@ -89,7 +89,7 @@
 
 <p><img src="/media/img/vagabond-2d-light-system/realist.png" alt="" width="400" class="center-image modal-image" /></p>
 
-<p>Consequently, I looked for other formulas, that are maybe less physically realist, but that give better results.</p>
+<p>Consequently, I looked for other formulas, that are maybe less physically realist, but that gives better results.</p>
 
 <p>I start with a simple linear attenuation:</p>
 
@@ -113,7 +113,7 @@
 
 <p>For now, we do not take into account any obstacle for the light. We simply draw a square around the light.</p>
 
-<p>To be able, to take into account walls and have shadows, I use a more complex shape. I compute the the set of points that are visible for the light center, this set is called the <a href="https://en.wikipedia.org/wiki/Visibility_polygon">visibility polygon</a>.</p>
+<p>To be able, to take into account walls and have shadows, I use a more complex shape. I compute the set of points that are visible for the light center, this set is called the <a href="https://en.wikipedia.org/wiki/Visibility_polygon">visibility polygon</a>.</p>
 
 <p>There are some good resources on the web that describe algorithms to compute the visibility polygon from naive methods to more elaborate ones. Here are two articles that I found useful to gain some intuition: <a href="https://www.redblobgames.com/articles/visibility/">here</a> and <a href="https://ncase.me/sight-and-light/">there</a>.</p>
 
