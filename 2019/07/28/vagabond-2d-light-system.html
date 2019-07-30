@@ -7,7 +7,7 @@
         <meta name="description" content="">
         <meta name="author" content="Pierre Vigier">
 
-        <title>Vagabond &#8211; Game engine foundations - pvigier's blog</title>
+        <title>Vagabond &#8211; 2D Light System - pvigier's blog</title>
         <link rel="shortcut icon" href="/media/img/favicon.png">
         <!-- Bootstrap -->
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
@@ -39,51 +39,119 @@
             <div class="row">
             <div class="col-sm-8 blog-main">
 <div class="blog-post">
-    <h2 class="blog-post-title">Vagabond &#8211; Game engine foundations</h2>
-    <p class="blog-post-meta">14 Jul 2019 by <a href="/">pierre</a></p>
-    <p>This week, I have continued to develop my game engine. I have laid the foundation for a certain number of engines and systems.</p>
+    <h2 class="blog-post-title">Vagabond &#8211; 2D Light System</h2>
+    <p class="blog-post-meta">28 Jul 2019 by <a href="/">pierre</a></p>
+    <p>This week, I have worked on a light system. It will allow me to simulate a day-night cycle and to create a nice atmosphere during night or inside dungeons and caves.</p>
 
-<p>As you may know, I am using SFML and C++ to create my game. However, building a game directly with SFML is a bit tough as SFML is a low-level library. Thus I have decided to build a small game engine to help me later on. Nothing too fancy or general, just the necessary to be able to power Vagabond.</p>
-
-<p>But, I did not do everything from scratch. I used the experience I acquired during the development of <a href="https://github.com/pvigier/Simulopolis">Simulopolis</a>. Moreover, when I finished developing Simulopolis, I read two books <a href="https://www.packtpub.com/game-development/sfml-game-development">SFML Game Development</a> and <a href="https://www.packtpub.com/game-development/sfml-game-development-example">SFML Game Development By Example</a> to compare their approaches and mine. It was really instructive.</p>
+<p><img src="/media/img/vagabond-2d-light-system/banner.png" alt="" width="400" class="center-image modal-image" /></p>
 
 <!--more-->
 
-<h1 id="states">States</h1>
+<h1 id="the-big-picture">The big picture</h1>
 
-<p>The first thing I implemented was the state system. States are used to separate the different screens of the game such as the menu screen, the option screen, the credits screen or the game screen. They allow to separate the logic of each screen nicely.</p>
+<p>My light system uses two textures.</p>
 
-<p>I decided to use a state stack and not a finite state machine as it is more powerful and flexible. For example, with a state stack, it is a possible to open a pause screen when playing and then get back the game. Doing so is not possible with a simple finite state machine.</p>
+<p>On the first one, I draw all the visible objects without any particular processing.</p>
 
-<h1 id="render-engine">Render engine</h1>
+<p>The other one is cleared with the ambient light color. Then, I draw the contribution of each light one by one with <a href="https://learnopengl.com/Advanced-OpenGL/Blending">additive blending</a>.</p>
 
-<p>Next, I worked on the render engine. SFML provides the <code class="highlighter-rouge">sf::RenderWindow</code> class which is used to open a window, poll events, and draw inside the window.</p>
+<p>Finally, I draw the lighting texture on the first one with multiplicative blending.</p>
 
-<p>My render engine is just a wrapper around <code class="highlighter-rouge">sf::RenderWindow</code>. It manages the screen resolution and other settings such as switching between full-screen and windowed mode.</p>
+<p>Here is an animation to sum up the process (sorry for the compression artifacts):</p>
 
-<p>Finally, its last mission is to forward input events to the input manager.</p>
+<p><img src="/media/img/vagabond-2d-light-system/big_picture.gif" alt="" width="400" class="center-image modal-image" /></p>
 
-<h1 id="scene-graph">Scene graph</h1>
+<h1 id="light-shading">Light shading</h1>
 
-<p>Then, I implemented a <a href="https://en.wikipedia.org/wiki/Scene_graph">scene graph</a>. The scene graph is used by the game state to draw all the game entities easily and efficiently. It provides several types of nodes to display sprites, animated sprites, tiles or particles. Moreover, it will also implement the light system with light nodes.</p>
+<p>For now, my light system only supports point lights.</p>
 
-<p>The scene graph will also take care of drawing all the nodes in the right order. Finally, as all the nodes and the camera are managed by the scene graph it is easy to implement culling with a space-partitioning data structure such as a <a href="https://en.wikipedia.org/wiki/Quadtree">quadtree</a>.</p>
+<p>A point light is defined by the position of its center, a radius, a color and an intensity.</p>
 
-<h1 id="input-management">Input management</h1>
+<p>For each point light that is visible on screen, I draw a square centered on the light of size <script type="math/tex">2r</script>, where <script type="math/tex">r</script> is the radius, and use a shader to set the color of each pixel in the square.</p>
 
-<p>I also work on an input manager. The input manager goal is to manage the bindings and to process the input events. It will allow the player to configure the bindings as he wants. When all the conditions of a binding are satisfied, the input manager simply calls the corresponding registered callback.</p>
+<p>The next step is to choose a formula to describe the color received by a point from the light.</p>
 
-<h1 id="integration-of-dear-imgui">Integration of Dear ImGui</h1>
+<p>As a point light emit the same light in all the directions, the color received only depends on the distance. Hence, we can use a formula which looks like that:</p>
 
-<p>Finally, I integrated <a href="https://github.com/ocornut/imgui">Dear ImGui</a> in the engine. To do that with SFML, I used a <a href="https://github.com/eliasdaler/imgui-sfml">nice binding</a> by <a href="https://eliasdaler.github.io/">Elias Daler</a>. It was super easy!</p>
+<script type="math/tex; mode=display">C(d) = attenuation(d) \times I \times C_{light}</script>
 
-<p>I made a small window with some metrics to get started with ImGui:</p>
+<p>where <script type="math/tex">I</script> is the intensity, <script type="math/tex">C_{light}</script> the color of the light and <script type="math/tex">attenuation</script> a mapping such that <script type="math/tex">attenuation(0) = 1</script> and <script type="math/tex">attenuation(d) = 0</script> for <script type="math/tex">d > r</script>.</p>
 
-<p><img src="/media/img/vagabond-game-engine-foundations/debug_window.png" alt="" width="400" class="center-image modal-image" /></p>
+<p>My first try was to use a <a href="http://wiki.ogre3d.org/tiki-index.php?page=-Point+Light+Attenuation">well-known formula</a> for the attenuation of 3D point lights:</p>
+
+<script type="math/tex; mode=display">attenuation(d) = \frac{1}{1 + K_l \times d + K_q \times d^2}</script>
+
+<p>Unfortunately, it does not work well as the center is bright but the luminosity decreases quickly. Moreover, it is never zero thus the radius of the light must be really large compared to the useful lit area in order to not see the seam at the border of the square. Here is an example where the seam is visible:</p>
+
+<p><img src="/media/img/vagabond-2d-light-system/realist_glitch.png" alt="" width="400" class="center-image modal-image" /></p>
+
+<p>Here is another example with a point light of same radius, intensity and color but I tweaked the parameters <script type="math/tex">K_l</script> and <script type="math/tex">K_q</script> so that the seam is invisible. However, the lit area is then even smaller:</p>
+
+<p><img src="/media/img/vagabond-2d-light-system/realist.png" alt="" width="400" class="center-image modal-image" /></p>
+
+<p>Consequently, I looked for other formulas, that are maybe less physically realist, but that give better results.</p>
+
+<p>I start with a simple linear attenuation:</p>
+
+<script type="math/tex; mode=display">attenuation(d) = \max(0, 1 - \frac{d}{r})</script>
+
+<p>What is nice with this formula is that the luminosity is zero for points outside of the disk of radius <script type="math/tex">r</script>. However, in my opinion, the attenuation is a bit brutal near the border:</p>
+
+<p><img src="/media/img/vagabond-2d-light-system/linear.png" alt="" width="400" class="center-image modal-image" /></p>
+
+<p>To obtain a smoother attenuation, I simply square the previous formula to obtain a quadratic attenuation:</p>
+
+<script type="math/tex; mode=display">attenuation(d) = \max(0, 1 - \frac{d}{r})^2</script>
+
+<p>I find the results much more appealing:</p>
+
+<p><img src="/media/img/vagabond-2d-light-system/quadratic.png" alt="" width="400" class="center-image modal-image" /></p>
+
+<p>Finally, I advise to use a texture that supports <a href="https://learnopengl.com/Advanced-Lighting/HDR">HDR</a> with tone mapping. Otherwise, it is likely that the colors will saturate as additive blending is used.</p>
+
+<h1 id="shadows">Shadows</h1>
+
+<p>For now, we do not take into account any obstacle for the light. We simply draw a square around the light.</p>
+
+<p>To be able, to take into account walls and have shadows, I use a more complex shape. I compute the the set of points that are visible for the light center, this set is called the <a href="https://en.wikipedia.org/wiki/Visibility_polygon">visibility polygon</a>.</p>
+
+<p>There are some good resources on the web that describe algorithms to compute the visibility polygon from naive methods to more elaborate ones. Here are two articles that I found useful to gain some intuition: <a href="https://www.redblobgames.com/articles/visibility/">here</a> and <a href="https://ncase.me/sight-and-light/">there</a>.</p>
+
+<p>Here is a small demo of my implementation:</p>
+
+<video controls="" width="400">
+    <source src="/media/video/vagabond-2d-light-system/visibility_polygon.mp4" type="video/mp4" />
+    Sorry, your browser doesn't support embedded videos.
+</video>
+
+<p>I may write a separate article describing my implementation of an <script type="math/tex">O(n\log{n})</script> algorithm to compute the visibility polygon. A bit like what I did for <a href="/2018/11/18/fortune-algorithm-details.html">Fortune’s algorithm</a>, but with even more details as this algorithm is simpler.</p>
+
+<p>Once we have computed the visibility polygon, we just have to render it with the shader to obtain shadows:</p>
+
+<video controls="" width="400">
+    <source src="/media/video/vagabond-2d-light-system/lights_and_walls.mp4" type="video/mp4" />
+    Sorry, your browser doesn't support embedded videos.
+</video>
+
+<p>Here is an example in a cave:</p>
+
+<video controls="" width="400">
+    <source src="/media/video/vagabond-2d-light-system/light_cave.mp4" type="video/mp4" />
+    Sorry, your browser doesn't support embedded videos.
+</video>
+
+<p>Here is another video in a cave but this time, I display all the walls in red, the walls that intersect with the light bounding box in yellow and the visibility polygon in green:</p>
+
+<video controls="" width="400">
+    <source src="/media/video/vagabond-2d-light-system/light_cave_debug.mp4" type="video/mp4" />
+    Sorry, your browser doesn't support embedded videos.
+</video>
 
 <h1 id="conclusion">Conclusion</h1>
 
-<p>That is all for this week. I did not code a lot, I essentially designed the engine. Next week, I will add <a href="/2019/07/21/vagabond-opengl-wrapper-metrics.html">more features to the graphics engine</a> and maybe start to work on the networking part.</p>
+<p>That is all for this article on my light system. I may blur the lighting texture to have smoother transitions to shadows. I may also add other types of lights such as spot lights and area lights later.</p>
+
+<p>Next week, I will work on the physics system.</p>
 
 <p>See you next week for more!</p>
 

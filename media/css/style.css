@@ -203,7 +203,7 @@ body > .container {
 /*
  * Extra
  */
- 
+
 .center-image {
     margin: 0 auto;
     display: block;
@@ -213,13 +213,13 @@ body > .container {
 /*
  * Tags
  */
- 
+
 .label a {
 	color: white;
 }
 
-/* 
- * Tables 
+/*
+ * Tables
  */
 
 table {
@@ -237,4 +237,14 @@ td, th {
 
 .image-table td, .image-table th {
     padding: 4px;
+}
+
+/*
+ * Videos
+ */
+
+video {
+    margin: 8px auto;
+    display: block;
+    max-width: 100%;
 }

@@ -3,12 +3,24 @@
 	<title>pvigier's blog</title>
 	<link href="http://pvigier.github.io/rss.xml" rel="self"/>
 	<link href="http://pvigier.github.io"/>
-	<updated>2019-07-21T18:08:14+02:00</updated>
+	<updated>2019-07-30T11:26:31+02:00</updated>
 	<id>http://pvigier.github.io</id>
 	<author>
 		<name>Pierre Vigier</name>
 		<email>pierre.vigier@ymail.com</email>
 	</author>
+	
+		<entry>
+			<title>Vagabond &#8211; 2D Light System</title>
+			<link href="http://pvigier.github.io/2019/07/28/vagabond-2d-light-system.html"/>
+			<updated>2019-07-28T00:00:00+02:00</updated>
+			<id>http://pvigier.github.io/2019/07/28/vagabond-2d-light-system</id>
+			<content type="html">&lt;p&gt;This week, I have worked on a light system. It will allow me to simulate a day-night cycle and to create a nice atmosphere during night or inside dungeons and caves.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/media/img/vagabond-2d-light-system/banner.png&quot; alt=&quot;&quot; width=&quot;400&quot; class=&quot;center-image modal-image&quot; /&gt;&lt;/p&gt;
+
+</content>
+		</entry>
 	
 		<entry>
 			<title>Vagabond &#8211; OpenGL wrapper and metrics</title>
