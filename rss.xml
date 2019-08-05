@@ -3,7 +3,7 @@
 	<title>pvigier's blog</title>
 	<link href="http://pvigier.github.io/rss.xml" rel="self"/>
 	<link href="http://pvigier.github.io"/>
-	<updated>2019-08-05T20:32:47+02:00</updated>
+	<updated>2019-08-05T20:51:17+02:00</updated>
 	<id>http://pvigier.github.io</id>
 	<author>
 		<name>Pierre Vigier</name>
@@ -21,7 +21,7 @@
 
 &lt;p&gt;Firstly, I want to argue why I decided to implement a quadtree.&lt;/p&gt;
 
-&lt;p&gt;Quadtrees are a &lt;a href=&quot;https://en.wikipedia.org/wiki/Space_partitioning&quot;&gt;space partitioning data structure&lt;/a&gt;. Its main advantage against other data structures is its versatility. It offers good performance for insertion, removal and lookup. Thus, we can use it in a dynamic context where the data often change. Moreover, it is quite easy to understand and implement.&lt;/p&gt;
+&lt;p&gt;A Quadtree is a &lt;a href=&quot;https://en.wikipedia.org/wiki/Space_partitioning&quot;&gt;space partitioning data structure&lt;/a&gt;. Its main advantage against other data structures is its versatility. It offers good performance for insertion, removal and lookup. Thus, we can use it in a dynamic context where the data often change. Moreover, it is quite easy to understand and implement.&lt;/p&gt;
 
 &lt;p&gt;If you are totally new to space partitioning, I advise you to read this &lt;a href=&quot;http://gameprogrammingpatterns.com/spatial-partition.html&quot;&gt;article&lt;/a&gt; by Robert Nystrom. If you want a gentler introduction to quadtrees, you can read this &lt;a href=&quot;https://gamedevelopment.tutsplus.com/tutorials/quick-tip-use-quadtrees-to-detect-likely-collisions-in-2d-space--gamedev-374&quot;&gt;article&lt;/a&gt; or this &lt;a href=&quot;https://jimkang.com/quadtreevis/&quot;&gt;one&lt;/a&gt;.&lt;/p&gt;
 

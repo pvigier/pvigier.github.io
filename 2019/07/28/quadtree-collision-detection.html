@@ -47,7 +47,7 @@
 
 <p>Firstly, I want to argue why I decided to implement a quadtree.</p>
 
-<p>Quadtrees are a <a href="https://en.wikipedia.org/wiki/Space_partitioning">space partitioning data structure</a>. Its main advantage against other data structures is its versatility. It offers good performance for insertion, removal and lookup. Thus, we can use it in a dynamic context where the data often change. Moreover, it is quite easy to understand and implement.</p>
+<p>A Quadtree is a <a href="https://en.wikipedia.org/wiki/Space_partitioning">space partitioning data structure</a>. Its main advantage against other data structures is its versatility. It offers good performance for insertion, removal and lookup. Thus, we can use it in a dynamic context where the data often change. Moreover, it is quite easy to understand and implement.</p>
 
 <p>If you are totally new to space partitioning, I advise you to read this <a href="http://gameprogrammingpatterns.com/spatial-partition.html">article</a> by Robert Nystrom. If you want a gentler introduction to quadtrees, you can read this <a href="https://gamedevelopment.tutsplus.com/tutorials/quick-tip-use-quadtrees-to-detect-likely-collisions-in-2d-space--gamedev-374">article</a> or this <a href="https://jimkang.com/quadtreevis/">one</a>.</p>
 
@@ -245,7 +245,7 @@
 
 <p>Let us have a look the node definition. A node just contains pointers to its four children and a list of values it contains. We do not store its bounding box or its depth. We will compute that on the fly.</p>
 
-<p>I have benchmarked both approach (storing the box and depth or not) and there is no performance penalty in computing them on the fly. Moreover, we are saving some memory.</p>
+<p>I have benchmarked both approaches (storing the box and depth or not) and there is no performance penalty in computing them on the fly. Moreover, we are saving some memory.</p>
 
 <p>To be able to distinct an interior node from a leaf, there is the method <code class="highlighter-rouge">isLeaf</code>. It just checks that the first child is not null. As all children are null or none are, it is sufficient to check the first one.</p>
 
@@ -275,9 +275,9 @@
 
 <p>If all the bounding boxes are small and roughly the same size, the first strategy is more efficient when looking for intersections. However, if there are big bounding boxes, there may be degenerate cases where the performance will be very bad. For instance, if we insert a value whose bounding box is the global bounding box, it will be added to all leaves. And if we insert <code class="highlighter-rouge">Threshold</code> such values, all the nodes will split until we reach <code class="highlighter-rouge">MaxDepth</code> and all the leaves will contain the values. Thus, the quadtree will contain <script type="math/tex">\texttt{Threshold} \times 4^{\texttt{MaxDepth}}</script> values which is … a lot.</p>
 
-<p>Moreover, with the first strategy, insertion and removal is a bit slower as we have to insert to (or remove from) all nodes that intersect the value.</p>
+<p>Moreover, with the first strategy, insertion and removal are a bit slower as we have to insert to (or remove from) all nodes that intersect the value.</p>
 
-<p>Thus, I will use the second strategy where there is no degenerate case. As I plan to use the quadtree in many context, it will be more convenient. Moreover, it is more suitable for dynamic context where we will do a lot of insertions and removals to update the values such as in a physics engine where entities are moving.</p>
+<p>Thus, I will use the second strategy where there is no degenerate case. As I plan to use the quadtree in many contexts, it will be more convenient. Moreover, it is more suitable for dynamic context where we will do a lot of insertions and removals to update the values such as in a physics engine where entities are moving.</p>
 
 <p>To find in which node, we will insert or remove a value, we will rely on two utility functions.</p>
 
