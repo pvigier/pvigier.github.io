@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="">
+        <meta name="author" content="Pierre Vigier">
+
+        <title>Quadtree and collision detection - pvigier's blog</title>
+        <link rel="shortcut icon" href="/media/img/favicon.png">
+        <!-- Bootstrap -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+        <!-- My themes -->
+        <link href="/media/css/style.css" rel="stylesheet">
+        <link href="/media/css/syntax.css" rel="stylesheet">
+        <link href="/media/css/modal.css" rel="stylesheet">
+        <!-- RSS -->
+        <link href="https://pvigier.github.io/rss.xml" rel="alternate" title="pvigier's blog" type="application/atom+xml" />
+    </head>
+    <body>
+        <div class="blog-masthead">
+            <div class="container">
+                <nav class="blog-nav">
+                    <a class="blog-nav-item active" href="/">Blog</a>
+                    <a class="blog-nav-item" href="/articles">Articles</a>
+                    <a class="blog-nav-item" href="/projects">Projects</a>
+                    <!--<a class="blog-nav-item" href="/best-resources">Best Resources</a>-->
+                    <!--<a class="blog-nav-item" href="/resume">Resume</a>-->
+                    <a class="blog-nav-item" href="/about">About</a>
+                </nav>
+            </div>
+        </div>
+        <div class="container">
+            <div class="blog-header">
+                <h1 class="blog-title">pvigier's blog</h1>
+                <p class="lead blog-description">computer science, programming and other ideas</p>
+            </div>
+            <div class="row">
+            <div class="col-sm-8 blog-main">
+<div class="blog-post">
+    <h2 class="blog-post-title">Quadtree and collision detection</h2>
+    <p class="blog-post-meta">28 Jul 2019 by <a href="/">pierre</a></p>
+    <p>This week was short as I was still working on the <a href="/2019/07/28/vagabond-2d-light-system.html">2D light system</a> on Monday and Tuesday. I spent the rest of my time working on a <a href="https://en.wikipedia.org/wiki/Quadtree">quadtree</a> implementation.</p>
+
+<p>In this article, I will share with you my implementation and my thoughts while designing it.</p>
+
+<p>Firstly, I want to argue why I decided to implement a quadtree.</p>
+
+<p>Quadtrees are a <a href="https://en.wikipedia.org/wiki/Space_partitioning">space partitioning data structure</a>. Its main advantage against other data structures is its versatility. It offers good performance for insertion, removal and lookup. Thus, we can use it in a dynamic context where the data often change. Moreover, it is quite easy to understand and implement.</p>
+
+<p>If you are totally new to space partitioning, I advise you to read this <a href="http://gameprogrammingpatterns.com/spatial-partition.html">article</a> by Robert Nystrom. If you want a gentler introduction to quadtrees, you can read this <a href="https://gamedevelopment.tutsplus.com/tutorials/quick-tip-use-quadtrees-to-detect-likely-collisions-in-2d-space--gamedev-374">article</a> or this <a href="https://jimkang.com/quadtreevis/">one</a>.</p>
+
+<p>In my game, there are several places where using a quadtree is an instant win:</p>
+
+<ul>
+  <li>During collision detection, using a quadtree is way more efficient than the brute-force approach (testing all pairs). It is not the most efficient approach though, see this <a href="https://0fps.net/2015/01/23/collision-detection-part-3-benchmarks/">article</a> if you want an overview of possible approaches and benchmarks. But, I will start using this in the first version of my physics engine. I may change later and use a more specialized algorithm if I need to.</li>
+  <li>In the <a href="/2019/07/14/vagabond-game-engine-foundations.html">scene graph</a>, to perform culling, I can use a quadtree to find all the nodes that are visible.</li>
+  <li>In the <a href="/2019/07/28/vagabond-2d-light-system.html">light system</a>, I can use a quadtree to find the walls that are intersecting the light visibility polygon.</li>
+  <li>In an AI system, I can use a quadtree to find all the objects or enemies that are close to an entity.</li>
+  <li>etc.</li>
+</ul>
+
+<p>As you can notice, quadtrees are very versatile. They are a nice tool to have in your toolbox.</p>
+
+<p>You can find all the code that I will show next on <a href="https://github.com/pvigier/Quadtree">GitHub</a>.</p>
+
+<!--more-->
+
+<h1 id="preliminaries">Preliminaries</h1>
+
+<p>Before to detail the code for the quadtree, we need small classes for geometric primitives: a <code class="highlighter-rouge">Vector2</code> class to represent points and a <code class="highlighter-rouge">Box</code> class to represent boxes. Both will be templated.</p>
+
+<h2 id="vector2">Vector2</h2>
+
+<p>The <a href="https://github.com/pvigier/Quadtree/blob/master/include/Vector2.h"><code class="highlighter-rouge">Vector2</code></a> class is a minimalist class. It only contains constructors and, <code class="highlighter-rouge">+</code> and <code class="highlighter-rouge">/</code> operators. That is all we will need:</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span>
+<span class="k">class</span> <span class="nc">Vector2</span>
+<span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+    <span class="n">T</span> <span class="n">x</span><span class="p">;</span>
+    <span class="n">T</span> <span class="n">y</span><span class="p">;</span>
+
+    <span class="k">constexpr</span> <span class="n">Vector2</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="p">(</span><span class="n">T</span> <span class="n">X</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">T</span> <span class="n">Y</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="k">noexcept</span> <span class="o">:</span> <span class="n">x</span><span class="p">(</span><span class="n">X</span><span class="p">),</span> <span class="n">y</span><span class="p">(</span><span class="n">Y</span><span class="p">)</span>
+    <span class="p">{</span>
+
+    <span class="p">}</span>
+
+    <span class="k">constexpr</span> <span class="n">Vector2</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;&amp;</span> <span class="k">operator</span><span class="o">+=</span><span class="p">(</span><span class="k">const</span> <span class="n">Vector2</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;&amp;</span> <span class="n">other</span><span class="p">)</span> <span class="k">noexcept</span>
+    <span class="p">{</span>
+        <span class="n">x</span> <span class="o">+=</span> <span class="n">other</span><span class="p">.</span><span class="n">x</span><span class="p">;</span>
+        <span class="n">y</span> <span class="o">+=</span> <span class="n">other</span><span class="p">.</span><span class="n">y</span><span class="p">;</span>
+        <span class="k">return</span> <span class="o">*</span><span class="k">this</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="k">constexpr</span> <span class="n">Vector2</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;&amp;</span> <span class="k">operator</span><span class="o">/=</span><span class="p">(</span><span class="n">T</span> <span class="n">t</span><span class="p">)</span> <span class="k">noexcept</span>
+    <span class="p">{</span>
+        <span class="n">x</span> <span class="o">/=</span> <span class="n">t</span><span class="p">;</span>
+        <span class="n">y</span> <span class="o">/=</span> <span class="n">t</span><span class="p">;</span>
+        <span class="k">return</span> <span class="o">*</span><span class="k">this</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span>
+<span class="k">constexpr</span> <span class="n">Vector2</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="k">operator</span><span class="o">+</span><span class="p">(</span><span class="n">Vector2</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">lhs</span><span class="p">,</span> <span class="k">const</span> <span class="n">Vector2</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;&amp;</span> <span class="n">rhs</span><span class="p">)</span> <span class="k">noexcept</span>
+<span class="p">{</span>
+    <span class="n">lhs</span> <span class="o">+=</span> <span class="n">rhs</span><span class="p">;</span>
+    <span class="k">return</span> <span class="n">lhs</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span>
+<span class="k">constexpr</span> <span class="n">Vector2</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="k">operator</span><span class="o">/</span><span class="p">(</span><span class="n">Vector2</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">vec</span><span class="p">,</span> <span class="n">T</span> <span class="n">t</span><span class="p">)</span> <span class="k">noexcept</span>
+<span class="p">{</span>
+    <span class="n">vec</span> <span class="o">/=</span> <span class="n">t</span><span class="p">;</span>
+    <span class="k">return</span> <span class="n">vec</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="box">Box</h2>
+
+<p>The <a href="https://github.com/pvigier/Quadtree/blob/master/include/Box.h"><code class="highlighter-rouge">Box</code></a> class is not really more complicated:</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span>
+<span class="k">class</span> <span class="nc">Box</span>
+<span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+    <span class="n">T</span> <span class="n">left</span><span class="p">;</span>
+    <span class="n">T</span> <span class="n">top</span><span class="p">;</span>
+    <span class="n">T</span> <span class="n">width</span><span class="p">;</span> <span class="c1">// Must be positive</span>
+    <span class="n">T</span> <span class="n">height</span><span class="p">;</span> <span class="c1">// Must be positive</span>
+
+    <span class="k">constexpr</span> <span class="nf">Box</span><span class="p">(</span><span class="n">T</span> <span class="n">Left</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">T</span> <span class="n">Top</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">T</span> <span class="n">Width</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">T</span> <span class="n">Height</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="k">noexcept</span> <span class="o">:</span>
+        <span class="n">left</span><span class="p">(</span><span class="n">Left</span><span class="p">),</span> <span class="n">top</span><span class="p">(</span><span class="n">Top</span><span class="p">),</span> <span class="n">width</span><span class="p">(</span><span class="n">Width</span><span class="p">),</span> <span class="n">height</span><span class="p">(</span><span class="n">Height</span><span class="p">)</span>
+    <span class="p">{</span>
+
+    <span class="p">}</span>
+
+    <span class="k">constexpr</span> <span class="nf">Box</span><span class="p">(</span><span class="k">const</span> <span class="n">Vector2</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;&amp;</span> <span class="n">position</span><span class="p">,</span> <span class="k">const</span> <span class="n">Vector2</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;&amp;</span> <span class="n">size</span><span class="p">)</span> <span class="k">noexcept</span> <span class="o">:</span>
+        <span class="n">left</span><span class="p">(</span><span class="n">position</span><span class="p">.</span><span class="n">x</span><span class="p">),</span> <span class="n">top</span><span class="p">(</span><span class="n">position</span><span class="p">.</span><span class="n">y</span><span class="p">),</span> <span class="n">width</span><span class="p">(</span><span class="n">size</span><span class="p">.</span><span class="n">x</span><span class="p">),</span> <span class="n">height</span><span class="p">(</span><span class="n">size</span><span class="p">.</span><span class="n">y</span><span class="p">)</span>
+    <span class="p">{</span>
+
+    <span class="p">}</span>
+
+    <span class="k">constexpr</span> <span class="n">T</span> <span class="n">getRight</span><span class="p">()</span> <span class="k">const</span> <span class="k">noexcept</span>
+    <span class="p">{</span>
+        <span class="k">return</span> <span class="n">left</span> <span class="o">+</span> <span class="n">width</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="k">constexpr</span> <span class="n">T</span> <span class="n">getBottom</span><span class="p">()</span> <span class="k">const</span> <span class="k">noexcept</span>
+    <span class="p">{</span>
+        <span class="k">return</span> <span class="n">top</span> <span class="o">+</span> <span class="n">height</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="k">constexpr</span> <span class="n">Vector2</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">getTopLeft</span><span class="p">()</span> <span class="k">const</span> <span class="k">noexcept</span>
+    <span class="p">{</span>
+        <span class="k">return</span> <span class="n">Vector2</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">top</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="k">constexpr</span> <span class="n">Vector2</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">getCenter</span><span class="p">()</span> <span class="k">const</span> <span class="k">noexcept</span>
+    <span class="p">{</span>
+        <span class="k">return</span> <span class="n">Vector2</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="p">(</span><span class="n">left</span> <span class="o">+</span> <span class="n">width</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">top</span> <span class="o">+</span> <span class="n">height</span> <span class="o">/</span> <span class="mi">2</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="k">constexpr</span> <span class="n">Vector2</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">getSize</span><span class="p">()</span> <span class="k">const</span> <span class="k">noexcept</span>
+    <span class="p">{</span>
+        <span class="k">return</span> <span class="n">Vector2</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="p">(</span><span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="k">constexpr</span> <span class="kt">bool</span> <span class="n">contains</span><span class="p">(</span><span class="k">const</span> <span class="n">Box</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;&amp;</span> <span class="n">box</span><span class="p">)</span> <span class="k">const</span> <span class="k">noexcept</span>
+    <span class="p">{</span>
+        <span class="k">return</span> <span class="n">left</span> <span class="o">&lt;=</span> <span class="n">box</span><span class="p">.</span><span class="n">left</span> <span class="o">&amp;&amp;</span> <span class="n">box</span><span class="p">.</span><span class="n">getRight</span><span class="p">()</span> <span class="o">&lt;=</span> <span class="n">getRight</span><span class="p">()</span> <span class="o">&amp;&amp;</span>
+            <span class="n">top</span> <span class="o">&lt;=</span> <span class="n">box</span><span class="p">.</span><span class="n">top</span> <span class="o">&amp;&amp;</span> <span class="n">box</span><span class="p">.</span><span class="n">getBottom</span><span class="p">()</span> <span class="o">&lt;=</span> <span class="n">getBottom</span><span class="p">();</span>
+    <span class="p">}</span>
+
+    <span class="k">constexpr</span> <span class="kt">bool</span> <span class="n">intersects</span><span class="p">(</span><span class="k">const</span> <span class="n">Box</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;&amp;</span> <span class="n">box</span><span class="p">)</span> <span class="k">const</span> <span class="k">noexcept</span>
+    <span class="p">{</span>
+        <span class="k">return</span> <span class="o">!</span><span class="p">(</span><span class="n">left</span> <span class="o">&gt;=</span> <span class="n">box</span><span class="p">.</span><span class="n">getRight</span><span class="p">()</span> <span class="o">||</span> <span class="n">getRight</span><span class="p">()</span> <span class="o">&lt;=</span> <span class="n">box</span><span class="p">.</span><span class="n">left</span> <span class="o">||</span>
+            <span class="n">top</span> <span class="o">&gt;=</span> <span class="n">box</span><span class="p">.</span><span class="n">getBottom</span><span class="p">()</span> <span class="o">||</span> <span class="n">getBottom</span><span class="p">()</span> <span class="o">&lt;=</span> <span class="n">box</span><span class="p">.</span><span class="n">top</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>It contains some useful getters.</p>
+
+<p>More interestingly, it contains the method <code class="highlighter-rouge">contains</code> to check if a box is contained inside another and the method <code class="highlighter-rouge">intersects</code> to check if a box intersects another one.</p>
+
+<p>We will use <code class="highlighter-rouge">contains</code> during insertion and removal, and <code class="highlighter-rouge">intersects</code> for intersection detection.</p>
+
+<h1 id="quadtree">Quadtree</h1>
+
+<p>Here is a skeleton of the <a href="https://github.com/pvigier/Quadtree/blob/master/include/Quadtree.h"><code class="highlighter-rouge">Quadtree</code></a> class:</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="p">,</span> <span class="k">typename</span> <span class="n">GetBox</span><span class="p">,</span> <span class="k">typename</span> <span class="n">Equal</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">equal_to</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="p">,</span> <span class="k">typename</span> <span class="n">Float</span> <span class="o">=</span> <span class="kt">float</span><span class="o">&gt;</span>
+<span class="k">class</span> <span class="nc">Quadtree</span>
+<span class="p">{</span>
+    <span class="k">static_assert</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">is_convertible_v</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">invoke_result_t</span><span class="o">&lt;</span><span class="n">GetBox</span><span class="p">,</span> <span class="k">const</span> <span class="n">T</span><span class="o">&amp;&gt;</span><span class="p">,</span> <span class="n">Box</span><span class="o">&lt;</span><span class="n">Float</span><span class="o">&gt;&gt;</span><span class="p">,</span>
+        <span class="s">"GetBox must be a callable of signature Box&lt;Float&gt;(const T&amp;)"</span><span class="p">);</span>
+    <span class="k">static_assert</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">is_convertible_v</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">invoke_result_t</span><span class="o">&lt;</span><span class="n">Equal</span><span class="p">,</span> <span class="k">const</span> <span class="n">T</span><span class="o">&amp;</span><span class="p">,</span> <span class="k">const</span> <span class="n">T</span><span class="o">&amp;&gt;</span><span class="p">,</span> <span class="kt">bool</span><span class="o">&gt;</span><span class="p">,</span>
+        <span class="s">"Equal must be a callable of signature bool(const T&amp;, const T&amp;)"</span><span class="p">);</span>
+    <span class="k">static_assert</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">is_arithmetic_v</span><span class="o">&lt;</span><span class="n">Float</span><span class="o">&gt;</span><span class="p">);</span>
+
+<span class="k">public</span><span class="o">:</span>
+    <span class="n">Quadtree</span><span class="p">(</span><span class="k">const</span> <span class="n">Box</span><span class="o">&lt;</span><span class="n">Float</span><span class="o">&gt;&amp;</span> <span class="n">box</span><span class="p">,</span> <span class="k">const</span> <span class="n">GetBox</span><span class="o">&amp;</span> <span class="n">getBox</span> <span class="o">=</span> <span class="n">GetBox</span><span class="p">(),</span>
+        <span class="k">const</span> <span class="n">Equal</span><span class="o">&amp;</span> <span class="n">equal</span> <span class="o">=</span> <span class="n">Equal</span><span class="p">())</span> <span class="o">:</span>
+        <span class="n">mBox</span><span class="p">(</span><span class="n">box</span><span class="p">),</span> <span class="n">mRoot</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">make_unique</span><span class="o">&lt;</span><span class="n">Node</span><span class="o">&gt;</span><span class="p">()),</span> <span class="n">mGetBox</span><span class="p">(</span><span class="n">getBox</span><span class="p">),</span> <span class="n">mEqual</span><span class="p">(</span><span class="n">equal</span><span class="p">)</span>
+    <span class="p">{</span>
+
+    <span class="p">}</span>
+
+<span class="k">private</span><span class="o">:</span>
+    <span class="k">static</span> <span class="k">constexpr</span> <span class="k">auto</span> <span class="n">Threshold</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="p">(</span><span class="mi">16</span><span class="p">);</span>
+    <span class="k">static</span> <span class="k">constexpr</span> <span class="k">auto</span> <span class="n">MaxDepth</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="p">(</span><span class="mi">8</span><span class="p">);</span>
+
+    <span class="k">struct</span> <span class="n">Node</span>
+    <span class="p">{</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">Node</span><span class="o">&gt;</span><span class="p">,</span> <span class="mi">4</span><span class="o">&gt;</span> <span class="n">children</span><span class="p">;</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">values</span><span class="p">;</span>
+    <span class="p">};</span>
+
+    <span class="n">Box</span><span class="o">&lt;</span><span class="n">Float</span><span class="o">&gt;</span> <span class="n">mBox</span><span class="p">;</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">Node</span><span class="o">&gt;</span> <span class="n">mRoot</span><span class="p">;</span>
+    <span class="n">GetBox</span> <span class="n">mGetBox</span><span class="p">;</span>
+    <span class="n">Equal</span> <span class="n">mEqual</span><span class="p">;</span>
+
+    <span class="kt">bool</span> <span class="n">isLeaf</span><span class="p">(</span><span class="k">const</span> <span class="n">Node</span><span class="o">*</span> <span class="n">node</span><span class="p">)</span> <span class="k">const</span>
+    <span class="p">{</span>
+        <span class="k">return</span> <span class="o">!</span><span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">bool</span><span class="o">&gt;</span><span class="p">(</span><span class="n">node</span><span class="o">-&gt;</span><span class="n">children</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>As you can notice, <code class="highlighter-rouge">Quadtree</code> is a template class. This will allow us to use the class for different purposes as I explained in the introduction.</p>
+
+<p>The template parameters are:</p>
+
+<ul>
+  <li><code class="highlighter-rouge">T</code>: the type of the values that will be contained in the quadtree. <code class="highlighter-rouge">T</code> should be a lightweight type at it will be stored inside the quadtree. A pointer or a small POD type are ideal.</li>
+  <li><code class="highlighter-rouge">GetBox</code>: the type of a callable that will take a value as input and return a box.</li>
+  <li><code class="highlighter-rouge">Equal</code>: is the type of a callable to test equality between two values. By default, we use the standard equal operator.</li>
+  <li><code class="highlighter-rouge">Float</code>: is the arithmetic type to use in the computations. By default, we use <code class="highlighter-rouge">float</code>.</li>
+</ul>
+
+<p>At the beginning of the class definition, there are three static assertions to check that the given template parameters are valid.</p>
+
+<p>Let us have a look the node definition. A node just contains pointers to its four children and a list of values it contains. We do not store its bounding box or its depth. We will compute that on the fly.</p>
+
+<p>I have benchmarked both approach (storing the box and depth or not) and there is no performance penalty in computing them on the fly. Moreover, we are saving some memory.</p>
+
+<p>To be able to distinct an interior node from a leaf, there is the method <code class="highlighter-rouge">isLeaf</code>. It just checks that the first child is not null. As all children are null or none are, it is sufficient to check the first one.</p>
+
+<p>Now, we can look at the member variables of <code class="highlighter-rouge">Quadtree</code>:</p>
+
+<ul>
+  <li><code class="highlighter-rouge">mBox</code> is the global bounding box. All values inserted in the quadtree should be contained in it.</li>
+  <li><code class="highlighter-rouge">mRoot</code> is the root of the quadtree.</li>
+  <li><code class="highlighter-rouge">mGetBox</code> is the callable that we will use to get a box from a value.</li>
+  <li><code class="highlighter-rouge">mEqual</code> is the callable that we will use to test the equality between two values.</li>
+</ul>
+
+<p>The constructor simply sets <code class="highlighter-rouge">mBox</code>, <code class="highlighter-rouge">mGetBox</code> and <code class="highlighter-rouge">mEqual</code>, and creates the root node.</p>
+
+<p>The last two parameters, we have not discussed yet, are <code class="highlighter-rouge">Threshold</code> and <code class="highlighter-rouge">MaxDepth</code>. <code class="highlighter-rouge">Threshold</code> is the maximum number of values a node can contain before we try to split it. <code class="highlighter-rouge">MaxDepth</code> is the maximum depth of a node, we stop trying to split nodes which are at <code class="highlighter-rouge">MaxDepth</code> because it can hurt performance if we subdivide too much. I have set up these constants to some sane values that should work for most of the cases. You can try to optimize them for some specific configuration.</p>
+
+<p>Now, we are ready to dive in the more interesting operations.</p>
+
+<h1 id="insertion-and-removal">Insertion and removal</h1>
+
+<p>Before, I show the code for insertion, we need to discuss which nodes will contain the values. There are two strategies:</p>
+
+<ul>
+  <li>Only the leaves store values. As the bounding box of a value can intersect several leaves, all these leaves will store the value.</li>
+  <li>All the nodes can store values. We store the value in the smallest node that entirely contains its bounding box.</li>
+</ul>
+
+<p>If all the bounding boxes are small and roughly the same size, the first strategy is more efficient when looking for intersections. However, if there are big bounding boxes, there may be degenerate cases where the performance will be very bad. For instance, if we insert a value whose bounding box is the global bounding box, it will be added to all leaves. And if we insert <code class="highlighter-rouge">Threshold</code> such values, all the nodes will split until we reach <code class="highlighter-rouge">MaxDepth</code> and all the leaves will contain the values. Thus, the quadtree will contain <script type="math/tex">\texttt{Threshold} \times 4^{\texttt{MaxDepth}}</script> values which is … a lot.</p>
+
+<p>Moreover, with the first strategy, insertion and removal is a bit slower as we have to insert to (or remove from) all nodes that intersect the value.</p>
+
+<p>Thus, I will use the second strategy where there is no degenerate case. As I plan to use the quadtree in many context, it will be more convenient. Moreover, it is more suitable for dynamic context where we will do a lot of insertions and removals to update the values such as in a physics engine where entities are moving.</p>
+
+<p>To find in which node, we will insert or remove a value, we will rely on two utility functions.</p>
+
+<p>The first one, <code class="highlighter-rouge">computeBox</code>, computes the box of a child from the box of its parent and the index of its quadrant.</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Box</span><span class="o">&lt;</span><span class="n">Float</span><span class="o">&gt;</span> <span class="n">computeBox</span><span class="p">(</span><span class="k">const</span> <span class="n">Box</span><span class="o">&lt;</span><span class="n">Float</span><span class="o">&gt;&amp;</span> <span class="n">box</span><span class="p">,</span> <span class="kt">int</span> <span class="n">i</span><span class="p">)</span> <span class="k">const</span>
+<span class="p">{</span>
+    <span class="k">auto</span> <span class="n">origin</span> <span class="o">=</span> <span class="n">box</span><span class="p">.</span><span class="n">getTopLeft</span><span class="p">();</span>
+    <span class="k">auto</span> <span class="n">childSize</span> <span class="o">=</span> <span class="n">box</span><span class="p">.</span><span class="n">getSize</span><span class="p">()</span> <span class="o">/</span> <span class="k">static_cast</span><span class="o">&lt;</span><span class="n">Float</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>
+    <span class="k">switch</span> <span class="p">(</span><span class="n">i</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="c1">// North West</span>
+        <span class="k">case</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Box</span><span class="o">&lt;</span><span class="n">Float</span><span class="o">&gt;</span><span class="p">(</span><span class="n">origin</span><span class="p">,</span> <span class="n">childSize</span><span class="p">);</span>
+        <span class="c1">// Norst East</span>
+        <span class="k">case</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Box</span><span class="o">&lt;</span><span class="n">Float</span><span class="o">&gt;</span><span class="p">(</span><span class="n">Vector2</span><span class="o">&lt;</span><span class="n">Float</span><span class="o">&gt;</span><span class="p">(</span><span class="n">origin</span><span class="p">.</span><span class="n">x</span> <span class="o">+</span> <span class="n">childSize</span><span class="p">.</span><span class="n">x</span><span class="p">,</span> <span class="n">origin</span><span class="p">.</span><span class="n">y</span><span class="p">),</span> <span class="n">childSize</span><span class="p">);</span>
+        <span class="c1">// South West</span>
+        <span class="k">case</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Box</span><span class="o">&lt;</span><span class="n">Float</span><span class="o">&gt;</span><span class="p">(</span><span class="n">Vector2</span><span class="o">&lt;</span><span class="n">Float</span><span class="o">&gt;</span><span class="p">(</span><span class="n">origin</span><span class="p">.</span><span class="n">x</span><span class="p">,</span> <span class="n">origin</span><span class="p">.</span><span class="n">y</span> <span class="o">+</span> <span class="n">childSize</span><span class="p">.</span><span class="n">y</span><span class="p">),</span> <span class="n">childSize</span><span class="p">);</span>
+        <span class="c1">// South East</span>
+        <span class="k">case</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Box</span><span class="o">&lt;</span><span class="n">Float</span><span class="o">&gt;</span><span class="p">(</span><span class="n">origin</span> <span class="o">+</span> <span class="n">childSize</span><span class="p">,</span> <span class="n">childSize</span><span class="p">);</span>
+        <span class="k">default</span><span class="o">:</span>
+            <span class="n">assert</span><span class="p">(</span><span class="nb">false</span> <span class="o">&amp;&amp;</span> <span class="s">"Invalid child index"</span><span class="p">);</span>
+            <span class="k">return</span> <span class="n">Box</span><span class="o">&lt;</span><span class="n">Float</span><span class="o">&gt;</span><span class="p">();</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>The second one, <code class="highlighter-rouge">getQuadrant</code>, returns the quadrant in which a value is:</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span> <span class="n">getQuadrant</span><span class="p">(</span><span class="k">const</span> <span class="n">Box</span><span class="o">&lt;</span><span class="n">Float</span><span class="o">&gt;&amp;</span> <span class="n">nodeBox</span><span class="p">,</span> <span class="k">const</span> <span class="n">Box</span><span class="o">&lt;</span><span class="n">Float</span><span class="o">&gt;&amp;</span> <span class="n">valueBox</span><span class="p">)</span> <span class="k">const</span>
+<span class="p">{</span>
+    <span class="k">auto</span> <span class="n">center</span> <span class="o">=</span> <span class="n">nodeBox</span><span class="p">.</span><span class="n">getCenter</span><span class="p">();</span>
+    <span class="c1">// West</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">valueBox</span><span class="p">.</span><span class="n">getRight</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">center</span><span class="p">.</span><span class="n">x</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="c1">// North West</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">valueBox</span><span class="p">.</span><span class="n">getBottom</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">center</span><span class="p">.</span><span class="n">y</span><span class="p">)</span>
+            <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+        <span class="c1">// South West</span>
+        <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">valueBox</span><span class="p">.</span><span class="n">top</span> <span class="o">&gt;=</span> <span class="n">center</span><span class="p">.</span><span class="n">y</span><span class="p">)</span>
+            <span class="k">return</span> <span class="mi">2</span><span class="p">;</span>
+        <span class="c1">// Not contained in any quadrant</span>
+        <span class="k">else</span>
+            <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="c1">// East</span>
+    <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">valueBox</span><span class="p">.</span><span class="n">left</span> <span class="o">&gt;=</span> <span class="n">center</span><span class="p">.</span><span class="n">x</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="c1">// North East</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">valueBox</span><span class="p">.</span><span class="n">getBottom</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">center</span><span class="p">.</span><span class="n">y</span><span class="p">)</span>
+            <span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
+        <span class="c1">// South East</span>
+        <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">valueBox</span><span class="p">.</span><span class="n">top</span> <span class="o">&gt;=</span> <span class="n">center</span><span class="p">.</span><span class="n">y</span><span class="p">)</span>
+            <span class="k">return</span> <span class="mi">3</span><span class="p">;</span>
+        <span class="c1">// Not contained in any quadrant</span>
+        <span class="k">else</span>
+            <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="c1">// Not contained in any quadrant</span>
+    <span class="k">else</span>
+        <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>It returns <code class="highlighter-rouge">-1</code> if it is not entirely contained in any of the quadrants.</p>
+
+<p>We are now ready to see the insertion and removal methods.</p>
+
+<h2 id="insertion">Insertion</h2>
+
+<p>The <code class="highlighter-rouge">add</code> method just calls a private auxiliary method:</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="nf">add</span><span class="p">(</span><span class="k">const</span> <span class="n">T</span><span class="o">&amp;</span> <span class="n">value</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">add</span><span class="p">(</span><span class="n">mRoot</span><span class="p">.</span><span class="n">get</span><span class="p">(),</span> <span class="mi">0</span><span class="p">,</span> <span class="n">mBox</span><span class="p">,</span> <span class="n">value</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Here is the code of the auxiliary method:</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="nf">add</span><span class="p">(</span><span class="n">Node</span><span class="o">*</span> <span class="n">node</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">depth</span><span class="p">,</span> <span class="k">const</span> <span class="n">Box</span><span class="o">&lt;</span><span class="n">Float</span><span class="o">&gt;&amp;</span> <span class="n">box</span><span class="p">,</span> <span class="k">const</span> <span class="n">T</span><span class="o">&amp;</span> <span class="n">value</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">assert</span><span class="p">(</span><span class="n">node</span> <span class="o">!=</span> <span class="nb">nullptr</span><span class="p">);</span>
+    <span class="n">assert</span><span class="p">(</span><span class="n">box</span><span class="p">.</span><span class="n">contains</span><span class="p">(</span><span class="n">mGetBox</span><span class="p">(</span><span class="n">value</span><span class="p">)));</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">isLeaf</span><span class="p">(</span><span class="n">node</span><span class="p">))</span>
+    <span class="p">{</span>
+        <span class="c1">// Insert the value in this node if possible</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">depth</span> <span class="o">&gt;=</span> <span class="n">MaxDepth</span> <span class="o">||</span> <span class="n">node</span><span class="o">-&gt;</span><span class="n">values</span><span class="p">.</span><span class="n">size</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">Threshold</span><span class="p">)</span>
+            <span class="n">node</span><span class="o">-&gt;</span><span class="n">values</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">value</span><span class="p">);</span>
+        <span class="c1">// Otherwise, we split and we try again</span>
+        <span class="k">else</span>
+        <span class="p">{</span>
+            <span class="n">split</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">box</span><span class="p">);</span>
+            <span class="n">add</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">depth</span><span class="p">,</span> <span class="n">box</span><span class="p">,</span> <span class="n">value</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="k">else</span>
+    <span class="p">{</span>
+        <span class="k">auto</span> <span class="n">i</span> <span class="o">=</span> <span class="n">getQuadrant</span><span class="p">(</span><span class="n">box</span><span class="p">,</span> <span class="n">mGetBox</span><span class="p">(</span><span class="n">value</span><span class="p">));</span>
+        <span class="c1">// Add the value in a child if the value is entirely contained in it</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">i</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">add</span><span class="p">(</span><span class="n">node</span><span class="o">-&gt;</span><span class="n">children</span><span class="p">[</span><span class="k">static_cast</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="o">&gt;</span><span class="p">(</span><span class="n">i</span><span class="p">)].</span><span class="n">get</span><span class="p">(),</span> <span class="n">depth</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">computeBox</span><span class="p">(</span><span class="n">box</span><span class="p">,</span> <span class="n">i</span><span class="p">),</span> <span class="n">value</span><span class="p">);</span>
+        <span class="c1">// Otherwise, we add the value in the current node</span>
+        <span class="k">else</span>
+            <span class="n">node</span><span class="o">-&gt;</span><span class="n">values</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">value</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Firstly, there are some assertions to check that we are not doing something that is not making sense such as inserting a value in a node that is not containing its bounding box.</p>
+
+<p>Then, if the node is a leaf and we can insert a new value in it i.e. we are at <code class="highlighter-rouge">MaxDepth</code> or <code class="highlighter-rouge">Threshold</code> is not reached yet, we insert there. Otherwise, we split this node and we try again.</p>
+
+<p>If it is an interior, we compute the quadrant in which the value’s bounding box is contained. If it is entirely contained in a child, we do a recursive call. Otherwise, we insert in this node.</p>
+
+<p>Finally, here is the split routine:</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="nf">split</span><span class="p">(</span><span class="n">Node</span><span class="o">*</span> <span class="n">node</span><span class="p">,</span> <span class="k">const</span> <span class="n">Box</span><span class="o">&lt;</span><span class="n">Float</span><span class="o">&gt;&amp;</span> <span class="n">box</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">assert</span><span class="p">(</span><span class="n">node</span> <span class="o">!=</span> <span class="nb">nullptr</span><span class="p">);</span>
+    <span class="n">assert</span><span class="p">(</span><span class="n">isLeaf</span><span class="p">(</span><span class="n">node</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="s">"Only leaves can be split"</span><span class="p">);</span>
+    <span class="c1">// Create children</span>
+    <span class="k">for</span> <span class="p">(</span><span class="k">auto</span><span class="o">&amp;</span> <span class="n">child</span> <span class="o">:</span> <span class="n">node</span><span class="o">-&gt;</span><span class="n">children</span><span class="p">)</span>
+        <span class="n">child</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">make_unique</span><span class="o">&lt;</span><span class="n">Node</span><span class="o">&gt;</span><span class="p">();</span>
+    <span class="c1">// Assign values to children</span>
+    <span class="k">auto</span> <span class="n">newValues</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="p">();</span> <span class="c1">// New values for this node</span>
+    <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="n">value</span> <span class="o">:</span> <span class="n">node</span><span class="o">-&gt;</span><span class="n">values</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">auto</span> <span class="n">i</span> <span class="o">=</span> <span class="n">getQuadrant</span><span class="p">(</span><span class="n">box</span><span class="p">,</span> <span class="n">mGetBox</span><span class="p">(</span><span class="n">value</span><span class="p">));</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">i</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">node</span><span class="o">-&gt;</span><span class="n">children</span><span class="p">[</span><span class="k">static_cast</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="o">&gt;</span><span class="p">(</span><span class="n">i</span><span class="p">)]</span><span class="o">-&gt;</span><span class="n">values</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">value</span><span class="p">);</span>
+        <span class="k">else</span>
+            <span class="n">newValues</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">value</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="n">node</span><span class="o">-&gt;</span><span class="n">values</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">newValues</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>We create the four children, and then for each value of the parent, we decide in which node (a child or the parent) the value should go.</p>
+
+<h2 id="removal">Removal</h2>
+
+<p>Again, the <code class="highlighter-rouge">remove</code> method just calls an auxiliary method:</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="nf">remove</span><span class="p">(</span><span class="k">const</span> <span class="n">T</span><span class="o">&amp;</span> <span class="n">value</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">remove</span><span class="p">(</span><span class="n">mRoot</span><span class="p">.</span><span class="n">get</span><span class="p">(),</span> <span class="nb">nullptr</span><span class="p">,</span> <span class="n">mBox</span><span class="p">,</span> <span class="n">value</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Here is the code of the auxiliary method, it is very analogous to insertion. :</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="nf">remove</span><span class="p">(</span><span class="n">Node</span><span class="o">*</span> <span class="n">node</span><span class="p">,</span> <span class="n">Node</span><span class="o">*</span> <span class="n">parent</span><span class="p">,</span> <span class="k">const</span> <span class="n">Box</span><span class="o">&lt;</span><span class="n">Float</span><span class="o">&gt;&amp;</span> <span class="n">box</span><span class="p">,</span> <span class="k">const</span> <span class="n">T</span><span class="o">&amp;</span> <span class="n">value</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">assert</span><span class="p">(</span><span class="n">node</span> <span class="o">!=</span> <span class="nb">nullptr</span><span class="p">);</span>
+    <span class="n">assert</span><span class="p">(</span><span class="n">box</span><span class="p">.</span><span class="n">contains</span><span class="p">(</span><span class="n">mGetBox</span><span class="p">(</span><span class="n">value</span><span class="p">)));</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">isLeaf</span><span class="p">(</span><span class="n">node</span><span class="p">))</span>
+    <span class="p">{</span>
+        <span class="c1">// Remove the value from node</span>
+        <span class="n">removeValue</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">value</span><span class="p">);</span>
+        <span class="c1">// Try to merge the parent</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">parent</span> <span class="o">!=</span> <span class="nb">nullptr</span><span class="p">)</span>
+            <span class="n">tryMerge</span><span class="p">(</span><span class="n">parent</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="k">else</span>
+    <span class="p">{</span>
+        <span class="c1">// Remove the value in a child if the value is entirely contained in it</span>
+        <span class="k">auto</span> <span class="n">i</span> <span class="o">=</span> <span class="n">getQuadrant</span><span class="p">(</span><span class="n">box</span><span class="p">,</span> <span class="n">mGetBox</span><span class="p">(</span><span class="n">value</span><span class="p">));</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">i</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">remove</span><span class="p">(</span><span class="n">node</span><span class="o">-&gt;</span><span class="n">children</span><span class="p">[</span><span class="k">static_cast</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="o">&gt;</span><span class="p">(</span><span class="n">i</span><span class="p">)].</span><span class="n">get</span><span class="p">(),</span> <span class="n">node</span><span class="p">,</span> <span class="n">computeBox</span><span class="p">(</span><span class="n">box</span><span class="p">,</span> <span class="n">i</span><span class="p">),</span> <span class="n">value</span><span class="p">);</span>
+        <span class="c1">// Otherwise, we remove the value from the current node</span>
+        <span class="k">else</span>
+            <span class="n">removeValue</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">value</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>If the current node is a leaf, we remove the value from the list of values of the current node and we try to merge this node with its siblings and its parent. Otherwise, we determine in which quadrant the value’s bounding box lies in. If it is entirely contained in a child, we do a recursive call. Otherwise, we remove from the values of the current node.</p>
+
+<p>As we do not care about the order of the values stored in a node, I use a small optimization to erase a value, I just swap the value to erase with the last one and pop back:</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="nf">removeValue</span><span class="p">(</span><span class="n">Node</span><span class="o">*</span> <span class="n">node</span><span class="p">,</span> <span class="k">const</span> <span class="n">T</span><span class="o">&amp;</span> <span class="n">value</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="c1">// Find the value in node-&gt;values</span>
+    <span class="k">auto</span> <span class="n">it</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">find_if</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">begin</span><span class="p">(</span><span class="n">node</span><span class="o">-&gt;</span><span class="n">values</span><span class="p">),</span> <span class="n">std</span><span class="o">::</span><span class="n">end</span><span class="p">(</span><span class="n">node</span><span class="o">-&gt;</span><span class="n">values</span><span class="p">),</span>
+        <span class="p">[</span><span class="k">this</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">value</span><span class="p">](</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="n">rhs</span><span class="p">){</span> <span class="k">return</span> <span class="n">mEqual</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">rhs</span><span class="p">);</span> <span class="p">});</span>
+    <span class="n">assert</span><span class="p">(</span><span class="n">it</span> <span class="o">!=</span> <span class="n">std</span><span class="o">::</span><span class="n">end</span><span class="p">(</span><span class="n">node</span><span class="o">-&gt;</span><span class="n">values</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="s">"Trying to remove a value that is not present in the node"</span><span class="p">);</span>
+    <span class="c1">// Swap with the last element and pop back</span>
+    <span class="o">*</span><span class="n">it</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">node</span><span class="o">-&gt;</span><span class="n">values</span><span class="p">.</span><span class="n">back</span><span class="p">());</span>
+    <span class="n">node</span><span class="o">-&gt;</span><span class="n">values</span><span class="p">.</span><span class="n">pop_back</span><span class="p">();</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Finally, we must have a look to <code class="highlighter-rouge">tryMerge</code>:</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="nf">tryMerge</span><span class="p">(</span><span class="n">Node</span><span class="o">*</span> <span class="n">node</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">assert</span><span class="p">(</span><span class="n">node</span> <span class="o">!=</span> <span class="nb">nullptr</span><span class="p">);</span>
+    <span class="n">assert</span><span class="p">(</span><span class="o">!</span><span class="n">isLeaf</span><span class="p">(</span><span class="n">node</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="s">"Only interior nodes can be merged"</span><span class="p">);</span>
+    <span class="k">auto</span> <span class="n">nbValues</span> <span class="o">=</span> <span class="n">node</span><span class="o">-&gt;</span><span class="n">values</span><span class="p">.</span><span class="n">size</span><span class="p">();</span>
+    <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="n">child</span> <span class="o">:</span> <span class="n">node</span><span class="o">-&gt;</span><span class="n">children</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">isLeaf</span><span class="p">(</span><span class="n">child</span><span class="p">.</span><span class="n">get</span><span class="p">()))</span>
+            <span class="k">return</span><span class="p">;</span>
+        <span class="n">nbValues</span> <span class="o">+=</span> <span class="n">child</span><span class="o">-&gt;</span><span class="n">values</span><span class="p">.</span><span class="n">size</span><span class="p">();</span>
+    <span class="p">}</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">nbValues</span> <span class="o">&lt;=</span> <span class="n">Threshold</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">node</span><span class="o">-&gt;</span><span class="n">values</span><span class="p">.</span><span class="n">reserve</span><span class="p">(</span><span class="n">nbValues</span><span class="p">);</span>
+        <span class="c1">// Merge the values of all the children</span>
+        <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="n">child</span> <span class="o">:</span> <span class="n">node</span><span class="o">-&gt;</span><span class="n">children</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="n">value</span> <span class="o">:</span> <span class="n">child</span><span class="o">-&gt;</span><span class="n">values</span><span class="p">)</span>
+                <span class="n">node</span><span class="o">-&gt;</span><span class="n">values</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">value</span><span class="p">);</span>
+        <span class="p">}</span>
+        <span class="c1">// Remove the children</span>
+        <span class="k">for</span> <span class="p">(</span><span class="k">auto</span><span class="o">&amp;</span> <span class="n">child</span> <span class="o">:</span> <span class="n">node</span><span class="o">-&gt;</span><span class="n">children</span><span class="p">)</span>
+            <span class="n">child</span><span class="p">.</span><span class="n">reset</span><span class="p">();</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p><code class="highlighter-rouge">tryMerge</code> checks that all its children are leaves and that the total number of its values and its children’s values is lower than the threshold. If it is the case, we copy all the values in the children in the current node and we remove the children.</p>
+
+<h1 id="finding-intersections">Finding intersections</h1>
+
+<h2 id="intersection-with-a-box">Intersection with a box</h2>
+
+<p>Finally, we are coming to interesting things: finding intersections. The first use case is retrieving all the values that are intersecting a given box. This is what we need to do culling for instance.</p>
+
+<p>This is the goal of <code class="highlighter-rouge">query</code>:</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">query</span><span class="p">(</span><span class="k">const</span> <span class="n">Box</span><span class="o">&lt;</span><span class="n">Float</span><span class="o">&gt;&amp;</span> <span class="n">box</span><span class="p">)</span> <span class="k">const</span>
+<span class="p">{</span>
+    <span class="k">auto</span> <span class="n">values</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="p">();</span>
+    <span class="n">query</span><span class="p">(</span><span class="n">mRoot</span><span class="p">.</span><span class="n">get</span><span class="p">(),</span> <span class="n">mBox</span><span class="p">,</span> <span class="n">box</span><span class="p">,</span> <span class="n">values</span><span class="p">);</span>
+    <span class="k">return</span> <span class="n">values</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>In this method, we just allocate a <code class="highlighter-rouge">std::vector</code> that will contain the values that intersect the bounding box, and we call an auxiliary method:</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="n">query</span><span class="p">(</span><span class="n">Node</span><span class="o">*</span> <span class="n">node</span><span class="p">,</span> <span class="k">const</span> <span class="n">Box</span><span class="o">&lt;</span><span class="n">Float</span><span class="o">&gt;&amp;</span> <span class="n">box</span><span class="p">,</span> <span class="k">const</span> <span class="n">Box</span><span class="o">&lt;</span><span class="n">Float</span><span class="o">&gt;&amp;</span> <span class="n">queryBox</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;&amp;</span> <span class="n">values</span><span class="p">)</span> <span class="k">const</span>
+<span class="p">{</span>
+    <span class="n">assert</span><span class="p">(</span><span class="n">node</span> <span class="o">!=</span> <span class="nb">nullptr</span><span class="p">);</span>
+    <span class="n">assert</span><span class="p">(</span><span class="n">queryBox</span><span class="p">.</span><span class="n">intersects</span><span class="p">(</span><span class="n">box</span><span class="p">));</span>
+    <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="n">value</span> <span class="o">:</span> <span class="n">node</span><span class="o">-&gt;</span><span class="n">values</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">queryBox</span><span class="p">.</span><span class="n">intersects</span><span class="p">(</span><span class="n">mGetBox</span><span class="p">(</span><span class="n">value</span><span class="p">)))</span>
+            <span class="n">values</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">value</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">isLeaf</span><span class="p">(</span><span class="n">node</span><span class="p">))</span>
+    <span class="p">{</span>
+        <span class="k">for</span> <span class="p">(</span><span class="k">auto</span> <span class="n">i</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">node</span><span class="o">-&gt;</span><span class="n">children</span><span class="p">.</span><span class="n">size</span><span class="p">();</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="k">auto</span> <span class="n">childBox</span> <span class="o">=</span> <span class="n">computeBox</span><span class="p">(</span><span class="n">box</span><span class="p">,</span> <span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="n">i</span><span class="p">));</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">queryBox</span><span class="p">.</span><span class="n">intersects</span><span class="p">(</span><span class="n">childBox</span><span class="p">))</span>
+                <span class="n">query</span><span class="p">(</span><span class="n">node</span><span class="o">-&gt;</span><span class="n">children</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">get</span><span class="p">(),</span> <span class="n">childBox</span><span class="p">,</span> <span class="n">queryBox</span><span class="p">,</span> <span class="n">values</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Firstly, we add all the values stored in the current node that intersect with the query box. Then, if the current node is an interior node, we do a recursive call for each child whose bounding box intersects the query box.</p>
+
+<h2 id="all-pairwise-intersections">All pairwise intersections</h2>
+
+<p>The second use case that is supported is finding all the pairs of values stored in the quadtree that intersect. It is particularly useful for doing a physics engine. It is possible to achieve that with the <code class="highlighter-rouge">query</code> method. Indeed, we can call <code class="highlighter-rouge">query</code> for the bounding box of all values. However, it is possible to do that a bit more efficiently by adding the intersection only once for a pair (while, we would find it twice by using <code class="highlighter-rouge">query</code>).</p>
+
+<p>To be able to do that, we need to notice that an intersection can only occur:</p>
+
+<ul>
+  <li>between two values stored in the same node</li>
+</ul>
+
+<p>or</p>
+
+<ul>
+  <li>between a value stored in a node and another one stored in a descendant of this node.</li>
+</ul>
+
+<p>Thus, we only need to check the intersection between:</p>
+
+<ul>
+  <li>a value and the next values stored in the same node</li>
+</ul>
+
+<p>and</p>
+
+<ul>
+  <li>a value and the values stored in the descendant.</li>
+</ul>
+
+<p>This way, we are sure to not report twice the same intersection.</p>
+
+<p>Here is the code of <code class="highlighter-rouge">findAllIntersections</code>:</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">pair</span><span class="o">&lt;</span><span class="n">T</span><span class="p">,</span> <span class="n">T</span><span class="o">&gt;&gt;</span> <span class="n">findAllIntersections</span><span class="p">()</span> <span class="k">const</span>
+<span class="p">{</span>
+    <span class="k">auto</span> <span class="n">intersections</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">pair</span><span class="o">&lt;</span><span class="n">T</span><span class="p">,</span> <span class="n">T</span><span class="o">&gt;&gt;</span><span class="p">();</span>
+    <span class="n">findAllIntersections</span><span class="p">(</span><span class="n">mRoot</span><span class="p">.</span><span class="n">get</span><span class="p">(),</span> <span class="n">intersections</span><span class="p">);</span>
+    <span class="k">return</span> <span class="n">intersections</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Again, we just allocate a <code class="highlighter-rouge">std::vector</code> to store the intersections and we call an auxiliary function:</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="n">findAllIntersections</span><span class="p">(</span><span class="n">Node</span><span class="o">*</span> <span class="n">node</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">pair</span><span class="o">&lt;</span><span class="n">T</span><span class="p">,</span> <span class="n">T</span><span class="o">&gt;&gt;&amp;</span> <span class="n">intersections</span><span class="p">)</span> <span class="k">const</span>
+<span class="p">{</span>
+    <span class="c1">// Find intersections between values stored in this node</span>
+    <span class="c1">// Make sure to not report the same intersection twice</span>
+    <span class="k">for</span> <span class="p">(</span><span class="k">auto</span> <span class="n">i</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">node</span><span class="o">-&gt;</span><span class="n">values</span><span class="p">.</span><span class="n">size</span><span class="p">();</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">for</span> <span class="p">(</span><span class="k">auto</span> <span class="n">j</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">i</span><span class="p">;</span> <span class="o">++</span><span class="n">j</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">mGetBox</span><span class="p">(</span><span class="n">node</span><span class="o">-&gt;</span><span class="n">values</span><span class="p">[</span><span class="n">i</span><span class="p">]).</span><span class="n">intersects</span><span class="p">(</span><span class="n">mGetBox</span><span class="p">(</span><span class="n">node</span><span class="o">-&gt;</span><span class="n">values</span><span class="p">[</span><span class="n">j</span><span class="p">])))</span>
+                <span class="n">intersections</span><span class="p">.</span><span class="n">emplace_back</span><span class="p">(</span><span class="n">node</span><span class="o">-&gt;</span><span class="n">values</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">node</span><span class="o">-&gt;</span><span class="n">values</span><span class="p">[</span><span class="n">j</span><span class="p">]);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">isLeaf</span><span class="p">(</span><span class="n">node</span><span class="p">))</span>
+    <span class="p">{</span>
+        <span class="c1">// Values in this node can intersect values in descendants</span>
+        <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="n">child</span> <span class="o">:</span> <span class="n">node</span><span class="o">-&gt;</span><span class="n">children</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="n">value</span> <span class="o">:</span> <span class="n">node</span><span class="o">-&gt;</span><span class="n">values</span><span class="p">)</span>
+                <span class="n">findIntersectionsInDescendants</span><span class="p">(</span><span class="n">child</span><span class="p">.</span><span class="n">get</span><span class="p">(),</span> <span class="n">value</span><span class="p">,</span> <span class="n">intersections</span><span class="p">);</span>
+        <span class="p">}</span>
+        <span class="c1">// Find intersections in children</span>
+        <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="n">child</span> <span class="o">:</span> <span class="n">node</span><span class="o">-&gt;</span><span class="n">children</span><span class="p">)</span>
+            <span class="n">findAllIntersections</span><span class="p">(</span><span class="n">child</span><span class="p">.</span><span class="n">get</span><span class="p">(),</span> <span class="n">intersections</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>In the first step, we check the intersections between values stored in the current node. Then, if the current node is an interior node, we check the intersections between values stored in this node and values stored in its descendants by calling <code class="highlighter-rouge">findIntersectionInDescendants</code>. Finally, we do recursive calls.</p>
+
+<p><code class="highlighter-rouge">findIntersectionsInDescendants</code> recursively finds intersections between the given value and all the values stored in the subtree:</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="nf">findIntersectionsInDescendants</span><span class="p">(</span><span class="n">Node</span><span class="o">*</span> <span class="n">node</span><span class="p">,</span> <span class="k">const</span> <span class="n">T</span><span class="o">&amp;</span> <span class="n">value</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">pair</span><span class="o">&lt;</span><span class="n">T</span><span class="p">,</span> <span class="n">T</span><span class="o">&gt;&gt;&amp;</span> <span class="n">intersections</span><span class="p">)</span> <span class="k">const</span>
+<span class="p">{</span>
+    <span class="c1">// Test against the values stored in this node</span>
+    <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="n">other</span> <span class="o">:</span> <span class="n">node</span><span class="o">-&gt;</span><span class="n">values</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">mGetBox</span><span class="p">(</span><span class="n">value</span><span class="p">).</span><span class="n">intersects</span><span class="p">(</span><span class="n">mGetBox</span><span class="p">(</span><span class="n">other</span><span class="p">)))</span>
+            <span class="n">intersections</span><span class="p">.</span><span class="n">emplace_back</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">other</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="c1">// Test against values stored into descendants of this node</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">isLeaf</span><span class="p">(</span><span class="n">node</span><span class="p">))</span>
+    <span class="p">{</span>
+        <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="n">child</span> <span class="o">:</span> <span class="n">node</span><span class="o">-&gt;</span><span class="n">children</span><span class="p">)</span>
+            <span class="n">findIntersectionsInDescendants</span><span class="p">(</span><span class="n">child</span><span class="p">.</span><span class="n">get</span><span class="p">(),</span> <span class="n">value</span><span class="p">,</span> <span class="n">intersections</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>That’s all! Again, you can retrieve all the code from <a href="https://github.com/pvigier/Quadtree">GitHub</a>.</p>
+
+<h1 id="useful-resources">Useful resources</h1>
+
+<p>If you want to know more about collision detection and space partitioning data structure, I advise you to read <a href="http://realtimecollisiondetection.net/">Real-Time Collision Detection</a> by Christer Ericson. It covers a lot of topics in depth but it is very understandable. Moreover, it is possible to read chapters independently. It is really a good reference.</p>
+
+<h1 id="conclusion">Conclusion</h1>
+
+<p>That is all for collision detection. However, collision detection is only half of a physics engine. The other half is collision resolution. Next week, I will work on that and I hope I will have more nice pictures to share with you.</p>
+
+<p>See you next week for more!</p>
+
+<p><em>If you are interested by my adventures during the development of Vagabond, you can follow me on <a href="https://twitter.com/PierreVigier">Twitter</a>.</em></p>
+
+    
+	<p>Tags: <span class="label label-primary"><a href="/tag/vagabond">vagabond</a></span> <span class="label label-primary"><a href="/tag/game-engine">game-engine</a></span> <span class="label label-primary"><a href="/tag/cpp">cpp</a></span> </p>
+	
+</div><!-- /.blog-post -->
+<hr/>
+<p>Subscribe to the newsletter if you do not want to miss any new article:</p>
+<!-- Begin Mailchimp Signup Form -->
+<link href="//cdn-images.mailchimp.com/embedcode/horizontal-slim-10_7.css" rel="stylesheet" type="text/css">
+<style type="text/css">
+	#mc_embed_signup{background:#fff; clear:left; font:14px Helvetica,Arial,sans-serif; width:100%;}
+	/* Add your own Mailchimp form style overrides in your site stylesheet or in this style block.
+	   We recommend moving this block and the preceding CSS link to the HEAD of your HTML file. */
+</style>
+<div id="mc_embed_signup">
+<form action="https://ymail.us20.list-manage.com/subscribe/post?u=7bb3b720a12ef1d8e0b48d8da&amp;id=7516dd4562" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate" target="_blank" novalidate>
+    <div id="mc_embed_signup_scroll">
+	
+	<input type="email" value="" name="EMAIL" class="email" id="mce-EMAIL" placeholder="email address" required>
+    <!-- real people should not fill this in and expect good things - do not remove this or risk form bot signups-->
+    <div style="position: absolute; left: -5000px;" aria-hidden="true"><input type="text" name="b_7bb3b720a12ef1d8e0b48d8da_7516dd4562" tabindex="-1" value=""></div>
+    <div class="clear"><input type="submit" value="Subscribe" name="subscribe" id="mc-embedded-subscribe" class="button"></div>
+    </div>
+</form>
+</div>
+<!--End mc_embed_signup-->
+<!-- Disqus -->
+<hr/>
+<div id="disqus_thread"></div>
+<script>
+
+/**
+*  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+*  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+/*
+var disqus_config = function () {
+this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+};
+*/
+(function() { // DON'T EDIT BELOW THIS LINE
+var d = document, s = d.createElement('script');
+s.src = 'https://pvigier-github-io.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div><!-- /.blog-main -->
+<div class="col-sm-3 col-sm-offset-1 blog-sidebar">
+	<div class="sidebar-module">
+        <h4>Tags</h4>
+        <ol class="list-unstyled">
+		
+			<li><a href="/tag/math">math (3)</a></li>
+		
+			<li><a href="/tag/python">python (6)</a></li>
+		
+			<li><a href="/tag/cpp">cpp (7)</a></li>
+		
+			<li><a href="/tag/pcg">pcg (10)</a></li>
+		
+			<li><a href="/tag/simulopolis">simulopolis (5)</a></li>
+		
+			<li><a href="/tag/linux">linux (1)</a></li>
+		
+			<li><a href="/tag/geometry">geometry (1)</a></li>
+		
+			<li><a href="/tag/graph">graph (1)</a></li>
+		
+			<li><a href="/tag/git">git (1)</a></li>
+		
+			<li><a href="/tag/vagabond">vagabond (13)</a></li>
+		
+			<li><a href="/tag/ecs">ecs (2)</a></li>
+		
+			<li><a href="/tag/game-engine">game-engine (4)</a></li>
+		
+        </ol>
+    </div>
+    <div class="sidebar-module">
+        <h4>Archives</h4>
+        <ol class="list-unstyled">
+		
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+			<li id="yJuly 2019"><a href="/2019/07">July 2019 (6)</a></li>
+				
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+			<li id="yJune 2019"><a href="/2019/06">June 2019 (4)</a></li>
+				
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+			<li id="yMay 2019"><a href="/2019/05">May 2019 (5)</a></li>
+				
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+			<li id="yNovember 2018"><a href="/2018/11">November 2018 (3)</a></li>
+				
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+			<li id="yOctober 2018"><a href="/2018/10">October 2018 (3)</a></li>
+				
+            
+        
+            
+            
+            
+            
+			<li id="yJune 2018"><a href="/2018/06">June 2018 (1)</a></li>
+				
+            
+        
+            
+            
+            
+            
+			<li id="yMay 2018"><a href="/2018/05">May 2018 (1)</a></li>
+				
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+			<li id="yFebruary 2018"><a href="/2018/02">February 2018 (2)</a></li>
+				
+            
+        
+            
+            
+            
+            
+			<li id="yAugust 2017"><a href="/2017/08">August 2017 (1)</a></li>
+				
+            
+        
+            
+            
+            
+            
+			<li id="yJuly 2017"><a href="/2017/07">July 2017 (1)</a></li>
+				
+            
+        
+            
+            
+            
+            
+			<li id="yFebruary 2017"><a href="/2017/02">February 2017 (1)</a></li>
+				
+            
+        
+        </ol>
+    </div>
+    <div class="sidebar-module">
+        <h4>Follow me</h4>
+        <ol class="list-unstyled">
+            <li><a href="https://github.com/pvigier">GitHub</a></li>
+            <li><a href="https://pvigier.itch.io/">itch.io</a></li>
+            <li><a href="https://twitter.com/PierreVigier">Twitter</a></li>
+            <li><a href="/rss.xml">RSS</a></li>
+        </ol>
+    </div>
+</div><!-- /.blog-sidebar -->
+
+            </div><!-- /.row -->
+        </div><!-- /.container -->
+
+        <footer class="blog-footer">
+            <p>Powered by <a href="http://getbootstrap.com">Bootstrap</a> and <a href="http://jekyllrb.com">Jekyll</a>.</p>
+            <p>
+                <a href="#">Back to top</a>
+            </p>
+        </footer>
+        <!-- Javascript -->
+        <!-- jQuery -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+        <!-- Bootstrap -->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+        <!-- MathJax -->
+        <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+        <!-- Analytics -->
+        <script>
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+        ga('create', 'UA-30902264-4', 'auto');
+        ga('send', 'pageview');
+        </script>
+        <!-- Modal images -->
+        <script src="/media/js/modal.js"></script>
+    </body>
+</html>

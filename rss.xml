@@ -3,12 +3,44 @@
 	<title>pvigier's blog</title>
 	<link href="http://pvigier.github.io/rss.xml" rel="self"/>
 	<link href="http://pvigier.github.io"/>
-	<updated>2019-07-30T14:05:18+02:00</updated>
+	<updated>2019-08-05T20:32:47+02:00</updated>
 	<id>http://pvigier.github.io</id>
 	<author>
 		<name>Pierre Vigier</name>
 		<email>pierre.vigier@ymail.com</email>
 	</author>
+	
+		<entry>
+			<title>Quadtree and collision detection</title>
+			<link href="http://pvigier.github.io/2019/07/28/quadtree-collision-detection.html"/>
+			<updated>2019-07-28T00:00:00+02:00</updated>
+			<id>http://pvigier.github.io/2019/07/28/quadtree-collision-detection</id>
+			<content type="html">&lt;p&gt;This week was short as I was still working on the &lt;a href=&quot;/2019/07/28/vagabond-2d-light-system.html&quot;&gt;2D light system&lt;/a&gt; on Monday and Tuesday. I spent the rest of my time working on a &lt;a href=&quot;https://en.wikipedia.org/wiki/Quadtree&quot;&gt;quadtree&lt;/a&gt; implementation.&lt;/p&gt;
+
+&lt;p&gt;In this article, I will share with you my implementation and my thoughts while designing it.&lt;/p&gt;
+
+&lt;p&gt;Firstly, I want to argue why I decided to implement a quadtree.&lt;/p&gt;
+
+&lt;p&gt;Quadtrees are a &lt;a href=&quot;https://en.wikipedia.org/wiki/Space_partitioning&quot;&gt;space partitioning data structure&lt;/a&gt;. Its main advantage against other data structures is its versatility. It offers good performance for insertion, removal and lookup. Thus, we can use it in a dynamic context where the data often change. Moreover, it is quite easy to understand and implement.&lt;/p&gt;
+
+&lt;p&gt;If you are totally new to space partitioning, I advise you to read this &lt;a href=&quot;http://gameprogrammingpatterns.com/spatial-partition.html&quot;&gt;article&lt;/a&gt; by Robert Nystrom. If you want a gentler introduction to quadtrees, you can read this &lt;a href=&quot;https://gamedevelopment.tutsplus.com/tutorials/quick-tip-use-quadtrees-to-detect-likely-collisions-in-2d-space--gamedev-374&quot;&gt;article&lt;/a&gt; or this &lt;a href=&quot;https://jimkang.com/quadtreevis/&quot;&gt;one&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;In my game, there are several places where using a quadtree is an instant win:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;During collision detection, using a quadtree is way more efficient than the brute-force approach (testing all pairs). It is not the most efficient approach though, see this &lt;a href=&quot;https://0fps.net/2015/01/23/collision-detection-part-3-benchmarks/&quot;&gt;article&lt;/a&gt; if you want an overview of possible approaches and benchmarks. But, I will start using this in the first version of my physics engine. I may change later and use a more specialized algorithm if I need to.&lt;/li&gt;
+  &lt;li&gt;In the &lt;a href=&quot;/2019/07/14/vagabond-game-engine-foundations.html&quot;&gt;scene graph&lt;/a&gt;, to perform culling, I can use a quadtree to find all the nodes that are visible.&lt;/li&gt;
+  &lt;li&gt;In the &lt;a href=&quot;/2019/07/28/vagabond-2d-light-system.html&quot;&gt;light system&lt;/a&gt;, I can use a quadtree to find the walls that are intersecting the light visibility polygon.&lt;/li&gt;
+  &lt;li&gt;In an AI system, I can use a quadtree to find all the objects or enemies that are close to an entity.&lt;/li&gt;
+  &lt;li&gt;etc.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;As you can notice, quadtrees are very versatile. They are a nice tool to have in your toolbox.&lt;/p&gt;
+
+&lt;p&gt;You can find all the code that I will show next on &lt;a href=&quot;https://github.com/pvigier/Quadtree&quot;&gt;GitHub&lt;/a&gt;.&lt;/p&gt;
+
+</content>
+		</entry>
 	
 		<entry>
 			<title>Vagabond &#8211; 2D Light System</title>
