@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.0//EN" "http://www.w3.org/TR/2001/PR-SVG-20010719/DTD/svg10.dtd">
+<svg width="17cm" height="11cm" viewBox="319 79 322 203" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs/>
+  <g id="Background">
+    <rect style="fill: #ffffff; fill-opacity: 0; stroke-opacity: 1; stroke-width: 2; stroke: #000000" x="500" y="80" width="140" height="60" rx="0" ry="0"/>
+    <g>
+      <rect style="fill: #ffffff; fill-opacity: 0; stroke-opacity: 1; stroke-width: 2; stroke: #000000" x="400" y="120" width="40" height="40" rx="0" ry="0"/>
+      <text font-size="12.8" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="420" y="143.9">
+        <tspan x="420" y="143.9"></tspan>
+      </text>
+    </g>
+    <g>
+      <line style="fill: none; stroke-opacity: 1; stroke-width: 2; stroke-dasharray: 6; stroke: #000000" x1="400" y1="120" x2="511.899" y2="194.599"/>
+      <polygon style="fill: #000000; fill-opacity: 1; stroke-opacity: 1; stroke-width: 2; stroke: #000000" fill-rule="evenodd" points="518.139,198.76 507.045,197.373 511.899,194.599 512.592,189.052 "/>
+    </g>
+    <g>
+      <rect style="fill: #ffffff; fill-opacity: 0; stroke-opacity: 1; stroke-width: 2; stroke-dasharray: 6; stroke: #000000" x="520" y="200" width="40" height="40" rx="0" ry="0"/>
+      <text font-size="12.8" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="540" y="223.9">
+        <tspan x="540" y="223.9"></tspan>
+      </text>
+    </g>
+    <line style="fill: none; stroke-opacity: 1; stroke-width: 2; stroke-dasharray: 4; stroke: #000000" x1="440" y1="120" x2="560" y2="200"/>
+    <line style="fill: none; stroke-opacity: 1; stroke-width: 2; stroke-dasharray: 4; stroke: #000000" x1="400" y1="160" x2="520" y2="240"/>
+    <rect style="fill: #ffffff; fill-opacity: 0; stroke-opacity: 1; stroke-width: 2; stroke: #000000" x="320" y="220" width="140" height="60" rx="0" ry="0"/>
+  </g>
+</svg>

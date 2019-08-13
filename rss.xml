@@ -3,7 +3,7 @@
 	<title>pvigier's blog</title>
 	<link href="http://pvigier.github.io/rss.xml" rel="self"/>
 	<link href="http://pvigier.github.io"/>
-	<updated>2019-08-05T20:51:17+02:00</updated>
+	<updated>2019-08-13T16:07:21+02:00</updated>
 	<id>http://pvigier.github.io</id>
 	<author>
 		<name>Pierre Vigier</name>
@@ -11,10 +11,25 @@
 	</author>
 	
 		<entry>
+			<title>Vagabond &#8211; 2D Physics Engine</title>
+			<link href="http://pvigier.github.io/2019/08/11/vagabond-2d-physics-engine.html"/>
+			<updated>2019-08-11T00:00:00+02:00</updated>
+			<id>http://pvigier.github.io/2019/08/11/vagabond-2d-physics-engine</id>
+			<content type="html">&lt;p&gt;This week, I worked on the physics engine. It was the first time, I wrote a physics engine thus it took me a lot of time to design an algorithm that works well. In this article, I will try to share with you the issues I faced and then my current design of the physics engine.&lt;/p&gt;
+
+&lt;video controls=&quot;&quot; width=&quot;256&quot;&gt;
+    &lt;source src=&quot;/media/video/vagabond-2d-physics-engine/physics_engine_demo.mp4&quot; type=&quot;video/mp4&quot; /&gt;
+    Sorry, your browser doesn't support embedded videos.
+&lt;/video&gt;
+
+</content>
+		</entry>
+	
+		<entry>
 			<title>Quadtree and collision detection</title>
-			<link href="http://pvigier.github.io/2019/07/28/quadtree-collision-detection.html"/>
-			<updated>2019-07-28T00:00:00+02:00</updated>
-			<id>http://pvigier.github.io/2019/07/28/quadtree-collision-detection</id>
+			<link href="http://pvigier.github.io/2019/08/04/quadtree-collision-detection.html"/>
+			<updated>2019-08-04T00:00:00+02:00</updated>
+			<id>http://pvigier.github.io/2019/08/04/quadtree-collision-detection</id>
 			<content type="html">&lt;p&gt;This week was short as I was still working on the &lt;a href=&quot;/2019/07/28/vagabond-2d-light-system.html&quot;&gt;2D light system&lt;/a&gt; on Monday and Tuesday. I spent the rest of my time working on a &lt;a href=&quot;https://en.wikipedia.org/wiki/Quadtree&quot;&gt;quadtree&lt;/a&gt; implementation.&lt;/p&gt;
 
 &lt;p&gt;In this article, I will share with you my implementation and my thoughts while designing it.&lt;/p&gt;

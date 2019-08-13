@@ -40,6 +40,31 @@
             <div class="col-sm-8 blog-main">
 
     <div class="blog-post">
+        <h2 class="blog-post-title"><a href="/2018/02/09/dependency-graph.html">Circular dependencies in C++</a></h2>
+        <p class="blog-post-meta">09 Feb 2018 by <a href="/">pierre</a></p>
+        <p>Hi guys, it has been a while since the last post.</p>
+
+<p>I write this short post to tell you about a small script I coded recently. You can find it <a href="https://github.com/pvigier/dependency-graph">here</a> on my github account.</p>
+
+<p>Its goal is to draw the “include” dependencies between classes in a C++ project. In particular, it allows to detect circular dependencies very easily or to check the architecture of a project.</p>
+
+<p>You can see the output of the script on a project of mine:</p>
+
+<p><img src="https://github.com/pvigier/dependency-graph/raw/master/examples/example1.png" alt="Dependency graph" class="center-image modal-image" /></p>
+
+<p>I really like this visual representation which allows to see how classes interact.</p>
+
+<p>However, the true reason why I created this tool is not because I like to see beautiful graphs but because I hate circular dependencies (note that there is none in the graph above). I consider circular dependencies as design flaws. But sometimes in a large project, it could happen that accidentally I create circular dependencies …</p>
+
+
+        <p><a href="/2018/02/09/dependency-graph.html">Read more ...</a></p>
+        
+        <p>Tags: <span class="label label-primary"><a href="/tag/cpp">cpp</a></span> <span class="label label-primary"><a href="/tag/python">python</a></span> </p>
+        
+    </div>
+    <hr />
+
+    <div class="blog-post">
         <h2 class="blog-post-title"><a href="/2017/08/13/pychain-part2-mnist.html">Pychain Part 2 - Application: MNIST</a></h2>
         <p class="blog-post-meta">13 Aug 2017 by <a href="/">pierre</a></p>
         <p>In <a href="/2017/07/21/pychain-part1-computational-graphs.html">part 1</a>, we have created a fully functional library which is able to create and train neural networks using computational graphs. We used them on very simple examples. Today, we are going to try it on a more serious problem: character recognition.</p>
@@ -146,11 +171,11 @@
 		
 			<li><a href="/tag/git">git (1)</a></li>
 		
-			<li><a href="/tag/vagabond">vagabond (13)</a></li>
+			<li><a href="/tag/vagabond">vagabond (14)</a></li>
 		
 			<li><a href="/tag/ecs">ecs (2)</a></li>
 		
-			<li><a href="/tag/game-engine">game-engine (4)</a></li>
+			<li><a href="/tag/game-engine">game-engine (5)</a></li>
 		
         </ol>
     </div>
@@ -168,10 +193,8 @@
             
             
             
-        
-            
-            
-            
+			<li id="yAugust 2019"><a href="/2019/08">August 2019 (2)</a></li>
+				
             
         
             
@@ -188,7 +211,17 @@
             
             
             
-			<li id="yJuly 2019"><a href="/2019/07">July 2019 (6)</a></li>
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+			<li id="yJuly 2019"><a href="/2019/07">July 2019 (5)</a></li>
 				
             
         

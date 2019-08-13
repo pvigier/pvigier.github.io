@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="">
+        <meta name="author" content="Pierre Vigier">
+
+        <title>Vagabond &#8211; 2D Physics Engine - pvigier's blog</title>
+        <link rel="shortcut icon" href="/media/img/favicon.png">
+        <!-- Bootstrap -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+        <!-- My themes -->
+        <link href="/media/css/style.css" rel="stylesheet">
+        <link href="/media/css/syntax.css" rel="stylesheet">
+        <link href="/media/css/modal.css" rel="stylesheet">
+        <!-- RSS -->
+        <link href="https://pvigier.github.io/rss.xml" rel="alternate" title="pvigier's blog" type="application/atom+xml" />
+    </head>
+    <body>
+        <div class="blog-masthead">
+            <div class="container">
+                <nav class="blog-nav">
+                    <a class="blog-nav-item active" href="/">Blog</a>
+                    <a class="blog-nav-item" href="/articles">Articles</a>
+                    <a class="blog-nav-item" href="/projects">Projects</a>
+                    <!--<a class="blog-nav-item" href="/best-resources">Best Resources</a>-->
+                    <!--<a class="blog-nav-item" href="/resume">Resume</a>-->
+                    <a class="blog-nav-item" href="/about">About</a>
+                </nav>
+            </div>
+        </div>
+        <div class="container">
+            <div class="blog-header">
+                <h1 class="blog-title">pvigier's blog</h1>
+                <p class="lead blog-description">computer science, programming and other ideas</p>
+            </div>
+            <div class="row">
+            <div class="col-sm-8 blog-main">
+<div class="blog-post">
+    <h2 class="blog-post-title">Vagabond &#8211; 2D Physics Engine</h2>
+    <p class="blog-post-meta">11 Aug 2019 by <a href="/">pierre</a></p>
+    <p>This week, I worked on the physics engine. It was the first time, I wrote a physics engine thus it took me a lot of time to design an algorithm that works well. In this article, I will try to share with you the issues I faced and then my current design of the physics engine.</p>
+
+<video controls="" width="256">
+    <source src="/media/video/vagabond-2d-physics-engine/physics_engine_demo.mp4" type="video/mp4" />
+    Sorry, your browser doesn't support embedded videos.
+</video>
+
+<!--more-->
+
+<h1 id="issues">Issues</h1>
+
+<p>Last week, I implemented a <a href="/2019/08/04/quadtree-collision-detection.html">quadtree</a> which allows me to find all the collisions inside a set of entities fairly quickly. But one question remains: what to do then?</p>
+
+<p>One idea is to move all the entities at the place they would be just before their first collision. The problem in doing so is that by moving them, we may create new collisions.</p>
+
+<table class="image-table">
+  <thead>
+    <tr>
+      <th style="text-align: center">Before resolution</th>
+      <th style="text-align: center">After resolution</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center"><img src="/media/img/vagabond-2d-physics-engine/before_collision.svg" alt="" width="250" /></td>
+      <td style="text-align: center"><img src="/media/img/vagabond-2d-physics-engine/after_collision.svg" alt="" width="250" /></td>
+    </tr>
+  </tbody>
+</table>
+
+<p>In the literature (see the Useful resources section), I found two main solutions to this problem:</p>
+
+<ul>
+  <li>Resolving again until there is no collision left.</li>
+  <li>Simulating the movement until the first collision occurs, resolving this collision, simulating until the next collision, resolving it, etc. Until we reach the current time.</li>
+</ul>
+
+<p>While these methods give the most precise simulation (especially the second one, the first one is an approximation), I feel they are too complex and computationally expensive for what I am trying to achieve: a very simple physics engine for a 2D RPG.</p>
+
+<p>Another issue that may occur with discrete simulation is tunneling: we may have no collision at the timestamps but go through obstacles between the two timestamps (see image below).</p>
+
+<p><img src="/media/img/vagabond-2d-physics-engine/tunneling.svg" alt="" width="250" class="center-image" /></p>
+
+<p>Finally, in most resources I found, they were simulating realistic physic laws. Thus, they resolved collision using <a href="https://en.wikipedia.org/wiki/Elastic_collision">elastic</a> or <a href="https://en.wikipedia.org/wiki/Inelastic_collision">inelastic collisions</a>. These behaviors are not well-suited for a top-down 2D RPG.</p>
+
+<h1 id="design-and-algorithm">Design and algorithm</h1>
+
+<h2 id="design">Design</h2>
+
+<p>In this section, I will share with you the current design of my physics engine. It is very simple but I think it works well for simple games and it is quite expandable. I will only show pseudo-code because there is no critical part but I leverage the <a href="/2019/08/04/quadtree-collision-detection.html">quadtree implementation I detailed last week</a>.</p>
+
+<p>The first strong design choice is that there will be two types of nodes: static nodes and dynamic nodes. As you have surely guessed, static nodes will not be able to move while dynamic nodes can.</p>
+
+<p>The other strong assumption is that we will only resolve collisions between static and dynamic nodes. In other words, a dynamic node cannot penetrate a static node but dynamic nodes may overlap. However, we will detect collisions between dynamic nodes and send a message when one occurs.</p>
+
+<p>Thus, static nodes are perfect to model terrain or objects such as trees, furniture, etc. Dynamic nodes will model players, characters, monsters, etc.</p>
+
+<p>I do no think that not resolving the collisions between dynamic nodes in the physics engine is a big limitation because it does not necessarily make sense to do that. Indeed, it may be convenient to let the player or characters be able to go through other characters. This way, it is not possible that one character blocks the passage for others. It can make the artificial intelligence controlling the characters way simpler. Moreover, if necessary most of these collisions between characters may be avoidable using steering behaviors.</p>
+
+<p>Another argument is that during a fight, it may be better to let the entities determining how the enemy should react to a hit than letting the physics engine which has no idea of the characteristics of the weapon doing that.</p>
+
+<p>The class that will model the static nodes is an abstract class in my implementation, it has two virtual methods: one for getting the bounding box of the entity to be able to insert the node in a quadtree, the other to detect a collision with a dynamic node:</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">struct</span> <span class="n">StaticNode</span>
+<span class="p">{</span>
+    <span class="k">virtual</span> <span class="k">const</span> <span class="n">Box</span><span class="o">&amp;</span> <span class="n">getBoundingBox</span><span class="p">()</span> <span class="k">const</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="k">virtual</span> <span class="n">CollisionResult</span><span class="o">&amp;</span> <span class="n">detectCollision</span><span class="p">(</span><span class="k">const</span> <span class="n">DynamicNode</span><span class="o">&amp;</span> <span class="n">node</span><span class="p">)</span> <span class="k">const</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p><code class="highlighter-rouge">CollisionResult</code> is a simple structure which contains information about the collision such as the time of impact <code class="highlighter-rouge">t</code> and the normal of the axis of collision <code class="highlighter-rouge">n</code>.</p>
+
+<p>Currently, I have two derived classes of <code class="highlighter-rouge">StaticNode</code>: <code class="highlighter-rouge">TileNode</code> for tiled terrains and <code class="highlighter-rouge">BoxNode</code> for other entities that are just a box.</p>
+
+<p>Here is the data structure for dynamic nodes:</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">struct</span> <span class="n">DynamicNode</span>
+<span class="p">{</span>
+    <span class="kt">float</span> <span class="n">mass</span><span class="p">;</span>
+    <span class="n">Box</span> <span class="n">box</span><span class="p">;</span>
+    <span class="n">Vector2</span> <span class="n">velocity</span><span class="p">;</span>
+    <span class="n">Vector2</span> <span class="n">netForce</span><span class="p">;</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p><code class="highlighter-rouge">mass</code> is the mass of the object, <code class="highlighter-rouge">box</code> contains the position of the entity and its size, <code class="highlighter-rouge">velocity</code> is its current velocity and <code class="highlighter-rouge">netForce</code> is the sum of all the forces that are currently applying on the object.</p>
+
+<h2 id="algorithm">Algorithm</h2>
+
+<p>Here are the three steps done in the physics engine:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1. Compute the new positions for all dynamic nodes.
+2. For each dynamic node, find its first collision with a static node and resolve it.
+3. Detect collisions between dynamic nodes.
+</code></pre></div></div>
+
+<h3 id="simulation">Simulation</h3>
+
+<p>In the first step, we compute the new position of a dynamic node if there is no obstacle.</p>
+
+<p>To update the position, I just integrate the <a href="https://en.wikipedia.org/wiki/Newton%27s_laws_of_motion">second law of motion</a> using <a href="https://en.wikipedia.org/wiki/Euler_method">Euler method</a>:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>acceleration = node.netForce / node.mass
+node.velocity += acceleration * dt
+newPosition = node.box.position + node.velocity * dt
+newBox = Box(newPosition, node.box.size)
+</code></pre></div></div>
+
+<p>Nothing fancy here.</p>
+
+<h3 id="dynamic-static-collisions">Dynamic-static collisions</h3>
+
+<p>The next step is to find the collisions with static nodes, to do that I use a quadtree <code class="highlighter-rouge">staticNodeQuadtree</code> that contains all the static nodes. Then, I look for the first collision, move the dynamic node at the place where it collides. Finally, I reset its velocity in the direction of the normal so that it remains only the tangential component and it stops trying to enter in the static node:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">staticNodesHit</span> <span class="o">=</span> <span class="n">staticNodeQuadtree</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">newBox</span><span class="p">)</span>
+<span class="n">minT</span> <span class="o">=</span> <span class="n">infinity</span>
+<span class="n">normal</span> <span class="o">=</span> <span class="n">nil</span>
+<span class="k">for</span> <span class="n">staticNode</span> <span class="ow">in</span> <span class="n">staticNodesHit</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">staticNode</span><span class="o">.</span><span class="n">detectCollision</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">t</span> <span class="o">&lt;</span> <span class="n">minT</span>
+        <span class="n">minT</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">t</span>
+        <span class="n">normal</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">n</span>
+<span class="n">node</span><span class="o">.</span><span class="n">box</span><span class="o">.</span><span class="n">position</span> <span class="o">+=</span> <span class="n">minT</span> <span class="o">*</span> <span class="n">node</span><span class="o">.</span><span class="n">velocity</span>
+<span class="n">node</span><span class="o">.</span><span class="n">box</span><span class="o">.</span><span class="n">velocity</span> <span class="o">-=</span> <span class="n">node</span><span class="o">.</span><span class="n">box</span><span class="o">.</span><span class="n">velocity</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">normal</span><span class="p">)</span> <span class="o">*</span> <span class="n">normal</span>
+</code></pre></div></div>
+
+<h3 id="dynamic-dynamic-collisions">Dynamic-dynamic collisions</h3>
+
+<p>The last step is finding all the collisions between dynamic nodes. Again, we will use a quadtree to do all the hard work:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">dynamicNodeQuadtree</span> <span class="o">=</span> <span class="n">Quadtree</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">dynamicNodes</span>
+    <span class="n">dynamicNodeQuadtree</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+<span class="n">collisions</span> <span class="o">=</span> <span class="n">dynamicNodeQuadtree</span><span class="o">.</span><span class="n">findAllIntersections</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">node1</span><span class="p">,</span> <span class="n">node2</span> <span class="ow">in</span> <span class="n">collisions</span>
+    <span class="n">sendMessage</span><span class="p">(</span><span class="n">CollisionMessage</span><span class="p">(</span><span class="n">node1</span><span class="p">,</span> <span class="n">node2</span><span class="p">))</span>
+</code></pre></div></div>
+
+<p>Contrary to the quadtree containing the static nodes that is kept between iterations, the quadtree for the dynamic nodes is created from scratch at each iteration as all the dynamic nodes may have moved and need an update.</p>
+
+<h1 id="possible-improvements">Possible improvements</h1>
+
+<p>Now that we have a basic physics engine that works we can try to add some improvements.</p>
+
+<h2 id="tunneling">Tunneling</h2>
+
+<p>In the previous algorithm, we do not tackle the problem of tunneling. Tunneling may not be an issue depending on the geometry present in the world and if the framerate is constantly high. However, there is a simple way to check that no tunneling takes place. To do that, we must modify the quadtree data structure a bit so that we can check the collision between nodes in the quadtree and a given parallelogram. It is easy simple to do so.</p>
+
+<p>Then, we have to remark that the swept area of the bounding box of a dynamic node between two iterations is a parallelogram. Thus, we can find all the static nodes it may collide with by querying the quadtree containing the static nodes with a parallelogram that represents the swept area.</p>
+
+<p><img src="/media/img/vagabond-2d-physics-engine/tunneling_parallelogram.svg" alt="" width="250" class="center-image" /></p>
+
+<h2 id="wall-sliding">Wall sliding</h2>
+
+<p>In a 2D top-down RPG, we may want the player to be able to slide along the walls even if a part of the velocity is toward the wall.</p>
+
+<p>After searching a bit on the Internet, I have found that one method often proposed is to first move along one axis an then along the other. I am not fond of this method for several reasons. Firstly, because moving along X then along Y is not the same as moving along X and Y simultaneously so it may return weird results.</p>
+
+<table class="image-table">
+  <thead>
+    <tr>
+      <th style="text-align: center">Diagonal</th>
+      <th style="text-align: center">Along axes</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center"><img src="/media/img/vagabond-2d-physics-engine/diagonal.svg" alt="" width="250" /></td>
+      <td style="text-align: center"><img src="/media/img/vagabond-2d-physics-engine/move_along_axis.svg" alt="" width="250" /></td>
+    </tr>
+  </tbody>
+</table>
+
+<p>However, with a low velocity, I don’t think it is noticeable. The second reason is that it works only if all the walls are vertical or horizontal, it is not expandable.</p>
+
+<p>An alternative, that is in my opinion better, is after the first collision that occurs at <code class="highlighter-rouge">t</code> if there is time left, we try to move again with the new velocity that just has been updated (we kept only the tangential component). We can even do that several times until we reach <code class="highlighter-rouge">dt</code> or a maximum number of iterations:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">t</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">nbCollisions</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="k">while</span> <span class="n">t</span> <span class="o">&lt;</span> <span class="n">dt</span> <span class="ow">and</span> <span class="n">nbCollisions</span> <span class="o">&lt;</span> <span class="n">maxNbCollisions</span>
+    <span class="n">collision</span> <span class="o">=</span> <span class="n">findFirstCollision</span><span class="p">()</span>
+    <span class="n">update</span> <span class="n">position</span> <span class="ow">and</span> <span class="n">velocity</span>
+    <span class="n">t</span> <span class="o">+=</span> <span class="n">collision</span><span class="o">.</span><span class="n">t</span>
+    <span class="n">nbCollisions</span> <span class="o">+=</span> <span class="mi">1</span>
+</code></pre></div></div>
+
+<p>Here is a figure to illustrate:</p>
+
+<p><img src="/media/img/vagabond-2d-physics-engine/wall_sliding.svg" alt="" width="250" class="center-image" /></p>
+
+<h2 id="hitboxes">Hitboxes</h2>
+
+<p>Finally, the last improvement I am thinking of is supporting several hitboxes for a dynamic node. For instance, we may want to use one hitbox for the body to be able to detect received hits and one hitbox for the weapon to be able to detect given hits.</p>
+
+<p><img src="/media/img/vagabond-2d-physics-engine/hitboxes.png" alt="" class="center-image" /></p>
+
+<p>I would simply add a list of hitboxes in the definition of <code class="highlighter-rouge">DynamicNode</code> and when there is a collision between the bounding boxes of two dynamic nodes, I would test the collision between their respective hitboxes.</p>
+
+<h1 id="useful-resources">Useful resources</h1>
+
+<ul>
+  <li><a href="http://realtimecollisiondetection.net/">Real-Time Collision Detection</a> by Christer Ericson</li>
+  <li>Game Physics Engine Design by Ian Millington</li>
+  <li>Mathematics &amp; Physics for Programmers by Danny Kodicek</li>
+</ul>
+
+<h1 id="conclusion">Conclusion</h1>
+
+<p>I hope this article give you some ideas on how to start writing your own physics engine.</p>
+
+<p>Next week, I may polish this a bit and start working on the audio engine.</p>
+
+<p>See you next week for more!</p>
+
+<p><em>If you are interested in my adventures during the development of Vagabond, you can follow me on <a href="https://twitter.com/PierreVigier">Twitter</a>.</em></p>
+
+    
+	<p>Tags: <span class="label label-primary"><a href="/tag/vagabond">vagabond</a></span> <span class="label label-primary"><a href="/tag/game-engine">game-engine</a></span> </p>
+	
+</div><!-- /.blog-post -->
+<hr/>
+<p>Subscribe to the newsletter if you do not want to miss any new article:</p>
+<!-- Begin Mailchimp Signup Form -->
+<link href="//cdn-images.mailchimp.com/embedcode/horizontal-slim-10_7.css" rel="stylesheet" type="text/css">
+<style type="text/css">
+	#mc_embed_signup{background:#fff; clear:left; font:14px Helvetica,Arial,sans-serif; width:100%;}
+	/* Add your own Mailchimp form style overrides in your site stylesheet or in this style block.
+	   We recommend moving this block and the preceding CSS link to the HEAD of your HTML file. */
+</style>
+<div id="mc_embed_signup">
+<form action="https://ymail.us20.list-manage.com/subscribe/post?u=7bb3b720a12ef1d8e0b48d8da&amp;id=7516dd4562" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate" target="_blank" novalidate>
+    <div id="mc_embed_signup_scroll">
+	
+	<input type="email" value="" name="EMAIL" class="email" id="mce-EMAIL" placeholder="email address" required>
+    <!-- real people should not fill this in and expect good things - do not remove this or risk form bot signups-->
+    <div style="position: absolute; left: -5000px;" aria-hidden="true"><input type="text" name="b_7bb3b720a12ef1d8e0b48d8da_7516dd4562" tabindex="-1" value=""></div>
+    <div class="clear"><input type="submit" value="Subscribe" name="subscribe" id="mc-embedded-subscribe" class="button"></div>
+    </div>
+</form>
+</div>
+<!--End mc_embed_signup-->
+<!-- Disqus -->
+<hr/>
+<div id="disqus_thread"></div>
+<script>
+
+/**
+*  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+*  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+/*
+var disqus_config = function () {
+this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+};
+*/
+(function() { // DON'T EDIT BELOW THIS LINE
+var d = document, s = d.createElement('script');
+s.src = 'https://pvigier-github-io.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div><!-- /.blog-main -->
+<div class="col-sm-3 col-sm-offset-1 blog-sidebar">
+	<div class="sidebar-module">
+        <h4>Tags</h4>
+        <ol class="list-unstyled">
+		
+			<li><a href="/tag/math">math (3)</a></li>
+		
+			<li><a href="/tag/python">python (6)</a></li>
+		
+			<li><a href="/tag/cpp">cpp (7)</a></li>
+		
+			<li><a href="/tag/pcg">pcg (10)</a></li>
+		
+			<li><a href="/tag/simulopolis">simulopolis (5)</a></li>
+		
+			<li><a href="/tag/linux">linux (1)</a></li>
+		
+			<li><a href="/tag/geometry">geometry (1)</a></li>
+		
+			<li><a href="/tag/graph">graph (1)</a></li>
+		
+			<li><a href="/tag/git">git (1)</a></li>
+		
+			<li><a href="/tag/vagabond">vagabond (14)</a></li>
+		
+			<li><a href="/tag/ecs">ecs (2)</a></li>
+		
+			<li><a href="/tag/game-engine">game-engine (5)</a></li>
+		
+        </ol>
+    </div>
+    <div class="sidebar-module">
+        <h4>Archives</h4>
+        <ol class="list-unstyled">
+		
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+			<li id="yAugust 2019"><a href="/2019/08">August 2019 (2)</a></li>
+				
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+			<li id="yJuly 2019"><a href="/2019/07">July 2019 (5)</a></li>
+				
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+			<li id="yJune 2019"><a href="/2019/06">June 2019 (4)</a></li>
+				
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+			<li id="yMay 2019"><a href="/2019/05">May 2019 (5)</a></li>
+				
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+			<li id="yNovember 2018"><a href="/2018/11">November 2018 (3)</a></li>
+				
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+			<li id="yOctober 2018"><a href="/2018/10">October 2018 (3)</a></li>
+				
+            
+        
+            
+            
+            
+            
+			<li id="yJune 2018"><a href="/2018/06">June 2018 (1)</a></li>
+				
+            
+        
+            
+            
+            
+            
+			<li id="yMay 2018"><a href="/2018/05">May 2018 (1)</a></li>
+				
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+			<li id="yFebruary 2018"><a href="/2018/02">February 2018 (2)</a></li>
+				
+            
+        
+            
+            
+            
+            
+			<li id="yAugust 2017"><a href="/2017/08">August 2017 (1)</a></li>
+				
+            
+        
+            
+            
+            
+            
+			<li id="yJuly 2017"><a href="/2017/07">July 2017 (1)</a></li>
+				
+            
+        
+            
+            
+            
+            
+			<li id="yFebruary 2017"><a href="/2017/02">February 2017 (1)</a></li>
+				
+            
+        
+        </ol>
+    </div>
+    <div class="sidebar-module">
+        <h4>Follow me</h4>
+        <ol class="list-unstyled">
+            <li><a href="https://github.com/pvigier">GitHub</a></li>
+            <li><a href="https://pvigier.itch.io/">itch.io</a></li>
+            <li><a href="https://twitter.com/PierreVigier">Twitter</a></li>
+            <li><a href="/rss.xml">RSS</a></li>
+        </ol>
+    </div>
+</div><!-- /.blog-sidebar -->
+
+            </div><!-- /.row -->
+        </div><!-- /.container -->
+
+        <footer class="blog-footer">
+            <p>Powered by <a href="http://getbootstrap.com">Bootstrap</a> and <a href="http://jekyllrb.com">Jekyll</a>.</p>
+            <p>
+                <a href="#">Back to top</a>
+            </p>
+        </footer>
+        <!-- Javascript -->
+        <!-- jQuery -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+        <!-- Bootstrap -->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+        <!-- MathJax -->
+        <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+        <!-- Analytics -->
+        <script>
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+        ga('create', 'UA-30902264-4', 'auto');
+        ga('send', 'pageview');
+        </script>
+        <!-- Modal images -->
+        <script src="/media/js/modal.js"></script>
+    </body>
+</html>

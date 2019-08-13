@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.0//EN" "http://www.w3.org/TR/2001/PR-SVG-20010719/DTD/svg10.dtd">
+<svg width="16cm" height="13cm" viewBox="338 99 303 243" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs/>
+  <g id="Background">
+    <rect style="fill: #ffffff; fill-opacity: 0; stroke-opacity: 1; stroke-width: 2; stroke: #000000" x="440" y="100" width="100" height="240" rx="0" ry="0"/>
+    <g>
+      <rect style="fill: #ffffff; fill-opacity: 0; stroke-opacity: 1; stroke-width: 2; stroke: #000000" x="340" y="140" width="40" height="40" rx="0" ry="0"/>
+      <text font-size="12.8" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="360" y="163.9">
+        <tspan x="360" y="163.9"></tspan>
+      </text>
+    </g>
+    <g>
+      <line style="fill: none; stroke-opacity: 1; stroke-width: 2; stroke-dasharray: 6; stroke: #000000" x1="340" y1="140" x2="590.694" y2="217.137"/>
+      <polygon style="fill: #000000; fill-opacity: 1; stroke-opacity: 1; stroke-width: 2; stroke: #000000" fill-rule="evenodd" points="597.863,219.342 586.835,221.18 590.694,217.137 589.775,211.623 "/>
+    </g>
+    <g>
+      <rect style="fill: #ffffff; fill-opacity: 0; stroke-opacity: 1; stroke-width: 2; stroke-dasharray: 6; stroke: #000000" x="600" y="220" width="40" height="40" rx="0" ry="0"/>
+      <text font-size="12.8" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="620" y="243.9">
+        <tspan x="620" y="243.9"></tspan>
+      </text>
+    </g>
+    <line style="fill: none; stroke-opacity: 1; stroke-width: 2; stroke-dasharray: 4; stroke: #000000" x1="340" y1="180" x2="600" y2="260"/>
+    <line style="fill: none; stroke-opacity: 1; stroke-width: 2; stroke-dasharray: 4; stroke: #000000" x1="380" y1="140" x2="640" y2="220"/>
+    <line style="fill: none; stroke-opacity: 1; stroke-width: 2; stroke-dasharray: 4; stroke: #000000" x1="640" y1="220" x2="600" y2="260"/>
+    <line style="fill: none; stroke-opacity: 1; stroke-width: 2; stroke-dasharray: 4; stroke: #000000" x1="380" y1="140" x2="340" y2="180"/>
+  </g>
+</svg>
