@@ -3,12 +3,34 @@
 	<title>pvigier's blog</title>
 	<link href="http://pvigier.github.io/rss.xml" rel="self"/>
 	<link href="http://pvigier.github.io"/>
-	<updated>2019-08-13T16:07:21+02:00</updated>
+	<updated>2019-08-19T14:41:55+02:00</updated>
 	<id>http://pvigier.github.io</id>
 	<author>
 		<name>Pierre Vigier</name>
 		<email>pierre.vigier@ymail.com</email>
 	</author>
+	
+		<entry>
+			<title>Vagabond &#8211; Audio Engine</title>
+			<link href="http://pvigier.github.io/2019/08/18/vagabond-audio-engine.html"/>
+			<updated>2019-08-18T00:00:00+02:00</updated>
+			<id>http://pvigier.github.io/2019/08/18/vagabond-audio-engine</id>
+			<content type="html">&lt;p&gt;After the &lt;a href=&quot;/2019/07/28/vagabond-2d-light-system.html&quot;&gt;graphics engine&lt;/a&gt; and the &lt;a href=&quot;/2019/08/11/vagabond-2d-physics-engine.html&quot;&gt;physics engine&lt;/a&gt;, this week, I have worked on the audio engine.&lt;/p&gt;
+
+&lt;p&gt;To play sounds and music I use the &lt;a href=&quot;https://www.sfml-dev.org/tutorials/2.5/audio-sounds.php&quot;&gt;audio part of SFML&lt;/a&gt; which is really good. It is a thin wrapper around OpenAL. It supports WAV, OGG/Vorbis and FLAC. Moreover, it also supports &lt;a href=&quot;https://www.sfml-dev.org/tutorials/2.5/audio-spatialization.php&quot;&gt;spatialization&lt;/a&gt; and it is really easy to use.&lt;/p&gt;
+
+&lt;p&gt;There are only two things for which an audio engine is needed.&lt;/p&gt;
+
+&lt;p&gt;The first one is to make sure that the total number of sounds and music never exceeds 256 (which is an internal limit according to SFML documentation). To do that, the audio engine refuses to play a new sound or music if the limit has already been reached. And as soon as a sound or a music finishes, it removes its instance to be able to play a new one.&lt;/p&gt;
+
+&lt;p&gt;The second thing is being able to pause all sounds and music, play other sounds and music and then be able to resume all the sounds and music that have been paused. This use case happens when you are in-game and some sounds or music are playing. Then you go to the pause menu, all the game simulation is paused, so the sounds and music should be paused too. Some sounds are played by the user interface in the pause menu. Finally, when the player returns to the game, the simulation resumes and all the sounds and music should be resumed too.&lt;/p&gt;
+
+&lt;p&gt;To achieve that, I will use two abstractions, one for each of the two issues, respectively the audio engine and the audio scene.&lt;/p&gt;
+
+&lt;p&gt;Let us dive into the details of these abstractions.&lt;/p&gt;
+
+</content>
+		</entry>
 	
 		<entry>
 			<title>Vagabond &#8211; 2D Physics Engine</title>

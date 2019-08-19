@@ -40,6 +40,31 @@
             <div class="col-sm-8 blog-main">
 
     <div class="blog-post">
+        <h2 class="blog-post-title"><a href="/2019/08/18/vagabond-audio-engine.html">Vagabond &#8211; Audio Engine</a></h2>
+        <p class="blog-post-meta">18 Aug 2019 by <a href="/">pierre</a></p>
+        <p>After the <a href="/2019/07/28/vagabond-2d-light-system.html">graphics engine</a> and the <a href="/2019/08/11/vagabond-2d-physics-engine.html">physics engine</a>, this week, I have worked on the audio engine.</p>
+
+<p>To play sounds and music I use the <a href="https://www.sfml-dev.org/tutorials/2.5/audio-sounds.php">audio part of SFML</a> which is really good. It is a thin wrapper around OpenAL. It supports WAV, OGG/Vorbis and FLAC. Moreover, it also supports <a href="https://www.sfml-dev.org/tutorials/2.5/audio-spatialization.php">spatialization</a> and it is really easy to use.</p>
+
+<p>There are only two things for which an audio engine is needed.</p>
+
+<p>The first one is to make sure that the total number of sounds and music never exceeds 256 (which is an internal limit according to SFML documentation). To do that, the audio engine refuses to play a new sound or music if the limit has already been reached. And as soon as a sound or a music finishes, it removes its instance to be able to play a new one.</p>
+
+<p>The second thing is being able to pause all sounds and music, play other sounds and music and then be able to resume all the sounds and music that have been paused. This use case happens when you are in-game and some sounds or music are playing. Then you go to the pause menu, all the game simulation is paused, so the sounds and music should be paused too. Some sounds are played by the user interface in the pause menu. Finally, when the player returns to the game, the simulation resumes and all the sounds and music should be resumed too.</p>
+
+<p>To achieve that, I will use two abstractions, one for each of the two issues, respectively the audio engine and the audio scene.</p>
+
+<p>Let us dive into the details of these abstractions.</p>
+
+
+        <p><a href="/2019/08/18/vagabond-audio-engine.html">Read more ...</a></p>
+        
+        <p>Tags: <span class="label label-primary"><a href="/tag/vagabond">vagabond</a></span> <span class="label label-primary"><a href="/tag/game-engine">game-engine</a></span> </p>
+        
+    </div>
+    <hr />
+
+    <div class="blog-post">
         <h2 class="blog-post-title"><a href="/2019/08/11/vagabond-2d-physics-engine.html">Vagabond &#8211; 2D Physics Engine</a></h2>
         <p class="blog-post-meta">11 Aug 2019 by <a href="/">pierre</a></p>
         <p>This week, I worked on the physics engine. It was the first time, I wrote a physics engine thus it took me a lot of time to design an algorithm that works well. In this article, I will try to share with you the issues I faced and then my current design of the physics engine.</p>
@@ -122,23 +147,6 @@
     </div>
     <hr />
 
-    <div class="blog-post">
-        <h2 class="blog-post-title"><a href="/2019/07/14/vagabond-game-engine-foundations.html">Vagabond &#8211; Game engine foundations</a></h2>
-        <p class="blog-post-meta">14 Jul 2019 by <a href="/">pierre</a></p>
-        <p>This week, I have continued to develop my game engine. I have laid the foundation for a certain number of engines and systems.</p>
-
-<p>As you may know, I am using SFML and C++ to create my game. However, building a game directly with SFML is a bit tough as SFML is a low-level library. Thus I have decided to build a small game engine to help me later on. Nothing too fancy or general, just the necessary to be able to power Vagabond.</p>
-
-<p>But, I did not do everything from scratch. I used the experience I acquired during the development of <a href="https://github.com/pvigier/Simulopolis">Simulopolis</a>. Moreover, when I finished developing Simulopolis, I read two books <a href="https://www.packtpub.com/game-development/sfml-game-development">SFML Game Development</a> and <a href="https://www.packtpub.com/game-development/sfml-game-development-example">SFML Game Development By Example</a> to compare their approaches and mine. It was really instructive.</p>
-
-
-        <p><a href="/2019/07/14/vagabond-game-engine-foundations.html">Read more ...</a></p>
-        
-        <p>Tags: <span class="label label-primary"><a href="/tag/vagabond">vagabond</a></span> <span class="label label-primary"><a href="/tag/game-engine">game-engine</a></span> </p>
-        
-    </div>
-    <hr />
-
 <nav>
     <ul class="pager">
         
@@ -174,11 +182,11 @@
 		
 			<li><a href="/tag/git">git (1)</a></li>
 		
-			<li><a href="/tag/vagabond">vagabond (14)</a></li>
+			<li><a href="/tag/vagabond">vagabond (15)</a></li>
 		
 			<li><a href="/tag/ecs">ecs (2)</a></li>
 		
-			<li><a href="/tag/game-engine">game-engine (5)</a></li>
+			<li><a href="/tag/game-engine">game-engine (6)</a></li>
 		
         </ol>
     </div>
@@ -196,7 +204,12 @@
             
             
             
-			<li id="yAugust 2019"><a href="/2019/08">August 2019 (2)</a></li>
+        
+            
+            
+            
+            
+			<li id="yAugust 2019"><a href="/2019/08">August 2019 (3)</a></li>
 				
             
         
