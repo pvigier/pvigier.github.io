@@ -7,7 +7,7 @@
         <meta name="description" content="">
         <meta name="author" content="Pierre Vigier">
 
-        <title>Vagabond &#8211; Rasterizing roads and rivers - pvigier's blog</title>
+        <title>Vagabond &#8211; Choosing a GUI library - pvigier's blog</title>
         <link rel="shortcut icon" href="/media/img/favicon.png">
         <!-- Bootstrap -->
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
@@ -39,99 +39,94 @@
             <div class="row">
             <div class="col-sm-8 blog-main">
 <div class="blog-post">
-    <h2 class="blog-post-title">Vagabond &#8211; Rasterizing roads and rivers</h2>
-    <p class="blog-post-meta">02 Jun 2019 by <a href="/">pierre</a></p>
-    <p><img src="/media/img/vagabond-rasterizing-roads-rivers/roads_rivers.png" alt="" width="400" class="center-image modal-image" /></p>
+    <h2 class="blog-post-title">Vagabond &#8211; Choosing a GUI library</h2>
+    <p class="blog-post-meta">25 Aug 2019 by <a href="/">pierre</a></p>
+    <p>The goal of this week was to find a GUI library for the in-game interface. While making some custom widgets may seem easy, writing a general, production-ready, full-fledged GUI library is notoriously difficult. Thus there are few open-source and well-maintained GUI libraries that work with OpenGL or SFML.</p>
 
-<p>This week, I finished the rasterization of polygonal maps that I started to implement <a href="/2019/05/26/vagabond-generating-tiles.html">last week</a>. Then, I improved my renderer to be able to display worlds way larger than before. Finally, I started to fill the biomes with some decorations and vegetation.</p>
+<p>In this article, I will enumerate the alternatives I considered and give some details about them. Finally, I will select one and explain my choice.</p>
+
+<p><img src="/media/img/vagabond-choosing-gui-library/Vagabond_Menu.png" alt="" width="400" class="center-image modal-image" /></p>
 
 <!--more-->
 
-<h1 id="rasterizing-rivers">Rasterizing rivers</h1>
+<h1 id="writing-my-own-library">Writing my own library</h1>
 
-<p>The first thing I did this week was to rasterize the rivers. I reuse my line rasterization algorithm. But instead of setting only one tile per coordinates output by the algorithm, I rasterize a whole square around the coordinates. It is as if I used a brush in a graphics editor such as GIMP or Photoshop.</p>
+<p>The first alternative is not using an external library but writing my own. I did that for my last (unfinished) game Simulopolis.</p>
 
-<p>Moreover, I would like the rivers to be wider when many tributaries meet. So I just use a wider brush when the rivers should be larger. The width of the rivers grows as the square root of the number of tributaries.</p>
+<p><img src="/media/img/vagabond-choosing-gui-library/Simulopolis_GUI.png" alt="" width="400" class="center-image modal-image" /></p>
 
-<p>Here are the results:</p>
+<p>I developed a certain number of widgets. But it was exhausting and took me a lot of time. Thus, I would prefer to use an external library to save some time and have something of better quality.</p>
 
-<p><img src="/media/img/vagabond-rasterizing-roads-rivers/Rivers.gif" alt="" width="400" class="center-image modal-image" /></p>
+<p>Especially because I think that a bad interface can make a game shitty but a great interface rarely makes a game great. In other words, a good interface is something expected by players and it is not where a game can make differences. So I would prefer to spend my time on other parts.</p>
 
-<h1 id="rasterizing-roads">Rasterizing roads</h1>
+<h1 id="sfml-libraries">SFML libraries</h1>
 
-<p>Rasterizing roads was harder. Indeed, there are several issues I must take care of:</p>
+<p>Two GUI libraries have been made specially to work with SFML: <a href="https://github.com/TankOs/SFGUI">SFGUI</a> and <a href="https://github.com/texus/TGUI">TGUI</a>. Thus, it is very easy to integrate them in an SFML application as they natively support SFML events.</p>
 
-<ul>
-  <li>Roads should avoid sea. If you <a href="/2019/05/19/vagabond-borders-rivers-cities-roads.html">remember well</a>, a road segment joins two sites of Voronoi cells. But if we draw a straight between the sites, it may go through sea as shown on the image below.</li>
-  <li>When a road crosses a river, there should be a bridge. But a bridge should be straight (totally vertical or totally horizontal).</li>
-</ul>
+<h2 id="sfgui">SFGUI</h2>
 
-<p>I use a smaller number of cells so that we can clearly observe that the roads go through the sea:</p>
+<p>SFGUI supports a large range of widgets as you can see in the picture below. It is very simple to build and to link in an existing SFML project.</p>
 
-<p><img src="/media/img/vagabond-rasterizing-roads-rivers/roads_issues.png" alt="" width="400" class="center-image modal-image" /></p>
+<p><img src="/media/img/vagabond-choosing-gui-library/SFGUI.png" alt="" width="400" class="center-image modal-image" /></p>
 
-<p>I use A* algorithm to find paths between two sites that fulfill all the mentioned constraints. Here is the macroscopic result:</p>
+<p>However, the major drawback is that the interface does not seem to be skinnable. Thus, it is, in my opinion, not suitable for in-game interfaces but it may be for debug/development interfaces.</p>
 
-<p><img src="/media/img/vagabond-rasterizing-roads-rivers/Roads.png" alt="" width="400" class="center-image modal-image" /></p>
+<h2 id="tgui">TGUI</h2>
 
-<p>And here are some of the generated bridges:</p>
+<p>The other one, TGUI, is as easy to build and to link. It also provides a lot of widgets as you can see below:</p>
 
-<p><img src="/media/img/vagabond-rasterizing-roads-rivers/Bridges.gif" alt="" width="400" class="center-image modal-image" /></p>
+<p><img src="/media/img/vagabond-choosing-gui-library/TGUI.png" alt="" width="400" class="center-image modal-image" /></p>
 
-<p>You can see that there are still some problems with the rasterization. I did not fix that yet because I am not happy with the method I used. While A* algorithm outputs a path that is valid, it is a list of coordinates which is not easy to work with. In particular, it is not appropriate to place inns or small villages along the roads. Or even for NPCs to follow the roads.</p>
+<p>Contrary to SFGUI, TGUI is skinnable so it is more suitable for in-game interfaces. I also prefer TGUI API, I find it more modern. However, the default theme of SFGUI is cleaner.</p>
 
-<p>The fundamental reason is that the description of the road is given in the world space (made of tiles) by A* star algorithm. However for things like village placement, we would like to use the map space (made of shapes) which is more adapted.</p>
+<p>Overall, both libraries are easy to build, install and use. But I think they are not as developed as the next libraries I am going to present, yet. Moreover, they are actively maintained thus they may become suitable for production very soon.</p>
 
-<p>Thus, I think I will use another method which will not necessarily give the shortest path but something more easy to manipulate. I am currently thinking about using distorted lines as I used for rivers and cell borders or Bezier curves which is a common technique to model roads.</p>
+<h1 id="opengl-libraries">OpenGL libraries</h1>
 
-<h1 id="bigger-worlds">Bigger worlds</h1>
+<p>In this section, I will present libraries that are available for several renderers and in particular with OpenGL. It is an ecosystem that has not changed very much for years. Most libraries are not maintained anymore.</p>
 
-<p>Usually, rendering is not a big issue for tile-based video games as only a small portion of the world is displayed. But in my editor/generator, I want to be able to explore the entire world. For small worlds, there is no problem with the naive approach of drawing a grid of tiles. Indeed, for 600x600x4 (I use 4 layers of tiles to display the terrains) worlds which means 1 440 400 tiles, my laptop has no problem. But for 3000x3000x4 worlds which means 36 000 000 tiles the application slows down seriously.</p>
+<p>The most notable change is the emergence of <a href="https://en.wikipedia.org/wiki/Immediate_Mode_GUI">immediate mode GUI</a> libraries such as <a href="https://github.com/ocornut/imgui">Dear ImGui</a>. But most of them are not skinnable, the exception is <a href="https://github.com/vurtun/nuklear">nuklear</a> which is skinnable but it is a C library. Moreover, I feel that this paradigm is more appropriate for development GUI than in-game interfaces.</p>
 
-<p>The solution I chose was to simplify the geometry. To do that, I use a popular technique in the voxel game development community: <a href="https://0fps.net/2012/06/30/meshing-in-a-minecraft-game/">greedy meshing</a>. The idea is quite simple: you just merge as many as possible similar adjacent tiles to reduce the number of faces. With greedy meshing, it takes less than one million faces to display 3000x3000x4 worlds, it is a big improvement!</p>
+<p>It remains the two usual suspects: <a href="https://bitbucket.org/cegui/cegui/">CEGUI</a> and <a href="https://github.com/MyGUI/mygui">MyGUI</a>.</p>
 
-<p>If you want to get the impression of what a 3000x3000 world looks like, here is a small animation:</p>
+<h2 id="cegui">CEGUI</h2>
 
-<p><img src="/media/img/vagabond-rasterizing-roads-rivers/Big.gif" alt="" width="400" class="center-image modal-image" /></p>
+<p>I will be honest, I have already tried to use CEGUI before but my experiences were not very successful. I tried to give it a new chance as it is widely acknowledged as the most powerful GUI library. Moreover, it has been used by commercial games such as <a href="https://www.torchlight2.com">Torchlight</a>.</p>
 
-<h1 id="filling-the-biomes">Filling the biomes</h1>
+<p>I succeeded in building the library and the samples but I failed to run the samples because GLFW failed to open a window. I investigated a bit but I was not able to make it work.</p>
 
-<p>Finally, I started to work on filling the cells that are currently so empty. The goal is not to add points of interest such as ruins, dungeon entries or small villages but to fill the cells with some monotonous decorations and vegetation.</p>
+<p>CEGUI may be a powerful GUI library but unfortunately, it is not very user-friendly: it is hard to make it work and the documentation is a bit obscure. It is maybe easier to use it with Ogre as renderer.</p>
 
-<p>I use a popular method in the procedural generation community to do object placement called Poisson disk sampling. I like it because it is simple, fast and controllable. I have put some links at the end of this article, If you want to know more.</p>
+<h2 id="mygui">MyGUI</h2>
 
-<p>Here is an example of points generating by Poisson disk sampling:</p>
+<p>The last library is MyGUI, like CEGUI, I have already used it but with more success. It is very easy to build and to run the samples. It is a bit trickier to link as they did not export CMake configuration files.</p>
 
-<p><img src="/media/img/vagabond-rasterizing-roads-rivers/poisson_disk_sampling.png" alt="" width="400" class="center-image modal-image" /></p>
+<p>The library is really powerful, there are a lot of widgets and they are totally skinnable as you can see below.</p>
 
-<p>By the way, if you are a C++ developer and are looking for a good pseudorandom number generator, I advise you to use the <a href="http://www.pcg-random.org/">PCG</a> generators which are compatible with the standard random library, faster than standard PRNGs and produce high quality random numbers.</p>
+<p><img src="/media/img/vagabond-choosing-gui-library/MyGUI.png" alt="" width="400" class="center-image modal-image" /></p>
 
-<p>Then I map each point to an object, here is the result for the desert biome:</p>
+<p>Moreover, it has good documentation: all the classes are documented and there are many samples where features are demonstrated, even for advanced features such as drag and drop.</p>
 
-<p><img src="/media/img/vagabond-rasterizing-roads-rivers/Desert.gif" alt="" width="400" class="center-image modal-image" /></p>
+<p>Also, MyGUI provides really useful tools to create the interfaces and the skins.</p>
 
-<p>I have not done the other biomes yet.</p>
+<p><img src="/media/img/vagabond-choosing-gui-library/MyGUI_LayoutEditor.png" alt="" width="400" class="center-image modal-image" /></p>
+
+<p>As you can see with the image at the beginning of the article, which is made with MyGUI, making a custom theme is quite easy. If it is a bit ugly, it is only because the artist, me, has no artistic talent. It is not in any way the fault of MyGUI.</p>
+
+<p>Finally, it is easy enough to integrate it with SFML. If you are interested, I have coded a small library to integrate MyGUI with SFML, it is available on <a href="https://github.com/pvigier/MyGUI-SFML">GitHub</a>.</p>
 
 <h1 id="conclusion">Conclusion</h1>
 
-<p>That’s all for this week. I spent a lot of time refactoring my code to be able to add new features. A lot of things such as biomes and terrains were hardcoded in the generator. But when the moment of adding decorations and vegetation arrived it was not manageable anymore thus I moved all the data to XML files.</p>
+<p>I am very glad to have found a library that suits my needs and to have made a basic theme for the game.</p>
 
-<p>The next steps are refining the object placement algorithm and adding decorations and vegetation for other biomes.</p>
+<p>The next and last step for the game engine is networking. It will be a big part so it may take me more than one week to work on that. But after that, I will work more directly on the game and I am really excited to be there.</p>
 
-<p>See you <a href="/2019/06/09/vagabond-forest-generation.html">next week</a> for more!</p>
-
-<h1 id="useful-links">Useful links</h1>
-
-<ul>
-  <li><a href="https://0fps.net/2012/06/30/meshing-in-a-minecraft-game/">Meshing in a Minecraft Game</a> by 0fps</li>
-  <li><a href="https://web.archive.org/web/20150817064406/http://devmag.org.za/2009/05/03/poisson-disk-sampling/">Poisson Disk Sampling</a> by Herman Tulleken</li>
-  <li><a href="https://www.cs.ubc.ca/~rbridson/docs/bridson-siggraph07-poissondisk.pdf">Fast Poisson Disk Sampling in Arbitrary Dimensions</a> by Robert Bridson</li>
-</ul>
+<p>See you next week for more!</p>
 
 <p><em>If you are interested in my adventures during the development of Vagabond, you can follow me on <a href="https://twitter.com/PierreVigier">Twitter</a>.</em></p>
 
     
-	<p>Tags: <span class="label label-primary"><a href="/tag/vagabond">vagabond</a></span> <span class="label label-primary"><a href="/tag/pcg">pcg</a></span> </p>
+	<p>Tags: <span class="label label-primary"><a href="/tag/vagabond">vagabond</a></span> <span class="label label-primary"><a href="/tag/game-engine">game-engine</a></span> </p>
 	
 </div><!-- /.blog-post -->
 <hr/>
