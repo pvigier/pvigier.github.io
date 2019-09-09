@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="">
+        <meta name="author" content="Pierre Vigier">
+
+        <title>Beginner's Guide to Game Networking - pvigier's blog</title>
+        <link rel="shortcut icon" href="/media/img/favicon.png">
+        <!-- Bootstrap -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+        <!-- My themes -->
+        <link href="/media/css/style.css" rel="stylesheet">
+        <link href="/media/css/syntax.css" rel="stylesheet">
+        <link href="/media/css/modal.css" rel="stylesheet">
+        <!-- RSS -->
+        <link href="https://pvigier.github.io/rss.xml" rel="alternate" title="pvigier's blog" type="application/atom+xml" />
+    </head>
+    <body>
+        <div class="blog-masthead">
+            <div class="container">
+                <nav class="blog-nav">
+                    <a class="blog-nav-item active" href="/">Blog</a>
+                    <a class="blog-nav-item" href="/articles">Articles</a>
+                    <a class="blog-nav-item" href="/projects">Projects</a>
+                    <!--<a class="blog-nav-item" href="/best-resources">Best Resources</a>-->
+                    <!--<a class="blog-nav-item" href="/resume">Resume</a>-->
+                    <a class="blog-nav-item" href="/about">About</a>
+                </nav>
+            </div>
+        </div>
+        <div class="container">
+            <div class="blog-header">
+                <h1 class="blog-title">pvigier's blog</h1>
+                <p class="lead blog-description">computer science, programming and other ideas</p>
+            </div>
+            <div class="row">
+            <div class="col-sm-8 blog-main">
+<div class="blog-post">
+    <h2 class="blog-post-title">Beginner's Guide to Game Networking</h2>
+    <p class="blog-post-meta">08 Sep 2019 by <a href="/">pierre</a></p>
+    <p>During the last two weeks, I was working on the network engine of my game. And before that, I knew nothing about game networking. Thus, I read a lot of articles and did a lot of experiments to understand all the concepts and be able to code my own network engine.</p>
+
+<p>In this guide, I want to share with you the different concepts you must learn before to write your own game engine and the best resources and articles to learn them.</p>
+
+<p>There are mainly two possible network architectures: peer-to-peer and client-server. In the peer-to-peer architecture, data is exchanged between any pair of connected players while in the client-server architecture, data is only exchanged between players and the server.</p>
+
+<p>While the peer-to-peer architecture is still used in some games, client-server is the standard as it is easier to implement, it requires less bandwidth and it is easier to prevent cheating. Thus, in this guide, we will focus on client-server architecture.</p>
+
+<p>More precisely, we will be interested in authoritative servers, it means that the server is always right. For instance, if a player thinks it is at coordinates (10, 5) but the server tells him that it is at (5, 3), then the client should update its position to the server’s one, and not the opposite. Using an authoritative server enables us to detect cheating more easily.</p>
+
+<p>There are mainly three components in game networking:</p>
+
+<ul>
+  <li>Transport protocol: how to transport the data between clients and the server?</li>
+  <li>Application protocol: what to send from clients to the server and from the server to clients and in which format?</li>
+  <li>Application logic: how to use the exchanged data to update clients and the server?</li>
+</ul>
+
+<p>It is really important to understand the role of each part and its challenges.</p>
+
+<!--more-->
+
+<h1 id="transport-protocol">Transport protocol</h1>
+
+<p>The first part is choosing a protocol to transport the data between the server and the clients. There are two Internet protocols available for that: <a href="https://en.wikipedia.org/wiki/Transmission_Control_Protocol">TCP</a> and <a href="https://en.wikipedia.org/wiki/User_Datagram_Protocol">UDP</a>. But you can also make your own custom transport protocol based on one of them or use a library that uses them.</p>
+
+<h2 id="tcp-vs-udp">TCP vs UDP</h2>
+
+<p>Both TCP and UDP are based on <a href="https://en.wikipedia.org/wiki/Internet_Protocol">IP</a>. IP allows to transmit a packet from a source to a destination but it provides no guarantee that the sent packet will eventually arrive at destination nor that it will arrive only once, nor that the data is not corrupted during the transfer, nor that a sequence of packets will arrive in order. Moreover, a packet can only contain a limited size of data which is given by the <a href="https://en.wikipedia.org/wiki/Maximum_transmission_unit">MTU</a>.</p>
+
+<p>UDP is only a thin layer above IP. Consequently, it has the same limitations. TCP, however, has a lot of features. It provides a reliable, ordered, and error-checked connection between two hosts. Thus TCP is really handy and is used in numerous other protocols such as <a href="https://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol">HTTP</a>, <a href="https://en.wikipedia.org/wiki/File_Transfer_Protocol">FTP</a> or <a href="https://en.wikipedia.org/wiki/Simple_Mail_Transfer_Protocol">SMTP</a>. But all these features come with a cost: <a href="https://en.wikipedia.org/wiki/Latency_(engineering)"><em>latency</em></a>.</p>
+
+<p>In order to understand why these features may cause latency. We must understand how TCP works. When a source host sends a packet to a destination host, it expects to receive an acknowledgement (ACK). If it does not receive any after some time (because its packet has been lost or the acknowledgement has been lost or any other reason), it sends again the packet. Moreover, TCP ensures the packets are arriving in order, so while the lost packet has not been received, the other packets cannot be processed even if they have already been received by the destination host.</p>
+
+<p>But as you may know, latency is important in multiplayer video games especially for action based games such as FPS. That is the reason why many games use UDP with a custom protocol.</p>
+
+<p>They are several ways a custom protocol using UDP may be more efficient than TCP. For example, it can mark some packets as reliable and some others as unreliable. Thus, it will not care if an unreliable packet arrives or not at its destination. Or it can manage several streams of data so that a lost packet in one stream will not slow down the other streams. For instance, there can be a stream for user inputs and another one for chat messages, thus if a chat message, which is nonurgent data, is lost, it will not slow down a trigger input, which is urgent. Or, the custom protocol can implement reliability in another way than TCP which is more efficient under video games assumption.</p>
+
+<p>So, if TCP is so shitty, let’s implement our custom transport protocol based on UDP?</p>
+
+<p>It is more complex than that. Even if TCP is almost always sub-optimal for video game networking. It may nevertheless work fine for your game and spare you precious time. For instance, latency may not be an issue for a turn-by-turn game or for a game that is only playable on LAN networks, where the latency and the packet loss rate is way smaller than on the Internet.</p>
+
+<p>Many successful games, such as World of Warcraft, Minecraft or Terraria, use TCP. However, most of FPS use a custom protocol based on UDP, we are going to talk more about that in the next sections.</p>
+
+<p>If you decide to use TCP, ensure that <a href="https://en.wikipedia.org/wiki/Nagle%27s_algorithm">Nagle’s algorithm</a> is disabled as it buffers packets before sending them and consequently increases the latency.</p>
+
+<p>To know more about the differences between UDP and TCP in a multiplayer game context, you can read the article <a href="https://web.archive.org/web/20180823015049/https://gafferongames.com/post/udp_vs_tcp/"><em>UDP vs. TCP</em></a> by Glenn Fiedler.</p>
+
+<h2 id="custom-protocol">Custom protocol</h2>
+
+<p>So you want to create your own transport protocol but you are not sure where to start? You are lucky because Glenn Fielder wrote two great series of articles explaining a way to do that. You will find plenty of smart ideas there.</p>
+
+<p>The first one <a href="https://web.archive.org/web/20180823012240/https://gafferongames.com/categories/game-networking"><em>Networking for Game Programmers</em></a> from 2008 is simpler than the second one <a href="https://web.archive.org/web/20180823014904/https://gafferongames.com/categories/building-a-game-network-protocol"><em>Building A Game Network Protocol</em></a> from 2016. I advise you to start with the oldest one.</p>
+
+<p>Be aware that Glenn Fiedler is a strong advocate of using a custom UDP based protocol. And after having read his articles, you will surely share its point of view that TCP has major flaws for video games and you will want to implement your own protocol.</p>
+
+<p>But if you are new to networking, please do yourself a favor and use TCP or a library. You have surely many things to learn before being able to implement successfully a custom transport protocol.</p>
+
+<h2 id="network-libraries">Network libraries</h2>
+
+<p>If you need something more efficient than TCP but do not want to bother implementing a custom protocol and dive into many issues, you can use a networking library. There are plenty available:</p>
+
+<ul>
+  <li><a href="https://github.com/networkprotocol/yojimbo">yojimbo</a> by Glenn Fiedler</li>
+  <li><a href="https://github.com/facebookarchive/RakNet">RakNet</a> which is not maintained anymore but a fork <a href="https://github.com/SLikeSoft/SLikeNet">SLikeNet</a> seems to be active.</li>
+  <li><a href="http://enet.bespin.org/">ENet</a> which is a library that has been made for the multiplayer FPS <a href="http://cubeengine.com/">Cube</a></li>
+  <li><a href="https://github.com/ValveSoftware/GameNetworkingSockets">GameNetworkingSockets</a> by Valve</li>
+</ul>
+
+<p>I have not tried them all but my preference goes to ENet as it is simple to use and robust. Moreover, it has clear documentation and a tutorial to get started.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>To sum up, there exists two base transport protocols: TCP and UDP. TCP has a lot of useful features: reliability, preserving packet order, error detection, while UDP does not but due to its design TCP has higher latency which may be inadequate for certain games. Thus, to have lower latency, it is possible to create a custom transport protocol using UDP or to use a library that provides a transport protocol based on UDP adapted for multiplayer video games.</p>
+
+<p>Choosing between TCP, UDP or using a library depends on several factors. Firstly, the needs of your game: does it require a very low latency? Secondly, the needs of the application protocol: does it require a reliable protocol? As we will see in the next part, it is possible to design an application protocol that is fine with an unreliable protocol. Finally, the experience of the networking developer.</p>
+
+<p>I have two pieces of advice:</p>
+
+<ul>
+  <li>Abstract your transport protocol as much as possible from the rest of the application. So that you can easily change it without rewriting everything.</li>
+  <li>Do not optimize prematurely. If you are not a networking expert and you are not sure if you really need a custom transport protocol build on UDP, you may start using TCP or a library that provides reliability and, test and measure. If there are issues and you are sure it comes from the transport protocol, then it may be the time to create your own transport protocol.</li>
+</ul>
+
+<p>To finish, this part, I advise you to read <a href="http://trac.bookofhook.com/bookofhook/trac.cgi/wiki/IntroductionToMultiplayerGameProgramming"><em>Introduction to Multiplayer Game Programming</em></a> by Brian Hook which covers a lot of topics we have discussed here.</p>
+
+<h1 id="application-protocol">Application protocol</h1>
+
+<p>Now that you have a way to exchange data between clients and the server you must decide what data to exchange and with which format.</p>
+
+<p>The classic scheme is that clients send inputs or actions to the server and the server sends the current game state to the clients.</p>
+
+<p>The server does not send the whole state but a filtered state with the entities that are around a player. It does that for three reasons. Firstly, the whole state may be way too large to be transmitted at high frequency. Secondly, the clients are mainly interested in the visual and audio data as most of the game logic is only simulated on the game server. Finally, in some games, the player must not know some data such as the position of an opponent at the other end of the map, otherwise, he can sniff the packets and know exactly where to go to kill him.</p>
+
+<!--image-->
+
+<h2 id="serialization">Serialization</h2>
+
+<p>The first step is to convert the data we want to send (the inputs or the game state) in a format suitable for transmission. This process is called <a href="https://en.wikipedia.org/wiki/Serialization"><em>serialization</em></a>.</p>
+
+<p>A first idea may be to use a human readable-format such as JSON or XML. But it would not be efficient at all and takes a lot of bandwidth needlessly.</p>
+
+<p>Instead, it is advisable to use a binary format which is much more compact. Thus, the packets will just contain a bunch of bytes. One issue you should be careful about is <a href="https://en.wikipedia.org/wiki/Endianness"><em>endianness</em></a>, the order of bytes may vary from one computer to another.</p>
+
+<p>You can use a library to help you serialize your data such as:</p>
+
+<ul>
+  <li><a href="https://google.github.io/flatbuffers/">FlatBuffers</a> by Google</li>
+  <li><a href="https://capnproto.org/">Cap’n Proto</a> by Sandstorm</li>
+  <li><a href="http://uscilab.github.io/cereal/serialization_archives.html">cereal</a> by Shane Grant and Randolph Voorhies</li>
+</ul>
+
+<p>Just be careful that the library makes portable archives and takes care of endianness.</p>
+
+<p>The alternative is to handle everything yourself, it is not really difficult, especially if you have a data-oriented approach in your code. It may also allow you to do certain optimization that is not always possible to achieve with a library.</p>
+
+<p>Glenn Fiedler wrote two articles about serialization: <a href="https://web.archive.org/web/20180823004533/https://gafferongames.com/post/reading_and_writing_packets/"><em>Reading and Writing Packets</em></a> and <a href="https://web.archive.org/web/20180823015044/https://gafferongames.com/post/serialization_strategies/"><em>Serialization Strategies</em></a>.</p>
+
+<h2 id="compression">Compression</h2>
+
+<p>The quantity of data that can be exchanged by clients and the server is limited by the bandwidth. Compressing your data may allow you to exchange more data in each snapshot, to have a faster refresh rate, or simply to have lower requirements on the bandwidth.</p>
+
+<h3 id="bit-packing">Bit packing</h3>
+
+<p>The first technique is bit packing. It consists in using exactly the number of bits you need to represent a given quantity. For instance, if you have an enumeration that can take 16 different values, you will use only 4 bits instead of a whole byte (8 bits).</p>
+
+<p>Glenn Fiedler explains how to achieve that in the second part of <a href="https://web.archive.org/web/20180823004533/https://gafferongames.com/post/reading_and_writing_packets/"><em>Reading and Writing Packets</em></a>.</p>
+
+<p>Bit packing works particularly well with quantization which is the next topic.</p>
+
+<h3 id="quantization">Quantization</h3>
+
+<p><a href="https://en.wikipedia.org/wiki/Quantization_(signal_processing)"><em>Quantization</em></a> is a lossy compression technique which consists in only using a subset of possible values to encode a quantity. The simplest way to achieve quantization is by truncating floating-point numbers.</p>
+
+<p>Glenn Fiedler (again!) shows how to use quantization in practice in his article <a href="https://web.archive.org/web/20180823021121/https://gafferongames.com/post/snapshot_compression/">Snapshot Compression</a>.</p>
+
+<h3 id="compression-algorithms">Compression algorithms</h3>
+
+<p>The next technique is using lossless compression algorithms.</p>
+
+<p>In my opinion, the three more interesting algorithms to know are:</p>
+<ul>
+  <li><a href="https://en.wikipedia.org/wiki/Huffman_coding">Huffman coding</a> with a precomputed code which is extremely fast and can give good results. It was used to compress the packets in the Quake3 network engine.</li>
+  <li>Using <a href="http://www.zlib.net/">zlib</a> which is a general-purpose compression algorithm and it never expands the data. It is used in numerous applications as you can see <a href="https://en.wikipedia.org/wiki/Zlib">here</a>. It may be overkill for state updates. But it may be interesting if you have to send assets, long texts or terrains from the server to clients.</li>
+  <li><a href="https://en.wikipedia.org/wiki/Run-length_encoding">Run-length encoding</a> is maybe the simplest compression algorithm but it is very efficient for certain types of data and can be used as a preprocessing step before to use zlib. It is specifically suitable for compressing terrains made of tiles or voxels where many adjacent elements are similar.</li>
+</ul>
+
+<h3 id="delta-compression">Delta compression</h3>
+
+<p>The last compression technique is delta compression. It consists in sending only the differences between the current game state and the last state received by a client.</p>
+
+<p>It was first used in Quake3 network engine, here are two articles explaining how it was used:</p>
+<ul>
+  <li><a href="http://trac.bookofhook.com/bookofhook/trac.cgi/wiki/Quake3Networking"><em>The Quake3 Networking Model</em></a> by Brian Hook</li>
+  <li><a href="http://fabiensanglard.net/quake3/network.php"><em>Quake 3 Source Code Review: Network Model</em></a> by Fabien Sanglard</li>
+</ul>
+
+<p>Glenn Fiedler also used it in the second part of his article <a href="https://web.archive.org/web/20180823021121/https://gafferongames.com/post/snapshot_compression/"><em>Snapshot Compression</em></a>.</p>
+
+<h2 id="encryption">Encryption</h2>
+
+<p>Finally, you may want to encrypt the communication between clients and the server for several reasons:</p>
+
+<ul>
+  <li>privacy/confidentiality: the messages can only be read by its receiver, any other person who sniffs the network will not be able to read them.</li>
+  <li>authenticity: any person who wants to impersonate a player will have to know its key.</li>
+  <li>cheating prevention: it will be way harder for malicious players to craft custom packets to cheat, they will have to reproduce the encryption scheme and find the key (which changes at each connection).</li>
+</ul>
+
+<p>I strongly advise you to use a library to help you. I suggest <a href="https://download.libsodium.org/doc/">libsodium</a> as it is particularly simple to use and it provides great tutorials. You will be in particular interested by the <a href="https://download.libsodium.org/doc/key_exchange">key exchange</a> tutorial to generate new keys for each new connection.</p>
+
+<h2 id="conclusion-1">Conclusion</h2>
+
+<p>That is all for this part. I think that compression is totally optional and it depends on your game and how much bandwidth is needed. Encryption is, in my opinion, not optional but it may be skipped in a first prototype.</p>
+
+<h1 id="application-logic">Application logic</h1>
+
+<p>You are now able to update the state in the client but you may experience latency issues. Indeed, you have to wait for a game state update from the server after having triggered an input to see its effect in the world.</p>
+
+<p>Moreover, between two state updates, the world is completely static. Thus, movements will be completely chopped if the state update rate is low.</p>
+
+<p>There are several techniques to mitigate these issues that I will present in the next section.</p>
+
+<h2 id="latency-mitigation-techniques">Latency mitigation techniques</h2>
+
+<p>All the techniques presented in this section are presented in-depth in <a href="https://www.gabrielgambetta.com/client-server-game-architecture.html"><em>Fast-Paced Multiplayer</em></a> by Gabriel Gambetta. I strongly advise you to read this series of articles which is great. There is also a live demo to see how these techniques work in practice.</p>
+
+<p>The first technique is to apply the result of an input directly without waiting for the response from the server. It is called <em>client prediction</em>. However, when the client receives an update from the server, it has to check that its prediction was correct, otherwise, it must modify its state according to what it has received from the server as the server is the authority. This technique was first used in Quake, you can read more in the <a href="http://fabiensanglard.net/quakeSource/index.php"><em>Quake Engine code review</em></a> by Fabien Sanglard.</p>
+
+<p>The second set of techniques is for smoothing the movement of other entities between two state updates. There are two ways to achieve this: by doing interpolation or extrapolation. Interpolation is using the two last states and showing the transition from one to another. Its drawback is that it induces a bit of latency because the client always shows what happens in the past. Extrapolation consists in predicting where the entities would be now according to the last state the client received. Its drawback is that if an entity completely changes its direction, there would be a large error between the prediction and the real position.</p>
+
+<p>The last technique which is most advanced and only useful in FPS is lag compensation. With lag compensation, the server takes into account the latency of the client when they are shooting at a target. For instance, if the player did a headshot on its screen but in reality, its target is elsewhere due to latency, it would be unfair to the player to refuse him his kill due to latency. So the server will rewind in time, at the time the player shot to simulate what the player saw on its screen and check the collision between his shot and the target.</p>
+
+<p>Glenn Fiedler (always!) wrote <a href="https://web.archive.org/web/20180823005028/https://gafferongames.com/post/networked_physics_2004/"><em>Network Physics (2004)</em></a> in 2004 where he laid the foundations of synchronizing a physics simulation between a server and a client. In 2014, he wrote a new series of articles, <a href="https://web.archive.org/web/20180823004853/https://gafferongames.com/categories/networked-physics"><em>Networking Physics</em></a>, where he showed more techniques to synchronize a physics simulation.</p>
+
+<p>There are also two articles on Valve’s wiki, <a href="https://developer.valvesoftware.com/wiki/Source_Multiplayer_Networking"><em>Source Multiplayer Networking</em></a> and <a href="https://developer.valvesoftware.com/wiki/Latency_Compensating_Methods_in_Client/Server_In-game_Protocol_Design_and_Optimization"><em>Latency Compensating Methods in Client/Server In-game Protocol Design and Optimization</em></a>, which deal with latency compensation.</p>
+
+<h2 id="cheating-prevention">Cheating prevention</h2>
+
+<p>There are two main techniques for preventing cheating.</p>
+
+<p>The first one is to make hard for cheaters to send malicious packets. As we explained before, encryption is a good way to achieve that.</p>
+
+<p>The second technique is by having an authoritative server that only receives commands/inputs/actions. The client should never be able to modify the server state by another way than sending inputs. Then each time, the server receives an input, it should check that this input is valid before to apply it.</p>
+
+<h2 id="conclusion-2">Conclusion</h2>
+
+<p>I advise you to implement a way to simulate high latency and low refresh rates in your game to be able to test your game in bad conditions even if both the client and the server are running on your computer. It will simplify greatly the implementation of latency mitigation techniques.</p>
+
+<h1 id="other-useful-resources">Other useful resources</h1>
+
+<p>If you are looking for more networking resources, you can find them there:</p>
+<ul>
+  <li><a href="https://web.archive.org/web/20190328001900/https://gafferongames.com/">Glenn Fielder’s blog</a>, you should read its entire blog, it contains lots of great articles. <a href="https://web.archive.org/web/20180823014743/https://gafferongames.com/tags/networking">Here</a> are all its articles concerning networking.</li>
+  <li><a href="https://github.com/MFatihMAR/Awesome-Game-Networking">Awesome Game Networking</a> by M. Fatih MAR is an extensive list of articles and videos on game networking.</li>
+  <li><a href="https://www.reddit.com/r/gamedev/wiki/index#wiki_networking">r/gamedev’s wiki</a> also contains many useful links.</li>
+</ul>
+
+<h1 id="conclusion-3">Conclusion</h1>
+
+<p>That is all for this guide. I hope you learned a few things and find interesting articles. Good luck with the creation of your network engine!</p>
+
+<p>See you next week for more!</p>
+
+<p><em>If you are interested in my adventures during the development of Vagabond, you can follow me on <a href="https://twitter.com/PierreVigier">Twitter</a>.</em></p>
+
+    
+	<p>Tags: <span class="label label-primary"><a href="/tag/vagabond">vagabond</a></span> <span class="label label-primary"><a href="/tag/game-engine">game-engine</a></span> </p>
+	
+</div><!-- /.blog-post -->
+<hr/>
+<p>Subscribe to the newsletter if you do not want to miss any new article:</p>
+<!-- Begin Mailchimp Signup Form -->
+<link href="//cdn-images.mailchimp.com/embedcode/horizontal-slim-10_7.css" rel="stylesheet" type="text/css">
+<style type="text/css">
+	#mc_embed_signup{background:#fff; clear:left; font:14px Helvetica,Arial,sans-serif; width:100%;}
+	/* Add your own Mailchimp form style overrides in your site stylesheet or in this style block.
+	   We recommend moving this block and the preceding CSS link to the HEAD of your HTML file. */
+</style>
+<div id="mc_embed_signup">
+<form action="https://ymail.us20.list-manage.com/subscribe/post?u=7bb3b720a12ef1d8e0b48d8da&amp;id=7516dd4562" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate" target="_blank" novalidate>
+    <div id="mc_embed_signup_scroll">
+	
+	<input type="email" value="" name="EMAIL" class="email" id="mce-EMAIL" placeholder="email address" required>
+    <!-- real people should not fill this in and expect good things - do not remove this or risk form bot signups-->
+    <div style="position: absolute; left: -5000px;" aria-hidden="true"><input type="text" name="b_7bb3b720a12ef1d8e0b48d8da_7516dd4562" tabindex="-1" value=""></div>
+    <div class="clear"><input type="submit" value="Subscribe" name="subscribe" id="mc-embedded-subscribe" class="button"></div>
+    </div>
+</form>
+</div>
+<!--End mc_embed_signup-->
+<!-- Disqus -->
+<hr/>
+<div id="disqus_thread"></div>
+<script>
+
+/**
+*  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+*  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+/*
+var disqus_config = function () {
+this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+};
+*/
+(function() { // DON'T EDIT BELOW THIS LINE
+var d = document, s = d.createElement('script');
+s.src = 'https://pvigier-github-io.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div><!-- /.blog-main -->
+<div class="col-sm-3 col-sm-offset-1 blog-sidebar">
+	<div class="sidebar-module">
+        <h4>Tags</h4>
+        <ol class="list-unstyled">
+		
+			<li><a href="/tag/math">math (3)</a></li>
+		
+			<li><a href="/tag/python">python (6)</a></li>
+		
+			<li><a href="/tag/cpp">cpp (7)</a></li>
+		
+			<li><a href="/tag/pcg">pcg (10)</a></li>
+		
+			<li><a href="/tag/simulopolis">simulopolis (5)</a></li>
+		
+			<li><a href="/tag/linux">linux (1)</a></li>
+		
+			<li><a href="/tag/geometry">geometry (1)</a></li>
+		
+			<li><a href="/tag/graph">graph (1)</a></li>
+		
+			<li><a href="/tag/git">git (1)</a></li>
+		
+			<li><a href="/tag/vagabond">vagabond (17)</a></li>
+		
+			<li><a href="/tag/ecs">ecs (2)</a></li>
+		
+			<li><a href="/tag/game-engine">game-engine (8)</a></li>
+		
+        </ol>
+    </div>
+    <div class="sidebar-module">
+        <h4>Archives</h4>
+        <ol class="list-unstyled">
+		
+        
+            
+            
+            
+            
+			<li id="ySeptember 2019"><a href="/2019/09">September 2019 (1)</a></li>
+				
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+			<li id="yAugust 2019"><a href="/2019/08">August 2019 (4)</a></li>
+				
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+			<li id="yJuly 2019"><a href="/2019/07">July 2019 (5)</a></li>
+				
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+			<li id="yJune 2019"><a href="/2019/06">June 2019 (4)</a></li>
+				
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+			<li id="yMay 2019"><a href="/2019/05">May 2019 (5)</a></li>
+				
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+			<li id="yNovember 2018"><a href="/2018/11">November 2018 (3)</a></li>
+				
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+			<li id="yOctober 2018"><a href="/2018/10">October 2018 (3)</a></li>
+				
+            
+        
+            
+            
+            
+            
+			<li id="yJune 2018"><a href="/2018/06">June 2018 (1)</a></li>
+				
+            
+        
+            
+            
+            
+            
+			<li id="yMay 2018"><a href="/2018/05">May 2018 (1)</a></li>
+				
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+			<li id="yFebruary 2018"><a href="/2018/02">February 2018 (2)</a></li>
+				
+            
+        
+            
+            
+            
+            
+			<li id="yAugust 2017"><a href="/2017/08">August 2017 (1)</a></li>
+				
+            
+        
+            
+            
+            
+            
+			<li id="yJuly 2017"><a href="/2017/07">July 2017 (1)</a></li>
+				
+            
+        
+            
+            
+            
+            
+			<li id="yFebruary 2017"><a href="/2017/02">February 2017 (1)</a></li>
+				
+            
+        
+        </ol>
+    </div>
+    <div class="sidebar-module">
+        <h4>Follow me</h4>
+        <ol class="list-unstyled">
+            <li><a href="https://github.com/pvigier">GitHub</a></li>
+            <li><a href="https://pvigier.itch.io/">itch.io</a></li>
+            <li><a href="https://twitter.com/PierreVigier">Twitter</a></li>
+            <li><a href="/rss.xml">RSS</a></li>
+        </ol>
+    </div>
+</div><!-- /.blog-sidebar -->
+
+            </div><!-- /.row -->
+        </div><!-- /.container -->
+
+        <footer class="blog-footer">
+            <p>Powered by <a href="http://getbootstrap.com">Bootstrap</a> and <a href="http://jekyllrb.com">Jekyll</a>.</p>
+            <p>
+                <a href="#">Back to top</a>
+            </p>
+        </footer>
+        <!-- Javascript -->
+        <!-- jQuery -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+        <!-- Bootstrap -->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+        <!-- MathJax -->
+        <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+        <!-- Analytics -->
+        <script>
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+        ga('create', 'UA-30902264-4', 'auto');
+        ga('send', 'pageview');
+        </script>
+        <!-- Modal images -->
+        <script src="/media/js/modal.js"></script>
+    </body>
+</html>
