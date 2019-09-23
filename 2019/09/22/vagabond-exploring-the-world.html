@@ -7,7 +7,7 @@
         <meta name="description" content="">
         <meta name="author" content="Pierre Vigier">
 
-        <title>Simulopolis alpha is released - pvigier's blog</title>
+        <title>Vagabond &#8211; Exploring the world - pvigier's blog</title>
         <link rel="shortcut icon" href="/media/img/favicon.png">
         <!-- Bootstrap -->
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
@@ -39,56 +39,50 @@
             <div class="row">
             <div class="col-sm-8 blog-main">
 <div class="blog-post">
-    <h2 class="blog-post-title">Simulopolis alpha is released</h2>
-    <p class="blog-post-meta">06 Oct 2018 by <a href="/">pierre</a></p>
-    <p><img src="/media/img/simulopolis-alpha-1/cover.png" alt="Cover" class="center-image modal-image" /></p>
+    <h2 class="blog-post-title">Vagabond &#8211; Exploring the world</h2>
+    <p class="blog-post-meta">22 Sep 2019 by <a href="/">pierre</a></p>
+    <p>Hi everyone!</p>
 
-<p>Today, I’m happy to announce you that the first release of my city building game, Simulopolis, is available online.</p>
-
-<p>It’s been a long and chaotic journey which lasted a bit more than six months.</p>
+<p>This is the first devlog since I stopped working on the game engine and really started working on the game. I did not publish a post last week, I started writing an article about the new implementation of my <a href="https://github.com/pvigier/ecs">entity-component-system library</a> but I did not find the time to finish it yet. The last two weeks were pretty busy.</p>
 
 <!--more-->
 
-<h1 id="philosophy">Philosophy</h1>
+<h1 id="moving-in-the-world">Moving in the world</h1>
 
-<p>At first, there was no idea or concept behind Simulopolis, it was only an experiment about game engine architecture. But then I decided that it would be cool to make a full game from it.</p>
+<p>The first goal was to be able to move a character in a generated world. To do that, I had to plug the <a href="/2019/05/26/vagabond-generating-tiles.html">world generator</a> with the rest of the game engine. Then, displaying the world and the character was just creating some nodes in the scene graph.</p>
 
-<p>My main goal with Simulopolis is not to ship the best game ever but to learn as much as possible about game development. That’s the reason why I decided to use as few dependencies as possible. Currently, Simulopolis has only three: <a href="https://www.sfml-dev.org/">SFML</a>, <a href="http://www.grinninglizard.com/tinyxml2/">TinyXML-2</a> and <a href="https://www.boost.org/doc/libs/1_68_0/libs/serialization/doc/index.html">Boost Serialization</a>. This means that all the rest (game engine, GUI, AI, PCG, etc.) is handmade.</p>
+<p>I tried to use the entity-component-system pattern as much as possible. It was a bit difficult at the beginning as it was the first time I used it in practice. Separating data in components and logic in systems is a manner of thinking I was not familiar with. However, it revealed extremely powerful, in particular in a roguelite and a multiplayer context. Being able to create new entities by blending components is useful to generate a huge amount of content. Moreover, the separation of logic in systems allows reusing common parts of logic between the server and the client easily.</p>
 
-<p>And doing everything is as interesting as it is time consuming. The game I have after months of development (not full-time, only couple of hours a day and not every day) is barely as good as some games developed during a game jam.</p>
+<p>Here is a small screencast of a (naked) character walking in the world:</p>
 
-<h1 id="concept">Concept</h1>
+<video controls="" width="600">
+    <source src="/media/video/vagabond-exploring-the-world/walking.mp4" type="video/mp4" />
+    Sorry, your browser doesn't support embedded videos.
+</video>
 
-<p>When I started, I had no idea of what the game would be. I had a prototype of a game engine and some assets done by <a href="https://opengameart.org/users/kenney">Kenney</a>. I also wanted to explore game AI and PCG so there must be some in the game.</p>
+<h1 id="multiplayer-mode-is-working">Multiplayer mode is working</h1>
 
-<p>Finally, I choose to make a city building game where each citizen is an autonomous agent. Citizens have different personalities and skills. They are free to evolve in the city you build for them.</p>
+<p>I decided to directly create the multiplayer mode. In fact, the single-player mode just runs a local server which does not accept any external connection. I think that in the long term, starting with this design is easier than firstly creating the single-player game and then trying to add a multiplayer mode.</p>
 
-<p><img src="/media/img/simulopolis-alpha-1/screenshot.png" alt="Screenshot" class="center-image modal-image" /></p>
+<p>The client does not generate nor store the world, it is streamed by the server. Thus, the connection is pretty fast, the player does not have to wait while the entire world is downloading.</p>
 
-<p>They are no precise goal in Simulopolis, it is a sandbox game. You can do whatever you want. Not so much for now.</p>
+<p>Here is a small screencast of a second player joining the server opened by another player:</p>
 
-<p>But my goal is that you can try several economic systems such that capitalism, socialism, a mixed of both or even a system without money.</p>
+<video controls="" width="600">
+    <source src="/media/video/vagabond-exploring-the-world/multiplayer.mp4" type="video/mp4" />
+    Sorry, your browser doesn't support embedded videos.
+</video>
 
-<h1 id="try-it">Try it!</h1>
+<h1 id="conclusion">Conclusion</h1>
 
-<p>The game is available on <a href="https://pvigier.itch.io/simulopolis">itch.io</a> on Windows and Linux and it is totally free!</p>
+<p>The next goal is to be able to add pieces of equipment to the characters so that they are not naked anymore!</p>
 
-<iframe src="https://itch.io/embed/295935" width="552" height="167" frameborder="0"></iframe>
+<p>See you next week for more!</p>
 
-<p>However, I must warn you that the game is not finished. Many features are missing, there is no tutorial, the interface is ugly, … This makes the game hardly playable. But you can try this first version to see where I start and see the future evolution.</p>
-
-<p>Finally, the game is open-source. It is licensed under the GPLv3. You can find the code on my <a href="https://github.com/pvigier/Simulopolis">github account</a>.</p>
-
-<h1 id="whats-next">What’s next?</h1>
-
-<p>My goal is to make the game enjoyable before moving on. I hope to reach that point before the end of the year and I will try to release a new version of the game, with new features, every two weeks.</p>
-
-<p>I will also try to publish some articles on the blog about what I learnt in this project. I have already planned to write one about the procedural generation of terrains and the difficulties I faced to distribute the game on Linux. Maybe I will write on the citizen AI too. If you want me to write on a specific point, do not hesitate to ask!</p>
-
-<p>See you!</p>
+<p><em>If you are interested in my adventures during the development of Vagabond, you can follow me on <a href="https://twitter.com/PierreVigier">Twitter</a>.</em></p>
 
     
-	<p>Tags: <span class="label label-primary"><a href="/tag/simulopolis">simulopolis</a></span> </p>
+	<p>Tags: <span class="label label-primary"><a href="/tag/vagabond">vagabond</a></span> </p>
 	
 </div><!-- /.blog-post -->
 <hr/>

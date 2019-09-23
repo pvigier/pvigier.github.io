@@ -3,12 +3,24 @@
 	<title>pvigier's blog</title>
 	<link href="http://pvigier.github.io/rss.xml" rel="self"/>
 	<link href="http://pvigier.github.io"/>
-	<updated>2019-09-10T10:53:35+02:00</updated>
+	<updated>2019-09-23T21:49:43+02:00</updated>
 	<id>http://pvigier.github.io</id>
 	<author>
 		<name>Pierre Vigier</name>
 		<email>pierre.vigier@ymail.com</email>
 	</author>
+	
+		<entry>
+			<title>Vagabond &#8211; Exploring the world</title>
+			<link href="http://pvigier.github.io/2019/09/22/vagabond-exploring-the-world.html"/>
+			<updated>2019-09-22T00:00:00+02:00</updated>
+			<id>http://pvigier.github.io/2019/09/22/vagabond-exploring-the-world</id>
+			<content type="html">&lt;p&gt;Hi everyone!&lt;/p&gt;
+
+&lt;p&gt;This is the first devlog since I stopped working on the game engine and really started working on the game. I did not publish a post last week, I started writing an article about the new implementation of my &lt;a href=&quot;https://github.com/pvigier/ecs&quot;&gt;entity-component-system library&lt;/a&gt; but I did not find the time to finish it yet. The last two weeks were pretty busy.&lt;/p&gt;
+
+</content>
+		</entry>
 	
 		<entry>
 			<title>Beginner's Guide to Game Networking</title>

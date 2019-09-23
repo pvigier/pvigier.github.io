@@ -40,6 +40,21 @@
             <div class="col-sm-8 blog-main">
 
     <div class="blog-post">
+        <h2 class="blog-post-title"><a href="/2019/09/22/vagabond-exploring-the-world.html">Vagabond &#8211; Exploring the world</a></h2>
+        <p class="blog-post-meta">22 Sep 2019 by <a href="/">pierre</a></p>
+        <p>Hi everyone!</p>
+
+<p>This is the first devlog since I stopped working on the game engine and really started working on the game. I did not publish a post last week, I started writing an article about the new implementation of my <a href="https://github.com/pvigier/ecs">entity-component-system library</a> but I did not find the time to finish it yet. The last two weeks were pretty busy.</p>
+
+
+        <p><a href="/2019/09/22/vagabond-exploring-the-world.html">Read more ...</a></p>
+        
+        <p>Tags: <span class="label label-primary"><a href="/tag/vagabond">vagabond</a></span> </p>
+        
+    </div>
+    <hr />
+
+    <div class="blog-post">
         <h2 class="blog-post-title"><a href="/2019/09/08/beginner-guide-game-networking.html">Beginner's Guide to Game Networking</a></h2>
         <p class="blog-post-meta">08 Sep 2019 by <a href="/">pierre</a></p>
         <p>During the last two weeks, I was working on the network engine of my game. And before that, I knew nothing about game networking. Thus, I read a lot of articles and did a lot of experiments to understand all the concepts and be able to code my own network engine.</p>
@@ -130,41 +145,6 @@
     </div>
     <hr />
 
-    <div class="blog-post">
-        <h2 class="blog-post-title"><a href="/2019/08/04/quadtree-collision-detection.html">Quadtree and collision detection</a></h2>
-        <p class="blog-post-meta">04 Aug 2019 by <a href="/">pierre</a></p>
-        <p>This week was short as I was still working on the <a href="/2019/07/28/vagabond-2d-light-system.html">2D light system</a> on Monday and Tuesday. I spent the rest of my time working on a <a href="https://en.wikipedia.org/wiki/Quadtree">quadtree</a> implementation.</p>
-
-<p>In this article, I will share with you my implementation and my thoughts while designing it.</p>
-
-<p>Firstly, I want to argue why I decided to implement a quadtree.</p>
-
-<p>A Quadtree is a <a href="https://en.wikipedia.org/wiki/Space_partitioning">space partitioning data structure</a>. Its main advantage against other data structures is its versatility. It offers good performance for insertion, removal and lookup. Thus, we can use it in a dynamic context where the data often change. Moreover, it is quite easy to understand and implement.</p>
-
-<p>If you are totally new to space partitioning, I advise you to read this <a href="http://gameprogrammingpatterns.com/spatial-partition.html">article</a> by Robert Nystrom. If you want a gentler introduction to quadtrees, you can read this <a href="https://gamedevelopment.tutsplus.com/tutorials/quick-tip-use-quadtrees-to-detect-likely-collisions-in-2d-space--gamedev-374">article</a> or this <a href="https://jimkang.com/quadtreevis/">one</a>.</p>
-
-<p>In my game, there are several places where using a quadtree is an instant win:</p>
-
-<ul>
-  <li>During collision detection, using a quadtree is way more efficient than the brute-force approach (testing all pairs). It is not the most efficient approach though, see this <a href="https://0fps.net/2015/01/23/collision-detection-part-3-benchmarks/">article</a> if you want an overview of possible approaches and benchmarks. But, I will start using this in the first version of my physics engine. I may change later and use a more specialized algorithm if I need to.</li>
-  <li>In the <a href="/2019/07/14/vagabond-game-engine-foundations.html">scene graph</a>, to perform culling, I can use a quadtree to find all the nodes that are visible.</li>
-  <li>In the <a href="/2019/07/28/vagabond-2d-light-system.html">light system</a>, I can use a quadtree to find the walls that are intersecting the light visibility polygon.</li>
-  <li>In an AI system, I can use a quadtree to find all the objects or enemies that are close to an entity.</li>
-  <li>etc.</li>
-</ul>
-
-<p>As you can notice, quadtrees are very versatile. They are a nice tool to have in your toolbox.</p>
-
-<p>You can find all the code that I will show next on <a href="https://github.com/pvigier/Quadtree">GitHub</a>.</p>
-
-
-        <p><a href="/2019/08/04/quadtree-collision-detection.html">Read more ...</a></p>
-        
-        <p>Tags: <span class="label label-primary"><a href="/tag/vagabond">vagabond</a></span> <span class="label label-primary"><a href="/tag/game-engine">game-engine</a></span> <span class="label label-primary"><a href="/tag/cpp">cpp</a></span> </p>
-        
-    </div>
-    <hr />
-
 <nav>
     <ul class="pager">
         
@@ -200,7 +180,7 @@
 		
 			<li><a href="/tag/git">git (1)</a></li>
 		
-			<li><a href="/tag/vagabond">vagabond (17)</a></li>
+			<li><a href="/tag/vagabond">vagabond (18)</a></li>
 		
 			<li><a href="/tag/ecs">ecs (2)</a></li>
 		
@@ -217,7 +197,12 @@
             
             
             
-			<li id="ySeptember 2019"><a href="/2019/09">September 2019 (1)</a></li>
+        
+            
+            
+            
+            
+			<li id="ySeptember 2019"><a href="/2019/09">September 2019 (2)</a></li>
 				
             
         
