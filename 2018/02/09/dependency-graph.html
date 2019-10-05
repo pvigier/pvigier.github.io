@@ -108,9 +108,9 @@
   <li>Harder to debug: as many pieces of codes are coupled, you will have to look at a lot of files if you want to trace back a bug.</li>
 </ul>
 
-<p>There are many ways to avoid circular dependencies. The most obvious one is to design well the project with independent modules or even to break a big project in smaller libraries.</p>
+<p>There are many ways to avoid circular dependencies. The most obvious one is to design well the project with independent modules or even to break a big project in smaller libraries. Moreover, it may be okay to have a small circular dependency inside a small module/library but not through the whole project.</p>
 
-<p>Design patterns like <a href="http://gameprogrammingpatterns.com/observer.html">Observer</a> or <a href="http://gameprogrammingpatterns.com/event-queue.html">Event Queue</a> can also be of great help. By the way, I recommend you to have a look at <a href="http://gameprogrammingpatterns.com/">Game Programming Patterns</a> by Robert Nystrom if you do not know this book already.</p>
+<p>Design patterns like <a href="https://en.wikipedia.org/wiki/Dependency_injection">Dependency injection</a>, <a href="http://gameprogrammingpatterns.com/observer.html">Observer</a> or <a href="http://gameprogrammingpatterns.com/event-queue.html">Event Queue</a> can also be of great help. By the way, I recommend you to have a look at <a href="http://gameprogrammingpatterns.com/">Game Programming Patterns</a> by Robert Nystrom if you do not know this book already.</p>
 
 <p>Finally, you could use my little script to monitor the architecture of your project.</p>
 
@@ -122,6 +122,7 @@
 
 <p>That’s all for this short post. See you!</p>
 
+    <p><em>If you are interested in my adventures during the development of Vagabond, you can follow me on <a href="https://twitter.com/PierreVigier">Twitter</a>.</em></p>
     
 	<p>Tags: <span class="label label-primary"><a href="/tag/cpp">cpp</a></span> <span class="label label-primary"><a href="/tag/python">python</a></span> </p>
 	
@@ -138,7 +139,7 @@
 <div id="mc_embed_signup">
 <form action="https://ymail.us20.list-manage.com/subscribe/post?u=7bb3b720a12ef1d8e0b48d8da&amp;id=7516dd4562" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate" target="_blank" novalidate>
     <div id="mc_embed_signup_scroll">
-	
+
 	<input type="email" value="" name="EMAIL" class="email" id="mce-EMAIL" placeholder="email address" required>
     <!-- real people should not fill this in and expect good things - do not remove this or risk form bot signups-->
     <div style="position: absolute; left: -5000px;" aria-hidden="true"><input type="text" name="b_7bb3b720a12ef1d8e0b48d8da_7516dd4562" tabindex="-1" value=""></div>
@@ -179,7 +180,7 @@ s.setAttribute('data-timestamp', +new Date());
 		
 			<li><a href="/tag/python">python (6)</a></li>
 		
-			<li><a href="/tag/cpp">cpp (7)</a></li>
+			<li><a href="/tag/cpp">cpp (8)</a></li>
 		
 			<li><a href="/tag/pcg">pcg (10)</a></li>
 		

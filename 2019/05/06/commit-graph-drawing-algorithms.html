@@ -213,7 +213,7 @@ Rewrite Event, Arc and VoronoiDiagram
                 dfs(d)
             c.i = i
             i = i + 1
-    
+
     i = 0
     for c in C
         dfs(c)
@@ -237,7 +237,7 @@ Rewrite Event, Arc and VoronoiDiagram
                 dfs(d)
             c.i = i
             i = i + 1
-    
+
     i = 0
     for c in C sorted from newest committer date to oldest
         dfs(c)
@@ -393,7 +393,7 @@ Rewrite Event, Arc and VoronoiDiagram
 
 <p>We can simplify the expression of <script type="math/tex">J(c)</script> thanks to the following lemma.</p>
 
-<p><em>Lemma</em>: 
+<p><em>Lemma</em>:
 <script type="math/tex">J(c) = \{j \text{ s.t. the column j is non-empty between rows }\underset{d \in c.mergeChildren}{\min}{d.i}\text{ and }c.i\}</script></p>
 
 <p><a href="#proof1" data-toggle="collapse">Show the proof</a></p>
@@ -476,7 +476,7 @@ J(c) = J_{i_{min}}(c)\text{ with }i_{min} = \underset{c.mergeChildren}{\min}{d.i
 
 <p><img src="/media/img/commit-graph/edges_visible/edges_visible.svg" alt="Edges visible" class="center-image modal-image" /></p>
 
-<p>To find them quickly, we must recognize that this is a problem of finding intersecting intervals again. Indeed, we can represent all the edges by intervals of rows and the visible area is also an interval of rows. An edge is visible if and only if its interval overlaps with the interval of the visible area. So we can use an interval tree to find all the visible edges in <script type="math/tex">O(m\log{k})</script> where <script type="math/tex">m</script> is the number edges and <script type="math/tex">k</script> the number of edges that are visible.</p>
+<p>To find them quickly, we must recognize that this is a problem of finding intersecting intervals again. Indeed, we can represent all the edges by intervals of rows and the visible area is also an interval of rows. An edge is visible if and only if its interval overlaps with the interval of the visible area. So we can use an interval tree to find all the visible edges in <script type="math/tex">O(k\log{m})</script> where <script type="math/tex">m</script> is the number edges and <script type="math/tex">k</script> the number of edges that are visible.</p>
 
 <p>In the table below, we can observe the time it takes to render the visible part of a large commit graph with and without the different optimizations we talked about:</p>
 
@@ -511,6 +511,7 @@ J(c) = J_{i_{min}}(c)\text{ with }i_{min} = \underset{c.mergeChildren}{\min}{d.i
 
 <p>The last optimization does not concern the graph rendering but the commit list which is displayed next to the graph. Displaying the whole list of commits does not scale well when there are thousands or tens of thousands commits. Thus, we can apply the same idea as previously and only display the commits that are visible. However, to give the impression to the user that all the commits are displayed and give him the ability to scroll, padding was added before and after the displayed items.</p>
 
+    <p><em>If you are interested in my adventures during the development of Vagabond, you can follow me on <a href="https://twitter.com/PierreVigier">Twitter</a>.</em></p>
     
 	<p>Tags: <span class="label label-primary"><a href="/tag/graph">graph</a></span> <span class="label label-primary"><a href="/tag/git">git</a></span> </p>
 	
@@ -527,7 +528,7 @@ J(c) = J_{i_{min}}(c)\text{ with }i_{min} = \underset{c.mergeChildren}{\min}{d.i
 <div id="mc_embed_signup">
 <form action="https://ymail.us20.list-manage.com/subscribe/post?u=7bb3b720a12ef1d8e0b48d8da&amp;id=7516dd4562" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate" target="_blank" novalidate>
     <div id="mc_embed_signup_scroll">
-	
+
 	<input type="email" value="" name="EMAIL" class="email" id="mce-EMAIL" placeholder="email address" required>
     <!-- real people should not fill this in and expect good things - do not remove this or risk form bot signups-->
     <div style="position: absolute; left: -5000px;" aria-hidden="true"><input type="text" name="b_7bb3b720a12ef1d8e0b48d8da_7516dd4562" tabindex="-1" value=""></div>
@@ -568,7 +569,7 @@ s.setAttribute('data-timestamp', +new Date());
 		
 			<li><a href="/tag/python">python (6)</a></li>
 		
-			<li><a href="/tag/cpp">cpp (7)</a></li>
+			<li><a href="/tag/cpp">cpp (8)</a></li>
 		
 			<li><a href="/tag/pcg">pcg (10)</a></li>
 		

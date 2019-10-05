@@ -140,18 +140,18 @@
 <div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">A</span>
 <span class="p">{</span>
 <span class="k">public</span><span class="o">:</span>
-	<span class="n">A</span><span class="p">()</span> <span class="o">:</span> <span class="n">mPointer</span><span class="p">(</span><span class="k">new</span> <span class="kt">int</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
-	<span class="p">{</span>
+    <span class="n">A</span><span class="p">()</span> <span class="o">:</span> <span class="n">mPointer</span><span class="p">(</span><span class="k">new</span> <span class="kt">int</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+    <span class="p">{</span>
 
-	<span class="p">}</span>
+    <span class="p">}</span>
 
-	<span class="o">~</span><span class="n">A</span><span class="p">()</span>
-	<span class="p">{</span>
-		<span class="k">delete</span> <span class="n">mPointer</span><span class="p">;</span>
-	<span class="p">}</span>
+    <span class="o">~</span><span class="n">A</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="k">delete</span> <span class="n">mPointer</span><span class="p">;</span>
+    <span class="p">}</span>
 
 <span class="k">private</span><span class="o">:</span>
-	<span class="kt">int</span><span class="o">*</span> <span class="n">mPointer</span><span class="p">;</span>
+    <span class="kt">int</span><span class="o">*</span> <span class="n">mPointer</span><span class="p">;</span>
 <span class="p">}</span>
 </code></pre></div></div>
 
@@ -161,14 +161,14 @@
 
 <div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
 <span class="p">{</span>
-	<span class="n">A</span> <span class="n">a</span><span class="p">;</span>
-	<span class="n">A</span> <span class="n">anotherA</span><span class="p">(</span><span class="n">a</span><span class="p">);</span>
+    <span class="n">A</span> <span class="n">a</span><span class="p">;</span>
+    <span class="n">A</span> <span class="n">anotherA</span><span class="p">(</span><span class="n">a</span><span class="p">);</span>
 
-	<span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p>A <code class="highlighter-rouge">Segmentation fault</code> will occur.</p>
+<p>A <a href="https://en.wikipedia.org/wiki/Segmentation_fault">segmentation fault</a> will occur.</p>
 
 <p>Why?</p>
 
@@ -232,7 +232,7 @@
 		
 			<li><a href="/tag/python">python (6)</a></li>
 		
-			<li><a href="/tag/cpp">cpp (7)</a></li>
+			<li><a href="/tag/cpp">cpp (8)</a></li>
 		
 			<li><a href="/tag/pcg">pcg (10)</a></li>
 		

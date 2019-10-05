@@ -81,7 +81,12 @@
 <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>readelf -d &lt;executable&gt;
 </code></pre></div></div>
 
-<p>It reads the information written in the binary (see <a href="https://en.wikipedia.org/wiki/Executable_and_Linkable_Format">ELF</a>). For Simulopolis, it outputs:</p>
+<p>An alternative command that will output the same information is:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>objdump -p &lt;executable&gt;
+</code></pre></div></div>
+
+<p>They read the information written in the binary (see <a href="https://en.wikipedia.org/wiki/Executable_and_Linkable_Format">ELF</a>). For Simulopolis, it outputs:</p>
 
 <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>0x000000000000001d (RUNPATH)            Library runpath: [lib]
 </code></pre></div></div>
@@ -104,7 +109,15 @@
 
 <p>I decided not to put the last four because there are standard libraries of C and C++ and they should be present in all modern Linux distribution.</p>
 
-<p>If needed, you can set the rpath of a binary after its creation using the command <code class="highlighter-rouge">chrpath</code>.</p>
+<p>If needed, you can set the rpath of a binary after its creation using the command <code class="highlighter-rouge">chrpath</code>:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>chrpath -r &lt;new rpath&gt; &lt;executable&gt;
+</code></pre></div></div>
+
+<p>Another command that may be useful is <code class="highlighter-rouge">ldd</code>, it will print all the libraries required by an executable and where the linker finds them:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ldd &lt;executable&gt;
+</code></pre></div></div>
 
 <p>Finally, my brother can play to Simulopolis!</p>
 
@@ -114,6 +127,7 @@
 
 <p>See you!</p>
 
+    <p><em>If you are interested in my adventures during the development of Vagabond, you can follow me on <a href="https://twitter.com/PierreVigier">Twitter</a>.</em></p>
     
 	<p>Tags: <span class="label label-primary"><a href="/tag/cpp">cpp</a></span> <span class="label label-primary"><a href="/tag/linux">linux</a></span> <span class="label label-primary"><a href="/tag/simulopolis">simulopolis</a></span> </p>
 	
@@ -130,7 +144,7 @@
 <div id="mc_embed_signup">
 <form action="https://ymail.us20.list-manage.com/subscribe/post?u=7bb3b720a12ef1d8e0b48d8da&amp;id=7516dd4562" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate" target="_blank" novalidate>
     <div id="mc_embed_signup_scroll">
-	
+
 	<input type="email" value="" name="EMAIL" class="email" id="mce-EMAIL" placeholder="email address" required>
     <!-- real people should not fill this in and expect good things - do not remove this or risk form bot signups-->
     <div style="position: absolute; left: -5000px;" aria-hidden="true"><input type="text" name="b_7bb3b720a12ef1d8e0b48d8da_7516dd4562" tabindex="-1" value=""></div>
@@ -171,7 +185,7 @@ s.setAttribute('data-timestamp', +new Date());
 		
 			<li><a href="/tag/python">python (6)</a></li>
 		
-			<li><a href="/tag/cpp">cpp (7)</a></li>
+			<li><a href="/tag/cpp">cpp (8)</a></li>
 		
 			<li><a href="/tag/pcg">pcg (10)</a></li>
 		

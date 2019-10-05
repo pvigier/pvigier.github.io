@@ -177,6 +177,8 @@
 
 <p>Glenn Fiedler (again!) shows how to use quantization in practice in his article <a href="https://web.archive.org/web/20180823021121/https://gafferongames.com/post/snapshot_compression/">Snapshot Compression</a>.</p>
 
+<p>Shawn Hargreaves also has some interesting articles on compression including quantization, you can find them all <a href="http://www.shawnhargreaves.com/blogindex.html#networking">here</a>.</p>
+
 <h3 id="compression-algorithms">Compression algorithms</h3>
 
 <p>The next technique is using lossless compression algorithms.</p>
@@ -185,8 +187,10 @@
 <ul>
   <li><a href="https://en.wikipedia.org/wiki/Huffman_coding">Huffman coding</a> with a precomputed code which is extremely fast and can give good results. It was used to compress the packets in the Quake3 network engine.</li>
   <li>Using <a href="http://www.zlib.net/">zlib</a> which is a general-purpose compression algorithm and it never expands the data. It is used in numerous applications as you can see <a href="https://en.wikipedia.org/wiki/Zlib">here</a>. It may be overkill for state updates. But it may be interesting if you have to send assets, long texts or terrains from the server to clients.</li>
-  <li><a href="https://en.wikipedia.org/wiki/Run-length_encoding">Run-length encoding</a> is maybe the simplest compression algorithm but it is very efficient for certain types of data and can be used as a preprocessing step before to use zlib. It is specifically suitable for compressing terrains made of tiles or voxels where many adjacent elements are similar.</li>
+  <li><a href="https://en.wikipedia.org/wiki/Run-length_encoding">Run-length encoding</a> is maybe the simplest compression algorithm but it is very efficient for certain types of data. It is specifically suitable for compressing terrains made of tiles or voxels where many adjacent elements are similar.</li>
 </ul>
+
+<p>There is also a paid library by Rad Game Tools called <a href="http://www.radgametools.com/oodlenetwork.htm">Oodle Network Compression</a>. On the page, they show an interesting graph where they compared the compression ratio of Huffman coding, zlib and their solution, very instructive.</p>
 
 <h3 id="delta-compression">Delta compression</h3>
 
@@ -240,11 +244,15 @@
 
 <h2 id="cheating-prevention">Cheating prevention</h2>
 
-<p>There are two main techniques for preventing cheating.</p>
+<p>There are mainly two ways to cheat in a mutliplayer game: by sending malicious packets to the server or by reading data coming from the server that give an unfair advantage to the cheater.</p>
 
-<p>The first one is to make hard for cheaters to send malicious packets. As we explained before, encryption is a good way to achieve that.</p>
+<p>A first technique is to make hard for cheaters to craft malicious packets and to read incoming packets. As we explained before, encryption is a good way to achieve that as it will <a href="https://en.wikipedia.org/wiki/Obfuscation">obfuscate</a> the incoming packets and the cheaters will have to get the keys and reproduce the encryption scheme to craft malicious packets.</p>
 
-<p>The second technique is by having an authoritative server that only receives commands/inputs/actions. The client should never be able to modify the server state by another way than sending inputs. Then each time, the server receives an input, it should check that this input is valid before to apply it.</p>
+<p>The second technique is to have an authoritative server that only receives commands/inputs/actions. The client should never be able to modify the server state by another way than sending inputs. Then, each time the server receives an input, it should check that this input is valid before to apply it.</p>
+
+<p>The best technique to prevent cheaters from accessing data they should not know about is simply by making sure the server does not send it in the first place. For instance, the server should not send to the players the position of opponents or monsters that are far from them. Otherwise, even if they are not visible in the game, the players can read the incoming packets and know exactly where to go to kill their targets. This kind of cheating is called <em>map hack</em> or <em>world hack</em>.</p>
+
+<p>If you want to know more about cheating you can read the article <a href="https://en.wikipedia.org/wiki/Cheating_in_online_games">Cheating in online games</a> on Wikipedia which contains a list of possible ways of cheating and solutions to detect and prevent them.</p>
 
 <h2 id="application-logic--conclusion">Application logic – Conclusion</h2>
 
@@ -265,8 +273,9 @@
 
 <p>See you next week for more!</p>
 
-<p><em>If you are interested in my adventures during the development of Vagabond, you can follow me on <a href="https://twitter.com/PierreVigier">Twitter</a>.</em></p>
+<p>Edit: Thanks to the redditors for the <a href="https://www.reddit.com/r/gamedev/comments/d1oz18/beginners_guide_to_game_networking/">feedback</a>. I tried to take it into account.</p>
 
+    <p><em>If you are interested in my adventures during the development of Vagabond, you can follow me on <a href="https://twitter.com/PierreVigier">Twitter</a>.</em></p>
     
 	<p>Tags: <span class="label label-primary"><a href="/tag/vagabond">vagabond</a></span> <span class="label label-primary"><a href="/tag/game-engine">game-engine</a></span> </p>
 	
@@ -283,7 +292,7 @@
 <div id="mc_embed_signup">
 <form action="https://ymail.us20.list-manage.com/subscribe/post?u=7bb3b720a12ef1d8e0b48d8da&amp;id=7516dd4562" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate" target="_blank" novalidate>
     <div id="mc_embed_signup_scroll">
-	
+
 	<input type="email" value="" name="EMAIL" class="email" id="mce-EMAIL" placeholder="email address" required>
     <!-- real people should not fill this in and expect good things - do not remove this or risk form bot signups-->
     <div style="position: absolute; left: -5000px;" aria-hidden="true"><input type="text" name="b_7bb3b720a12ef1d8e0b48d8da_7516dd4562" tabindex="-1" value=""></div>
@@ -324,7 +333,7 @@ s.setAttribute('data-timestamp', +new Date());
 		
 			<li><a href="/tag/python">python (6)</a></li>
 		
-			<li><a href="/tag/cpp">cpp (7)</a></li>
+			<li><a href="/tag/cpp">cpp (8)</a></li>
 		
 			<li><a href="/tag/pcg">pcg (10)</a></li>
 		
