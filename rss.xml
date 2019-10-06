@@ -3,12 +3,28 @@
 	<title>pvigier's blog</title>
 	<link href="http://pvigier.github.io/rss.xml" rel="self"/>
 	<link href="http://pvigier.github.io"/>
-	<updated>2019-10-05T20:01:26+02:00</updated>
+	<updated>2019-10-06T17:12:39+02:00</updated>
 	<id>http://pvigier.github.io</id>
 	<author>
 		<name>Pierre Vigier</name>
 		<email>pierre.vigier@ymail.com</email>
 	</author>
+	
+		<entry>
+			<title>Palette Swapping with Shaders</title>
+			<link href="http://pvigier.github.io/2019/10/06/palette-swapping-with-shaders.html"/>
+			<updated>2019-10-06T00:00:00+02:00</updated>
+			<id>http://pvigier.github.io/2019/10/06/palette-swapping-with-shaders</id>
+			<content type="html">&lt;p&gt;Hi everyone!&lt;/p&gt;
+
+&lt;p&gt;In this devlog, I will show you a technique that I love and that I will abuse in Vagabond: palette swapping.&lt;/p&gt;
+
+&lt;p&gt;Palette swapping is simply changing the palette of a texture. Here, we will do that at runtime using shaders. It was a useful technique in the old days to add variety in the assets without using too much memory. Now, it is used in procedural generation to produce new assets, I will show many examples in later devlogs.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/media/img/palette-swapping-with-shaders/body_palette_swapping.gif&quot; alt=&quot;&quot; class=&quot;center-image modal-image&quot; /&gt;&lt;/p&gt;
+
+</content>
+		</entry>
 	
 		<entry>
 			<title>Vagabond &#8211; Exploring the world</title>
