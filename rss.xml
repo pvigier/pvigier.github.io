@@ -3,12 +3,29 @@
 	<title>pvigier's blog</title>
 	<link href="http://pvigier.github.io/rss.xml" rel="self"/>
 	<link href="http://pvigier.github.io"/>
-	<updated>2019-10-06T17:12:39+02:00</updated>
+	<updated>2019-10-21T11:53:36+02:00</updated>
 	<id>http://pvigier.github.io</id>
 	<author>
 		<name>Pierre Vigier</name>
 		<email>pierre.vigier@ymail.com</email>
 	</author>
+	
+		<entry>
+			<title>Vagabond &#8211; Teleporting into Dungeons</title>
+			<link href="http://pvigier.github.io/2019/10/20/vagabond-teleporting-into-dungeons.html"/>
+			<updated>2019-10-20T00:00:00+02:00</updated>
+			<id>http://pvigier.github.io/2019/10/20/vagabond-teleporting-into-dungeons</id>
+			<content type="html">&lt;p&gt;Hi everyone!&lt;/p&gt;
+
+&lt;p&gt;Last two weeks, I was working on teleporting the players from one map to another. I will use this system to enter into dungeons, buildings, etc. and also to leave them. But it was not that easy to implement as it required some deep architectural changes in the game engine.&lt;/p&gt;
+
+&lt;video controls=&quot;&quot; width=&quot;600&quot;&gt;
+    &lt;source src=&quot;/media/video/vagabond-teleporting-into-dungeons/dungeon_entrance.mp4&quot; type=&quot;video/mp4&quot; /&gt;
+    Sorry, your browser doesn't support embedded videos.
+&lt;/video&gt;
+
+</content>
+		</entry>
 	
 		<entry>
 			<title>Palette Swapping with Shaders</title>
