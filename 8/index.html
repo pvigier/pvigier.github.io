@@ -7,7 +7,7 @@
         <meta name="description" content="">
         <meta name="author" content="Pierre Vigier">
 
-        <title>Circular dependencies in C++ - pvigier's blog</title>
+        <title>Blog - pvigier's blog</title>
         <link rel="shortcut icon" href="/media/img/favicon.png">
         <!-- Bootstrap -->
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
@@ -38,138 +38,36 @@
             </div>
             <div class="row">
             <div class="col-sm-8 blog-main">
-<div class="blog-post">
-    <h2 class="blog-post-title">Circular dependencies in C++</h2>
-    <p class="blog-post-meta">09 Feb 2018 by <a href="/">pierre</a></p>
-    <p>Hi guys, it has been a while since the last post.</p>
 
-<p>I write this short post to tell you about a small script I coded recently. You can find it <a href="https://github.com/pvigier/dependency-graph">here</a> on my github account.</p>
+    <div class="blog-post">
+        <h2 class="blog-post-title"><a href="/2017/02/14/hello-world.html">Hello World!</a></h2>
+        <p class="blog-post-meta">14 Feb 2017 by <a href="/">pierre</a></p>
+        <p>Welcome on my new website!</p>
 
-<p>Its goal is to draw the “include” dependencies between classes in a C++ project. In particular, it allows to detect circular dependencies very easily or to check the architecture of a project.</p>
+<p>I will try to keep it up-to-date. And to write a post as soon as I have an idea or discovered anything interesting. Stay Tuned!</p>
 
-<p>You can see the output of the script on a project of mine:</p>
+<p>A short word on the technologies which proudly power this website. As you can see, the website is gracefully hosted by GitHub. Thanks guys! This website is completely static, I use <a href="http://jekyllrb.com">Jekyll</a> to generate the pages. By the way, I found this <a href="http://jmcglone.com/guides/github-pages/">page</a> very interesting to get started with Jekyll. And the design is made with <a href="http://getbootstrap.com">Bootstrap</a>.</p>
 
-<p><img src="https://github.com/pvigier/dependency-graph/raw/master/examples/example1.png" alt="Dependency graph" class="center-image modal-image" /></p>
+<p>I try <a href="https://disqus.com/">Disqus</a> as commenting system. I’ve seen a lot of blogs using it and it was very easy to install. Finally, I use <a href="https://www.google.com/webmasters/">Google Webmasters</a> and <a href="https://analytics.google.com/">Google Analytics</a> to manage my metrics.</p>
 
-<p>I really like this visual representation which allows to see how classes interact.</p>
+<p>I hope you’ll find anything interesting here!</p>
 
-<p>However, the true reason why I created this tool is not because I like to see beautiful graphs but because I hate circular dependencies (note that there is none in the graph above). I consider circular dependencies as design flaws. But sometimes in a large project, it could happen that accidentally I create circular dependencies …</p>
-
-<!--more-->
-
-<h1 id="circular-dependencies">Circular dependencies</h1>
-
-<p>Fistly, let us be clear about what is a circular dependency.</p>
-
-<p>Suppose that you have two classes A and B. If A uses B and conversely then there is a circular dependency. However, the circular dependency maybe subtler. For instance, it may be A that uses B that uses C that uses A.</p>
-
-<p>In C++, if a file “A.h” includes “B.h” then “B.h” cannot include “A.h”. The only way for B to use A is to forward declare A, use pointers or references on A in the header and finally include “A.h” in “B.cpp”.</p>
-
-<p>For example, these three files should compile successfully.</p>
-
-<p>A.h:</p>
-<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#pragma once
-</span>
-<span class="cp">#include "B.h"
-</span>
-<span class="k">class</span> <span class="nc">A</span>
-<span class="p">{</span>
-<span class="k">private</span><span class="o">:</span>
-    <span class="n">B</span> <span class="n">mB</span><span class="p">;</span>
-<span class="p">};</span>
-</code></pre></div></div>
-
-<p>B.h:</p>
-<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#pragma once
-</span>
-<span class="k">class</span> <span class="nc">A</span><span class="p">;</span> <span class="c1">// forward declaration</span>
-
-<span class="k">class</span> <span class="nc">B</span>
-<span class="p">{</span>
-<span class="k">private</span><span class="o">:</span>
-    <span class="n">A</span><span class="o">*</span> <span class="n">mA</span><span class="p">;</span>
-<span class="p">};</span>
-</code></pre></div></div>
-
-<p>B.cpp:</p>
-<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include "B.h"
-#include "A.h" // We include "A.h" in the cpp file
-</span></code></pre></div></div>
-
-<p>This works well and is often the simpler solution for small projects.</p>
-
-<p>Why so much hate toward circular dependencies after all?</p>
-
-<p>I will list several reasons against circular dependencies:</p>
-<ul>
-  <li>Compilation time can blow up: when a file in the cycle is changed, all the other files have to be recompiled.</li>
-  <li>Prone to errors: as several pieces of code are tightly coupled, a change in one will probably break another.</li>
-  <li>Harder to reuse the code: as many files are dependent on each other, if you want to reuse a file in another project, you must also take the other ones.</li>
-  <li>Harder to debug: as many pieces of codes are coupled, you will have to look at a lot of files if you want to trace back a bug.</li>
-</ul>
-
-<p>There are many ways to avoid circular dependencies. The most obvious one is to design well the project with independent modules or even to break a big project in smaller libraries. Moreover, it may be okay to have a small circular dependency inside a small module/library but not through the whole project.</p>
-
-<p>Design patterns like <a href="https://en.wikipedia.org/wiki/Dependency_injection">Dependency injection</a>, <a href="http://gameprogrammingpatterns.com/observer.html">Observer</a> or <a href="http://gameprogrammingpatterns.com/event-queue.html">Event Queue</a> can also be of great help. By the way, I recommend you to have a look at <a href="http://gameprogrammingpatterns.com/">Game Programming Patterns</a> by Robert Nystrom if you do not know this book already.</p>
-
-<p>Finally, you could use my little script to monitor the architecture of your project.</p>
-
-<h1 id="some-details-on-the-code">Some details on the code</h1>
-
-<p>The script is pretty simple. I use the <code class="highlighter-rouge">re</code> module of Python to find the <code class="highlighter-rouge">#include</code>’s in source files.</p>
-
-<p>Then the scripts creates a graph and uses a port to Python of <a href="https://www.graphviz.org/">graphviz</a> to draw the graph. Graphviz creates very beautiful, this amazing tool is also used, for instance, by Doxygen to generate its diagram.</p>
-
-<p>That’s all for this short post. See you!</p>
-
-    <p><em>If you are interested in my adventures during the development of Vagabond, you can follow me on <a href="https://twitter.com/PierreVigier">Twitter</a>.</em></p>
-    
-	<p>Tags: <span class="label label-primary"><a href="/tag/cpp">cpp</a></span> <span class="label label-primary"><a href="/tag/python">python</a></span> </p>
-	
-</div><!-- /.blog-post -->
-<hr/>
-<p>Subscribe to the newsletter if you do not want to miss any new article:</p>
-<!-- Begin Mailchimp Signup Form -->
-<link href="//cdn-images.mailchimp.com/embedcode/horizontal-slim-10_7.css" rel="stylesheet" type="text/css">
-<style type="text/css">
-	#mc_embed_signup{background:#fff; clear:left; font:14px Helvetica,Arial,sans-serif; width:100%;}
-	/* Add your own Mailchimp form style overrides in your site stylesheet or in this style block.
-	   We recommend moving this block and the preceding CSS link to the HEAD of your HTML file. */
-</style>
-<div id="mc_embed_signup">
-<form action="https://ymail.us20.list-manage.com/subscribe/post?u=7bb3b720a12ef1d8e0b48d8da&amp;id=7516dd4562" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate" target="_blank" novalidate>
-    <div id="mc_embed_signup_scroll">
-
-	<input type="email" value="" name="EMAIL" class="email" id="mce-EMAIL" placeholder="email address" required>
-    <!-- real people should not fill this in and expect good things - do not remove this or risk form bot signups-->
-    <div style="position: absolute; left: -5000px;" aria-hidden="true"><input type="text" name="b_7bb3b720a12ef1d8e0b48d8da_7516dd4562" tabindex="-1" value=""></div>
-    <div class="clear"><input type="submit" value="Subscribe" name="subscribe" id="mc-embedded-subscribe" class="button"></div>
+        <p><a href="/2017/02/14/hello-world.html">Read more ...</a></p>
+        
     </div>
-</form>
-</div>
-<!--End mc_embed_signup-->
-<!-- Disqus -->
-<hr/>
-<div id="disqus_thread"></div>
-<script>
+    <hr />
 
-/**
-*  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
-*  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
-/*
-var disqus_config = function () {
-this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
-this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
-};
-*/
-(function() { // DON'T EDIT BELOW THIS LINE
-var d = document, s = d.createElement('script');
-s.src = 'https://pvigier-github-io.disqus.com/embed.js';
-s.setAttribute('data-timestamp', +new Date());
-(d.head || d.body).appendChild(s);
-})();
-</script>
-<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<nav>
+    <ul class="pager">
+        
+        <li><a href="/7/">Previous</a></li>
+        
+        
+        <li><span>Next</span></li>
+        
+    </ul>
+</nav>
+
 </div><!-- /.blog-main -->
 <div class="col-sm-3 col-sm-offset-1 blog-sidebar">
 	<div class="sidebar-module">

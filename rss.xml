@@ -3,12 +3,31 @@
 	<title>pvigier's blog</title>
 	<link href="http://pvigier.github.io/rss.xml" rel="self"/>
 	<link href="http://pvigier.github.io"/>
-	<updated>2019-10-21T11:53:36+02:00</updated>
+	<updated>2019-11-18T16:31:42+01:00</updated>
 	<id>http://pvigier.github.io</id>
 	<author>
 		<name>Pierre Vigier</name>
 		<email>pierre.vigier@ymail.com</email>
 	</author>
+	
+		<entry>
+			<title>Vagabond &#8211; Let's Fight</title>
+			<link href="http://pvigier.github.io/2019/11/18/vagabond-let-s-fight.html"/>
+			<updated>2019-11-18T00:00:00+01:00</updated>
+			<id>http://pvigier.github.io/2019/11/18/vagabond-let-s-fight</id>
+			<content type="html">&lt;p&gt;Hi everyone!&lt;/p&gt;
+
+&lt;p&gt;It’s been a long time since the last devlog.&lt;/p&gt;
+
+&lt;p&gt;I have been mainly working on monsters and combats. I created a lot of components and systems but nothing which deserves its own blog post. Let’s see the improvements.&lt;/p&gt;
+
+&lt;video controls=&quot;&quot; width=&quot;600&quot;&gt;
+    &lt;source src=&quot;/media/video/vagabond-let-s-fight/attack_dungeon_updated.mp4&quot; type=&quot;video/mp4&quot; /&gt;
+    Sorry, your browser doesn't support embedded videos.
+&lt;/video&gt;
+
+</content>
+		</entry>
 	
 		<entry>
 			<title>Vagabond &#8211; Teleporting into Dungeons</title>

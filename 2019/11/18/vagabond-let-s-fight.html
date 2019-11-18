@@ -7,7 +7,7 @@
         <meta name="description" content="">
         <meta name="author" content="Pierre Vigier">
 
-        <title>Circular dependencies in C++ - pvigier's blog</title>
+        <title>Vagabond &#8211; Let's Fight - pvigier's blog</title>
         <link rel="shortcut icon" href="/media/img/favicon.png">
         <!-- Bootstrap -->
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
@@ -39,92 +39,79 @@
             <div class="row">
             <div class="col-sm-8 blog-main">
 <div class="blog-post">
-    <h2 class="blog-post-title">Circular dependencies in C++</h2>
-    <p class="blog-post-meta">09 Feb 2018 by <a href="/">pierre</a></p>
-    <p>Hi guys, it has been a while since the last post.</p>
+    <h2 class="blog-post-title">Vagabond &#8211; Let's Fight</h2>
+    <p class="blog-post-meta">18 Nov 2019 by <a href="/">pierre</a></p>
+    <p>Hi everyone!</p>
 
-<p>I write this short post to tell you about a small script I coded recently. You can find it <a href="https://github.com/pvigier/dependency-graph">here</a> on my github account.</p>
+<p>It’s been a long time since the last devlog.</p>
 
-<p>Its goal is to draw the “include” dependencies between classes in a C++ project. In particular, it allows to detect circular dependencies very easily or to check the architecture of a project.</p>
+<p>I have been mainly working on monsters and combats. I created a lot of components and systems but nothing which deserves its own blog post. Let’s see the improvements.</p>
 
-<p>You can see the output of the script on a project of mine:</p>
-
-<p><img src="https://github.com/pvigier/dependency-graph/raw/master/examples/example1.png" alt="Dependency graph" class="center-image modal-image" /></p>
-
-<p>I really like this visual representation which allows to see how classes interact.</p>
-
-<p>However, the true reason why I created this tool is not because I like to see beautiful graphs but because I hate circular dependencies (note that there is none in the graph above). I consider circular dependencies as design flaws. But sometimes in a large project, it could happen that accidentally I create circular dependencies …</p>
+<video controls="" width="600">
+    <source src="/media/video/vagabond-let-s-fight/attack_dungeon_updated.mp4" type="video/mp4" />
+    Sorry, your browser doesn't support embedded videos.
+</video>
 
 <!--more-->
 
-<h1 id="circular-dependencies">Circular dependencies</h1>
+<h1 id="monsters">Monsters</h1>
 
-<p>Fistly, let us be clear about what is a circular dependency.</p>
+<p>Firstly, I ingested several monsters, even if you will only see bats in this devlog. And implemented a very basic artificial intelligence: they wander in rooms of dungeons.</p>
 
-<p>Suppose that you have two classes A and B. If A uses B and conversely then there is a circular dependency. However, the circular dependency maybe subtler. For instance, it may be A that uses B that uses C that uses A.</p>
+<video controls="" width="600">
+    <source src="/media/video/vagabond-let-s-fight/monster_wander.mp4" type="video/mp4" />
+    Sorry, your browser doesn't support embedded videos.
+</video>
 
-<p>In C++, if a file “A.h” includes “B.h” then “B.h” cannot include “A.h”. The only way for B to use A is to forward declare A, use pointers or references on A in the header and finally include “A.h” in “B.cpp”.</p>
+<h1 id="combat-system">Combat system</h1>
 
-<p>For example, these three files should compile successfully.</p>
+<p>It was then time to kick their ass. I had to modify the physics engine to support hurtboxes and hitboxes.</p>
 
-<p>A.h:</p>
-<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#pragma once
-</span>
-<span class="cp">#include "B.h"
-</span>
-<span class="k">class</span> <span class="nc">A</span>
-<span class="p">{</span>
-<span class="k">private</span><span class="o">:</span>
-    <span class="n">B</span> <span class="n">mB</span><span class="p">;</span>
-<span class="p">};</span>
-</code></pre></div></div>
+<p>Then, I had to improve the way animations are synchronized between clients which requires me to do huge changes in the codebase.</p>
 
-<p>B.h:</p>
-<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#pragma once
-</span>
-<span class="k">class</span> <span class="nc">A</span><span class="p">;</span> <span class="c1">// forward declaration</span>
+<p>Eventually, it was possible to attack the monsters:</p>
 
-<span class="k">class</span> <span class="nc">B</span>
-<span class="p">{</span>
-<span class="k">private</span><span class="o">:</span>
-    <span class="n">A</span><span class="o">*</span> <span class="n">mA</span><span class="p">;</span>
-<span class="p">};</span>
-</code></pre></div></div>
+<video controls="" width="600">
+    <source src="/media/video/vagabond-let-s-fight/combat_system.mp4" type="video/mp4" />
+    Sorry, your browser doesn't support embedded videos.
+</video>
 
-<p>B.cpp:</p>
-<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include "B.h"
-#include "A.h" // We include "A.h" in the cpp file
-</span></code></pre></div></div>
+<p>Monsters receive a small knockout just after being hit.</p>
 
-<p>This works well and is often the simpler solution for small projects.</p>
+<p>It is not impressive yet, but with some particle effects and sound effects, it should be funnier.</p>
 
-<p>Why so much hate toward circular dependencies after all?</p>
+<h1 id="hud">HUD</h1>
 
-<p>I will list several reasons against circular dependencies:</p>
-<ul>
-  <li>Compilation time can blow up: when a file in the cycle is changed, all the other files have to be recompiled.</li>
-  <li>Prone to errors: as several pieces of code are tightly coupled, a change in one will probably break another.</li>
-  <li>Harder to reuse the code: as many files are dependent on each other, if you want to reuse a file in another project, you must also take the other ones.</li>
-  <li>Harder to debug: as many pieces of codes are coupled, you will have to look at a lot of files if you want to trace back a bug.</li>
-</ul>
+<p>It had been weeks, I was postponing the work on the user interface. I rolled up my sleeves and made a basic HUD to display the target monster’s name and health.</p>
 
-<p>There are many ways to avoid circular dependencies. The most obvious one is to design well the project with independent modules or even to break a big project in smaller libraries. Moreover, it may be okay to have a small circular dependency inside a small module/library but not through the whole project.</p>
+<p>Moreover, I change the inputs. Now, everything is done with the mouse. Thus, I created a custom golden cursor you can see in the video below.</p>
 
-<p>Design patterns like <a href="https://en.wikipedia.org/wiki/Dependency_injection">Dependency injection</a>, <a href="http://gameprogrammingpatterns.com/observer.html">Observer</a> or <a href="http://gameprogrammingpatterns.com/event-queue.html">Event Queue</a> can also be of great help. By the way, I recommend you to have a look at <a href="http://gameprogrammingpatterns.com/">Game Programming Patterns</a> by Robert Nystrom if you do not know this book already.</p>
+<video controls="" width="600">
+    <source src="/media/video/vagabond-let-s-fight/attack_interface.mp4" type="video/mp4" />
+    Sorry, your browser doesn't support embedded videos.
+</video>
 
-<p>Finally, you could use my little script to monitor the architecture of your project.</p>
+<p>I also started to do preparatory work on a drag and drop system for the future inventory interface.</p>
 
-<h1 id="some-details-on-the-code">Some details on the code</h1>
+<h1 id="cave-generation-update">Cave generation update</h1>
 
-<p>The script is pretty simple. I use the <code class="highlighter-rouge">re</code> module of Python to find the <code class="highlighter-rouge">#include</code>’s in source files.</p>
+<p>Finally, I worked on the cave generator. I fixed pernicious bugs occurring during tile generation. Moreover, I added some cycles during maze generation. I am very happy with the results:</p>
 
-<p>Then the scripts creates a graph and uses a port to Python of <a href="https://www.graphviz.org/">graphviz</a> to draw the graph. Graphviz creates very beautiful, this amazing tool is also used, for instance, by Doxygen to generate its diagram.</p>
+<p><img src="/media/img/vagabond-let-s-fight/dungeon_generation_v3.gif" alt="" width="400" class="center-image modal-image" /></p>
 
-<p>That’s all for this short post. See you!</p>
+<p>I shared this animation on Reddit on <a href="https://www.reddit.com/r/gamedev/comments/dx95df/cave_generation_using_bsp_and_cellular_automaton/">r/gamedev</a>, I received many kind comments, it was very motivating!</p>
+
+<h1 id="conclusion">Conclusion</h1>
+
+<p>That’s all for this devlog.</p>
+
+<p>I am currently working on items, inventory, and characters. I think it will be a great step for the game and I hope I will have a lot of nice stuff to show.</p>
+
+<p>See you next time for more!</p>
 
     <p><em>If you are interested in my adventures during the development of Vagabond, you can follow me on <a href="https://twitter.com/PierreVigier">Twitter</a>.</em></p>
     
-	<p>Tags: <span class="label label-primary"><a href="/tag/cpp">cpp</a></span> <span class="label label-primary"><a href="/tag/python">python</a></span> </p>
+	<p>Tags: <span class="label label-primary"><a href="/tag/vagabond">vagabond</a></span> </p>
 	
 </div><!-- /.blog-post -->
 <hr/>
