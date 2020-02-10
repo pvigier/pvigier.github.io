@@ -7,7 +7,7 @@
         <meta name="description" content="">
         <meta name="author" content="Pierre Vigier">
 
-        <title>Vagabond &#8211; Dungeon and cave generation - pvigier's blog</title>
+        <title>Vagabond &#8211; Building Generation - pvigier's blog</title>
         <link rel="shortcut icon" href="/media/img/favicon.png">
         <!-- Bootstrap -->
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
@@ -39,93 +39,119 @@
             <div class="row">
             <div class="col-sm-8 blog-main">
 <div class="blog-post">
-    <h2 class="blog-post-title">Vagabond &#8211; Dungeon and cave generation</h2>
-    <p class="blog-post-meta">23 Jun 2019 by <a href="/">pierre</a></p>
-    <p><img src="/media/img/vagabond-dungeon-cave-generation/cave_generation.gif" alt="" width="400" class="center-image modal-image" /></p>
+    <h2 class="blog-post-title">Vagabond &#8211; Building Generation</h2>
+    <p class="blog-post-meta">09 Feb 2020 by <a href="/">pierre</a></p>
+    <p>Hi everyone!</p>
 
-<p>I am sorry, there was no article last week as I was on vacation.</p>
+<p>These last weeks, I had been working on building generation. I want to share with you the main ideas of my method, some insights, and my results!</p>
 
-<p>But, this week I started working on a new topic: dungeon and cave generation. I used space partitioning to generate rooms, maze generation algorithms to generate the corridors and cellular automata to have a more organic look and feel for caves. Let’s dive in the details!</p>
+<p>Here is a quick glimpse of the overall process:</p>
+
+<p><img src="/media/img/vagabond-building-generation/building_generation.gif" alt="" class="center-image modal-image" /></p>
 
 <!--more-->
 
-<h1 id="space-partitioning">Space partitioning</h1>
+<h1 id="floor-plan-generation">Floor plan generation</h1>
 
-<p>There are many ways (<a href="https://gamedevelopment.tutsplus.com/tutorials/create-a-procedurally-generated-dungeon-cave-system--gamedev-10099">random placement</a>, <a href="http://pcgbook.com/wp-content/uploads/chapter03.pdf">agent based</a>, using <a href="https://www.reddit.com/r/roguelikes/comments/1dodsv/my_procedural_dungeon_generation_algorithm/">separation steering behavior</a> or <a href="https://www.gamasutra.com/blogs/AAdonaac/20150903/252889/Procedural_Dungeon_Generation_Algorithm.php">a physics engine</a>, etc.) to create rooms for a dungeon. But my favorite method is space partitioning because it is controllable and easily expandable.</p>
+<p>The first step is to generate the floor plan that will be the input for the next steps.</p>
 
-<p>There are also many ways to split the space: grid partitioning, binary space partitioning, quad tree space partitioning, Voronoi diagrams, etc. I chose to use binary space partitioning this time as it is well suited to generate rectangular rooms. This method was popularized by an <a href="http://roguebasin.roguelikedevelopment.org/index.php?title=Basic_BSP_Dungeon_generation">article</a> on RogueBasin.</p>
+<p>There were a lot of trials and errors at this step. I wanted something flexible, that is, the generator takes as input a list of rooms that the building must contain and it generates a floor plan, whatever the number of rooms or their shape is. Thus, we cannot rely on some patterns to arrange the rooms. Moreover, I wanted the generator to be robust and always return good enough shapes.</p>
 
-<p>The only difficulty with this algorithm is to choose the split position. Indeed, if we do not set any constraint on the split position, we obtain weird space partitions:</p>
+<p>I decided to use an incremental method: to place the rooms one by one.</p>
 
-<p><img src="/media/img/vagabond-dungeon-cave-generation/bsp_no_constraint.gif" alt="" width="400" class="center-image modal-image" /></p>
+<p>My first attempt was to maintain the frontier of the building as a list of edges. Then, at each step, I would select an edge and grow a new room from it. And, I randomly generated the sizes of rooms. It was a terrible idea, it creates a lot of holes in the building shapes.</p>
 
-<p>There are several ways to avoid this behavior. One is to constrain the split to be between two ratios of the side length for instance between 30% and 70% or 40% and 60%. Another method is to use a normal or a binomial distribution instead of a uniform distribution, it is then more likely to split near the center of the side than its extremities. These methods fix the issue but it is hard to understand exactly how the parameters modify the final result.</p>
+<p><img src="/media/img/vagabond-building-generation/floor_plans_edges.gif" alt="" width="400" class="center-image modal-image" /></p>
 
-<p>So I use another method that has the advantage of having only one parameter which is easily understandable: the maximum allowed ratio between the length and the width of cells. When I sample a new split, I firstly compute the minimum value and the maximum value it can take so that the two new cells have their ratio below the limit then I sample uniformly between the two bounds. Here is the result when I vary the maximum allowed ratio:</p>
+<p>My second attempt to prevent the strange holes from appearing was to use a grid to place the rooms. A room would occupy exactly one cell and the frontier is now the set of cells that are neighbors to the already selected cells. Again, at each step, we select a cell in the frontier and add a room in this cell. But to have more variety, I chose to have columns with variable widths and rows with variable heights. It was a terrible idea, again. The issue, this time, is that all the rooms in the same column have the same width, and all the rooms in the same row have the same height, it was a bit weird. Moreover, the topology of the building was too simple for my liking.</p>
 
-<p><img src="/media/img/vagabond-dungeon-cave-generation/bsp_varying_ratio.gif" alt="" width="400" class="center-image modal-image" /></p>
+<p><img src="/media/img/vagabond-building-generation/floor_plans_variable.gif" alt="" width="400" class="center-image modal-image" /></p>
 
-<p>A maximum ratio between 2.0 and 3.0 gives good results:</p>
+<p>In my third attempt, I decided to fix the size of columns and rows, but the rooms can now occupy several cells which will allow more complex topologies. I think this is a good trade-off: we lose a bit of variety on the room shapes but having predictable room sizes will ease the next steps. Moreover, I find this solution particularly clean and simple to implement. I am still wondering why this was not the first thing I tried.</p>
 
-<p><img src="/media/img/vagabond-dungeon-cave-generation/bsp.gif" alt="" width="400" class="center-image modal-image" /></p>
+<p><img src="/media/img/vagabond-building-generation/floor_plans.gif" alt="" width="400" class="center-image modal-image" /></p>
 
-<h1 id="room-generation">Room generation</h1>
+<p>I want to give a bit more insight into how a cell is chosen from the frontier. If you select a random cell, there may be a collision problem (if the room takes several cells) and after several steps, you may have something very weird. To prevent that, all the cells in the frontier are tried, we check for collisions and a score is attributed to the configuration. Then, I randomly pick a cell among the cells that have the highest scores.</p>
 
-<p>The next step is to generate a room inside each cell. There is no special issue here, I just set some constraints so that the rooms are not too small nor too close to the walls of the cells.</p>
+<p>One question remains: how to determine the score? Well, in the beginning, I tried to quantify the beauty of a floor plan, and it was hard to find good criteria. Then, I changed my way of thinking instead of trying to select the most beautiful floor plans, I penalize ugly and weird floor plans. And, it reveals to be way simpler to craft a score function that penalizes weird floor plans than one that finds the beautiful ones. I mainly penalize two things: extreme ratios, I don’t want too flattened buildings and holes. Just with these two criteria, most weird building shapes are ruled out and the ones that are kept are at least correct.</p>
 
-<p>Here are the results:</p>
+<h1 id="interior-generation">Interior Generation</h1>
 
-<p><img src="/media/img/vagabond-dungeon-cave-generation/rooms.gif" alt="" width="400" class="center-image modal-image" /></p>
+<p>Now, that we have floor plans, we can generate floors and walls. As the generator is for a 2D game, I have to take care of the projection and let enough place between rooms to be able to put the walls.</p>
 
-<h1 id="edge-selection">Edge selection</h1>
+<p>I can assign different tiles for the floor and walls of the rooms. But for now, they are uniform for the whole building.</p>
 
-<p>Commonly in dungeon generators based on binary space partitioning, the binary tree used during space partitioning is used again for corridor generation. I did not do that because, in my opinion, it is quite limited.</p>
+<p><img src="/media/img/vagabond-building-generation/interiors.gif" alt="" width="400" class="center-image modal-image" /></p>
 
-<p>Instead, during space partitioning, I maintain a <a href="https://en.wikipedia.org/wiki/Doubly_connected_edge_list">half-edge data structure</a> which allows to know which cells are next to each other. Thus, I have graphs like that:</p>
+<h1 id="exterior-generation">Exterior Generation</h1>
 
-<p><img src="/media/img/vagabond-dungeon-cave-generation/graphs.gif" alt="" width="400" class="center-image modal-image" /></p>
+<p>Oddly, this was the first thing, I implemented. Even before I finished floor plan generation. Surely because I thought it was one of the easiest steps. In fact, there are some subtleties so that everything works well with 2D tiles.</p>
 
-<p>There are three advantages with this approach. The first one is that if later I want to change the method used for space partitioning, the rest of the generator is still valid as it only takes a half-edge data structure as input. The second one is that I can now use any <a href="https://en.wikipedia.org/wiki/Maze_generation_algorithm">maze generation algorithm</a> to select the edges that will become corridors. The third one is that if I want to add cycles in the dungeon, I can easily do so.</p>
+<p>One preprocessing step that reveals useful is to merge rooms to have larger rectangle parts. To achieve that, I used a <a href="https://0fps.net/2012/06/30/meshing-in-a-minecraft-game/">greedy meshing</a> algorithm.</p>
 
-<p>For now, I simply use Kruskal algorithm with Manhattan distance to select the edges. Here are the results:</p>
+<p><img src="/media/img/vagabond-building-generation/building_parts.gif" alt="" width="400" class="center-image modal-image" /></p>
 
-<p><img src="/media/img/vagabond-dungeon-cave-generation/selected_edges.gif" alt="" width="400" class="center-image modal-image" /></p>
+<h2 id="wall-generation">Wall Generation</h2>
 
-<h1 id="corridor-generation">Corridor generation</h1>
+<p>Nothing really difficult there. I just draw the bottom walls of building parts.</p>
 
-<p>The next step is the generation of corridors from the selected edges. This is maybe the trickiest part of the generator as we need to be careful that no corridor crosses another one.</p>
+<p><img src="/media/img/vagabond-building-generation/walls.gif" alt="" width="400" class="center-image modal-image" /></p>
 
-<p>Here are the results:</p>
+<h2 id="roof-generation">Roof Generation</h2>
 
-<p><img src="/media/img/vagabond-dungeon-cave-generation/corridors.gif" alt="" width="400" class="center-image modal-image" /></p>
+<p>Roofs are more challenging. I studied the different types of roofs a bit. For now, two of the simplest types, flat roofs and mansard roofs, are supported.</p>
 
-<h1 id="cave-generation">Cave generation</h1>
+<p><img src="/media/img/vagabond-building-generation/roofs.gif" alt="" width="400" class="center-image modal-image" /></p>
 
-<p>The previous results are fine for dungeons, crypts or other man-made structures but I would like a more organic aspect for caves or mines. The classic method to generate caves is to use a cellular automaton as described in <a href="http://www.roguebasin.com/index.php?title=Cellular_Automata_Method_for_Generating_Random_Cave-Like_Levels">this article</a> on RogueBasin. The big issue with cellular automata is that the results are not really controllable.</p>
+<p>I also have an experimental implementation of hip roof generation. Hip roofs are more complex because the tiling depends on the width and you must have a special case for the transition between two building parts. I will finish that later.</p>
 
-<p>My idea is to still use cellular automata to obtain an organic look but I set constraints to have a controllable result. Instead of using only two states: dead or alive, I use four: definitively dead, dead, alive, definitively alive. The “definitively” states cannot change from one step to another, they serve to constrain the result.</p>
+<p><img src="/media/img/vagabond-building-generation/hip_roof.png" alt="" width="400" class="center-image modal-image" /></p>
 
-<p>The rooms and the corridors we have generated in the previous steps are filled with definitively alive cells. Thus, we are still have a notion rooms and we are sure that they are connected to each other. The edges that were not selected are filled with definitively dead cells to make sure that no new path from one room to another appears. Finally around the rooms and the corridors we randomly set some cells to alive. Here is the initial configuration:</p>
+<h1 id="room-generation">Room Generation</h1>
 
-<p><img src="/media/img/vagabond-dungeon-cave-generation/cave_initial_configuration.png" alt="" width="400" class="center-image modal-image" /></p>
+<p>Placing objects in the rooms is by far the most interesting part of this generator.</p>
 
-<p>Then we run the cellular automaton to obtain the desired organic look:</p>
+<p>The first step is to define object groups, it may be one object alone or objects that should always be placed together, for instance, a table with chairs. For each object group, I will also associate a collision box and a margin box. The collision box corresponds to the tiles used by the object group while the margin box corresponds to the tiles that must be free around the group to be able to interact with the objects in the game.</p>
 
-<p><img src="/media/img/vagabond-dungeon-cave-generation/cellular_automaton.gif" alt="" width="400" class="center-image modal-image" /></p>
+<p>Here you can visualize the collision box and the margin box for some objects:</p>
 
-<p>Here are some more results:</p>
+<p><img src="/media/img/vagabond-building-generation/object_boxes.png" alt="" width="400" class="center-image modal-image" /></p>
 
-<p><img src="/media/img/vagabond-dungeon-cave-generation/caves.gif" alt="" width="400" class="center-image modal-image" /></p>
+<p>Then, for each room definition, I make a difference between objects that must be placed in the room, otherwise, the room is invalid. For example, there must be a bed in a bedroom, if we fail to place one there, then the generator fails. And objects that are optional such as decorations.</p>
 
-<p>One thing that I will surely implement later is a flood fill to remove unreachable parts.</p>
+<p>Besides, for each object group in the room, constraints can be assigned to it. Some constraints I implemented are: distance to a wall, in a corner of the room or horizontally centered in the room.</p>
+
+<p>To place, necessary objects, I use a <a href="https://en.wikipedia.org/wiki/Constraint_satisfaction_problem">CSP</a> solver I have designed especially for this problem. In particular, it can check very quickly for collisions between objects and that the room is connected, that is, we can access to all objects and doors in the room. My CSP solver uses a simple <a href="https://en.wikipedia.org/wiki/Backtracking">backtracking</a> algorithm.</p>
+
+<p>One important thing, for procedural generation, is to keep the solver “non-deterministic” i.e. it does not always return the same solution. Otherwise, it would be boring. To achieve that, I simply shuffle the domains, the sets of positions tried for each object group.</p>
+
+<p>On the contrary, for optional objects, I do not use the CSP solver. This allows keeping the problems relatively easy for the solver and thus to solve them very quickly. For each optional object, I just pick randomly one of its valid position and if there are none, it is not placed and I try the next object.</p>
+
+<p>Here are some living rooms generated with the same set of parameters:</p>
+
+<p><img src="/media/img/vagabond-building-generation/living_rooms.gif" alt="" width="400" class="center-image modal-image" /></p>
+
+<p>And some buildings with objects:</p>
+
+<p><img src="/media/img/vagabond-building-generation/objects.gif" alt="" width="400" class="center-image modal-image" /></p>
+
+<p>For now, there are only three different types of rooms: a bedroom, a kitchen and a living room. I will design more later.</p>
 
 <h1 id="conclusion">Conclusion</h1>
 
-<p>This is the first leg of the long journey of building an interesting dungeon generator. I am happy with the results so far. I am especially proud of the constrained cellular automaton method to have controllable and organic caves. I also like the fact that each step of the generation is separated from the others and can be modified independently.</p>
+<p>Let us look at some buildings generated by the generator to conclude this blog post:</p>
 
-<p>The next step is to <a href="/2019/06/30/vagabond-dungeon-cave-generation-part2.html">generate tiles</a> from the output of this generator to have much more appealing dungeons.</p>
+<p><img src="/media/img/vagabond-building-generation/buildings.gif" alt="" class="center-image modal-image" /></p>
 
-<p>See you next week for more!</p>
+<p>The whole process is quite fast, under 1ms for a whole building, it will allow me to generate hundreds to thousands of buildings during world generation!</p>
+
+<p>Most of the ideas described here are very simple, but as we say, the devil is in the detail, and there were a lot of details there!</p>
+
+<p>Now, that we have buildings, the next step is obviously to generate cities. It is one of the last steps before the release of the alpha version. I am so excited to eventually share my work with people! :)</p>
+
+<p>All the assets used in this post were made by <a href="https://opengameart.org/">OpenGameArt</a> artists, you can find them <a href="https://opengameart.org/content/vagabonds-assets">there</a>.</p>
+
+<p>See you next time for more!</p>
 
     <p><em>If you are interested in my adventures during the development of Vagabond, you can follow me on <a href="https://twitter.com/PierreVigier">Twitter</a>.</em></p>
     

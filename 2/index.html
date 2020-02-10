@@ -40,6 +40,37 @@
             <div class="col-sm-8 blog-main">
 
     <div class="blog-post">
+        <h2 class="blog-post-title"><a href="/2019/09/08/beginner-guide-game-networking.html">Beginner's Guide to Game Networking</a></h2>
+        <p class="blog-post-meta">08 Sep 2019 by <a href="/">pierre</a></p>
+        <p>During the last two weeks, I was working on the network engine of my game. And before that, I knew nothing about game networking. Thus, I read a lot of articles and did a lot of experiments to understand all the concepts and be able to code my own network engine.</p>
+
+<p>In this guide, I want to share with you the different concepts you must learn before to write your own game engine and the best resources and articles to learn them.</p>
+
+<p>There are mainly two possible network architectures: peer-to-peer and client-server. In the peer-to-peer architecture, data is exchanged between any pair of connected players while in the client-server architecture, data is only exchanged between players and the server.</p>
+
+<p>While the peer-to-peer architecture is still used in some games, client-server is the standard as it is easier to implement, it requires less bandwidth and it is easier to prevent cheating. Thus, in this guide, we will focus on client-server architecture.</p>
+
+<p>More precisely, we will be interested in authoritative servers, it means that the server is always right. For instance, if a player thinks it is at coordinates (10, 5) but the server tells him that it is at (5, 3), then the client should update its position to the server’s one, and not the opposite. Using an authoritative server enables us to detect cheating more easily.</p>
+
+<p>There are mainly three components in game networking:</p>
+
+<ul>
+  <li>Transport protocol: how to transport the data between clients and the server?</li>
+  <li>Application protocol: what to send from clients to the server and from the server to clients and in which format?</li>
+  <li>Application logic: how to use the exchanged data to update clients and the server?</li>
+</ul>
+
+<p>It is really important to understand the role of each part and its challenges.</p>
+
+
+        <p><a href="/2019/09/08/beginner-guide-game-networking.html">Read more ...</a></p>
+        
+        <p>Tags: <span class="label label-primary"><a href="/tag/vagabond">vagabond</a></span> <span class="label label-primary"><a href="/tag/game-engine">game-engine</a></span> </p>
+        
+    </div>
+    <hr />
+
+    <div class="blog-post">
         <h2 class="blog-post-title"><a href="/2019/08/25/vagabond-choosing-gui-library.html">Vagabond &#8211; Choosing a GUI library</a></h2>
         <p class="blog-post-meta">25 Aug 2019 by <a href="/">pierre</a></p>
         <p>The goal of this week was to find a GUI library for the in-game interface. While making some custom widgets may seem easy, writing a general, production-ready, full-fledged GUI library is notoriously difficult. Thus there are few open-source and well-maintained GUI libraries that work with OpenGL or SFML.</p>
@@ -134,21 +165,6 @@
     </div>
     <hr />
 
-    <div class="blog-post">
-        <h2 class="blog-post-title"><a href="/2019/07/28/vagabond-2d-light-system.html">Vagabond &#8211; 2D Light System</a></h2>
-        <p class="blog-post-meta">28 Jul 2019 by <a href="/">pierre</a></p>
-        <p>This week, I have worked on a light system. It will allow me to simulate a day-night cycle and to create a nice atmosphere during night or inside dungeons and caves.</p>
-
-<p><img src="/media/img/vagabond-2d-light-system/banner.png" alt="" width="400" class="center-image modal-image" /></p>
-
-
-        <p><a href="/2019/07/28/vagabond-2d-light-system.html">Read more ...</a></p>
-        
-        <p>Tags: <span class="label label-primary"><a href="/tag/vagabond">vagabond</a></span> <span class="label label-primary"><a href="/tag/game-engine">game-engine</a></span> </p>
-        
-    </div>
-    <hr />
-
 <nav>
     <ul class="pager">
         
@@ -172,7 +188,7 @@
 		
 			<li><a href="/tag/cpp">cpp (8)</a></li>
 		
-			<li><a href="/tag/pcg">pcg (11)</a></li>
+			<li><a href="/tag/pcg">pcg (12)</a></li>
 		
 			<li><a href="/tag/simulopolis">simulopolis (5)</a></li>
 		
@@ -184,7 +200,7 @@
 		
 			<li><a href="/tag/git">git (1)</a></li>
 		
-			<li><a href="/tag/vagabond">vagabond (21)</a></li>
+			<li><a href="/tag/vagabond">vagabond (22)</a></li>
 		
 			<li><a href="/tag/ecs">ecs (2)</a></li>
 		
@@ -196,6 +212,14 @@
         <h4>Archives</h4>
         <ol class="list-unstyled">
 		
+        
+            
+            
+            
+            
+			<li id="yFebruary 2020"><a href="/2020/02">February 2020 (1)</a></li>
+				
+            
         
             
             

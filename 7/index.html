@@ -40,6 +40,59 @@
             <div class="col-sm-8 blog-main">
 
     <div class="blog-post">
+        <h2 class="blog-post-title"><a href="/2018/06/13/perlin-noise-numpy.html">Perlin noise with numpy</a></h2>
+        <p class="blog-post-meta">13 Jun 2018 by <a href="/">pierre</a></p>
+        <p>Hi everyone, I have written an implementation of Perlin noise with numpy that is pretty fast, and I want to share it with you. The code is available <a href="https://github.com/pvigier/perlin-numpy">here</a>.</p>
+
+<h1 id="perlin-noise">Perlin noise</h1>
+
+<p>My code looks like the original implementation. The only difference is that I tried to use the vectorized operations of numpy as much as possible instead of <code class="highlighter-rouge">for</code> loops. Because as you may know, loops are really slow in Python.</p>
+
+<p>Here is the code:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">generate_perlin_noise_2d</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">res</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+        <span class="k">return</span> <span class="mi">6</span><span class="o">*</span><span class="n">t</span><span class="o">**</span><span class="mi">5</span> <span class="o">-</span> <span class="mi">15</span><span class="o">*</span><span class="n">t</span><span class="o">**</span><span class="mi">4</span> <span class="o">+</span> <span class="mi">10</span><span class="o">*</span><span class="n">t</span><span class="o">**</span><span class="mi">3</span>
+    
+    <span class="n">delta</span> <span class="o">=</span> <span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">res</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="p">(</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">//</span> <span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">//</span> <span class="n">res</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mgrid</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span><span class="n">delta</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="mi">0</span><span class="p">:</span><span class="n">res</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span><span class="n">delta</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">%</span> <span class="mi">1</span>
+    <span class="c"># Gradients</span>
+    <span class="n">angles</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">res</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">gradients</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dstack</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">angles</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">angles</span><span class="p">)))</span>
+    <span class="n">g00</span> <span class="o">=</span> <span class="n">gradients</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">g10</span> <span class="o">=</span> <span class="n">gradients</span><span class="p">[</span><span class="mi">1</span><span class="p">:,</span><span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">g01</span> <span class="o">=</span> <span class="n">gradients</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">g11</span> <span class="o">=</span> <span class="n">gradients</span><span class="p">[</span><span class="mi">1</span><span class="p">:,</span><span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="c"># Ramps</span>
+    <span class="n">n00</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="nb">sum</span><span class="p">(</span><span class="n">grid</span> <span class="o">*</span> <span class="n">g00</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">n10</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="nb">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dstack</span><span class="p">((</span><span class="n">grid</span><span class="p">[:,:,</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">grid</span><span class="p">[:,:,</span><span class="mi">1</span><span class="p">]))</span> <span class="o">*</span> <span class="n">g10</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">n01</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="nb">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dstack</span><span class="p">((</span><span class="n">grid</span><span class="p">[:,:,</span><span class="mi">0</span><span class="p">],</span> <span class="n">grid</span><span class="p">[:,:,</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span> <span class="o">*</span> <span class="n">g01</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">n11</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="nb">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dstack</span><span class="p">((</span><span class="n">grid</span><span class="p">[:,:,</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">grid</span><span class="p">[:,:,</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span> <span class="o">*</span> <span class="n">g11</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="c"># Interpolation</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">grid</span><span class="p">)</span>
+    <span class="n">n0</span> <span class="o">=</span> <span class="n">n00</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">t</span><span class="p">[:,:,</span><span class="mi">0</span><span class="p">])</span> <span class="o">+</span> <span class="n">t</span><span class="p">[:,:,</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">n10</span>
+    <span class="n">n1</span> <span class="o">=</span> <span class="n">n01</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">t</span><span class="p">[:,:,</span><span class="mi">0</span><span class="p">])</span> <span class="o">+</span> <span class="n">t</span><span class="p">[:,:,</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">n11</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">*</span><span class="p">((</span><span class="mi">1</span><span class="o">-</span><span class="n">t</span><span class="p">[:,:,</span><span class="mi">1</span><span class="p">])</span><span class="o">*</span><span class="n">n0</span> <span class="o">+</span> <span class="n">t</span><span class="p">[:,:,</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">n1</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>If you are familiar with Perlin noise, nothing should surprise you. Otherwise, I can suggest you to read the first pages of this <a href="http://staffwww.itn.liu.se/~stegu/simplexnoise/simplexnoise.pdf">article</a> which explains Perlin noise very well in my opinion.</p>
+
+<p>An example of what the function generates:</p>
+
+<p><img src="/media/img/perlin2d/perlin2d.png" alt="Perlin noise" class="center-image modal-image" /></p>
+
+<p>I normalized the gradients so that the noise is always between -1 and 1.</p>
+
+
+        <p><a href="/2018/06/13/perlin-noise-numpy.html">Read more ...</a></p>
+        
+        <p>Tags: <span class="label label-primary"><a href="/tag/pcg">pcg</a></span> <span class="label label-primary"><a href="/tag/python">python</a></span> </p>
+        
+    </div>
+    <hr />
+
+    <div class="blog-post">
         <h2 class="blog-post-title"><a href="/2018/05/14/fractal-image-compression.html">Fractal Image Compression</a></h2>
         <p class="blog-post-meta">14 May 2018 by <a href="/">pierre</a></p>
         <p>One year ago, I coded a very simple implementation of fractal image compression for a course and I made the code available on github <a href="https://github.com/pvigier/fractal-image-compression">there</a>.</p>
@@ -160,41 +213,6 @@
     </div>
     <hr />
 
-    <div class="blog-post">
-        <h2 class="blog-post-title"><a href="/2017/07/21/pychain-part1-computational-graphs.html">Pychain Part 1 - Computational graphs</a></h2>
-        <p class="blog-post-meta">21 Jul 2017 by <a href="/">pierre</a></p>
-        <p>Welcome in this big tutorial on neural networks!</p>
-
-<p>Our goal is to write our own deep learning framework like TensorFlow or Torch. We are going to learn in-depth how neural networks work, all the mechanics behind them.</p>
-
-<p>We will get our hands dirty and code everything! In this tutorial, we will use Python3 and scipy but I hope that the code and the ideas are clear enough so that you can adapt the code to your favorite language.</p>
-
-<p>First, I show you the plan. In this part, we are going to quickly introduce neural networks and then, we will introduce computational graphs in order to model them. In the end of this part, we are going to use our implementation to learn some non-linear functions.</p>
-
-<p>In the second part, we will deal with a more serious problem. We are going to build an optical character recognition system upon the <a href="http://yann.lecun.com/exdb/mnist/">MNIST database</a>. It is a classical problem in machine learning, we have to do it.</p>
-
-<p>Then, we will tackle recurrent neural networks and show how to model them with our library. To apply our new knowledge, we will try to learn a formal grammar generated by an automaton.</p>
-
-<p>In part 4, we will go further with recurrent neural networks and introduce the well-known LSTM cell. We will briefly compare it with fully-connected recurrent neural networks.</p>
-
-<p>To approach part 6, some more efficient optimization algorithms are necessary. Consequently, we will discuss them in part 5.</p>
-
-<p>Have you ever read <a href="http://karpathy.github.io/2015/05/21/rnn-effectiveness/">this fabulous article</a> by Andrej Karpathy? Yes? Cool, because, we are going to reproduce his results with our own library in part 6. Amazing, isn’t it?</p>
-
-<p>Finally, parts 7 and 8 are going to be theoretical appendices for the most curious readers.</p>
-
-<p>Is it all? Maybe not! Stay tuned!</p>
-
-<p>If you are ready, let’s go!</p>
-
-
-        <p><a href="/2017/07/21/pychain-part1-computational-graphs.html">Read more ...</a></p>
-        
-        <p>Tags: <span class="label label-primary"><a href="/tag/math">math</a></span> <span class="label label-primary"><a href="/tag/python">python</a></span> </p>
-        
-    </div>
-    <hr />
-
 <nav>
     <ul class="pager">
         
@@ -218,7 +236,7 @@
 		
 			<li><a href="/tag/cpp">cpp (8)</a></li>
 		
-			<li><a href="/tag/pcg">pcg (11)</a></li>
+			<li><a href="/tag/pcg">pcg (12)</a></li>
 		
 			<li><a href="/tag/simulopolis">simulopolis (5)</a></li>
 		
@@ -230,7 +248,7 @@
 		
 			<li><a href="/tag/git">git (1)</a></li>
 		
-			<li><a href="/tag/vagabond">vagabond (21)</a></li>
+			<li><a href="/tag/vagabond">vagabond (22)</a></li>
 		
 			<li><a href="/tag/ecs">ecs (2)</a></li>
 		
@@ -242,6 +260,14 @@
         <h4>Archives</h4>
         <ol class="list-unstyled">
 		
+        
+            
+            
+            
+            
+			<li id="yFebruary 2020"><a href="/2020/02">February 2020 (1)</a></li>
+				
+            
         
             
             
