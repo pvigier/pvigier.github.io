@@ -4,14 +4,11 @@
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="description" content="">
-        <meta name="author" content="Pierre Vigier">
 
-        <title>Terrain generation in Simulopolis - pvigier's blog</title>
         <link rel="shortcut icon" href="/media/img/favicon.png">
         <!-- SEO -->
         <!-- Begin Jekyll SEO tag v2.6.1 -->
-<title>Terrain generation in Simulopolis | Pierre Vigier</title>
+<title>Terrain generation in Simulopolis | pvigier’s blog</title>
 <meta name="generator" content="Jekyll v3.8.4" />
 <meta property="og:title" content="Terrain generation in Simulopolis" />
 <meta name="author" content="pierre" />
@@ -20,11 +17,11 @@
 <meta property="og:description" content="Hi! Today I will describe the generator of terrains I made for Simulopolis. Here are some screenshots of terrains from the game. In this article, I will not describe the C++ code used in the game as it is verbose and unnecessarily complicated. Instead, I will use the Python code I used to design the generator. Indeed, I found much more pleasant to use Python for prototyping as it is really fast to write something which works, there are good libraries and we do not have to wait for compilation every time we make a change. It is especially true for procedural content generation where we have to iterate a lot before obtaining something decent. The code I will present is the exact translation in Python of what is currently implemented in the game. It is based on the implementation of Perlin noise I described previously in this article. As usual, you can find the whole project on github." />
 <link rel="canonical" href="https://pvigier.github.io/2018/10/08/terrain-generation-simulopolis.html" />
 <meta property="og:url" content="https://pvigier.github.io/2018/10/08/terrain-generation-simulopolis.html" />
-<meta property="og:site_name" content="Pierre Vigier" />
+<meta property="og:site_name" content="pvigier’s blog" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2018-10-08T00:00:00+02:00" />
 <script type="application/ld+json">
-{"mainEntityOfPage":{"@type":"WebPage","@id":"https://pvigier.github.io/2018/10/08/terrain-generation-simulopolis.html"},"@type":"BlogPosting","url":"https://pvigier.github.io/2018/10/08/terrain-generation-simulopolis.html","headline":"Terrain generation in Simulopolis","dateModified":"2018-10-08T00:00:00+02:00","datePublished":"2018-10-08T00:00:00+02:00","author":{"@type":"Person","name":"pierre"},"description":"Hi! Today I will describe the generator of terrains I made for Simulopolis. Here are some screenshots of terrains from the game. In this article, I will not describe the C++ code used in the game as it is verbose and unnecessarily complicated. Instead, I will use the Python code I used to design the generator. Indeed, I found much more pleasant to use Python for prototyping as it is really fast to write something which works, there are good libraries and we do not have to wait for compilation every time we make a change. It is especially true for procedural content generation where we have to iterate a lot before obtaining something decent. The code I will present is the exact translation in Python of what is currently implemented in the game. It is based on the implementation of Perlin noise I described previously in this article. As usual, you can find the whole project on github.","@context":"https://schema.org"}</script>
+{"dateModified":"2018-10-08T00:00:00+02:00","datePublished":"2018-10-08T00:00:00+02:00","@type":"BlogPosting","headline":"Terrain generation in Simulopolis","mainEntityOfPage":{"@type":"WebPage","@id":"https://pvigier.github.io/2018/10/08/terrain-generation-simulopolis.html"},"url":"https://pvigier.github.io/2018/10/08/terrain-generation-simulopolis.html","author":{"@type":"Person","name":"pierre"},"description":"Hi! Today I will describe the generator of terrains I made for Simulopolis. Here are some screenshots of terrains from the game. In this article, I will not describe the C++ code used in the game as it is verbose and unnecessarily complicated. Instead, I will use the Python code I used to design the generator. Indeed, I found much more pleasant to use Python for prototyping as it is really fast to write something which works, there are good libraries and we do not have to wait for compilation every time we make a change. It is especially true for procedural content generation where we have to iterate a lot before obtaining something decent. The code I will present is the exact translation in Python of what is currently implemented in the game. It is based on the implementation of Perlin noise I described previously in this article. As usual, you can find the whole project on github.","@context":"https://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 
         <!-- Bootstrap -->
@@ -58,8 +55,8 @@
                 <p class="lead blog-description">computer science, programming and other ideas</p>
             </div>
             <div class="row">
-            <div class="col-sm-8 blog-main">
-<div class="blog-post">
+                <div class="col-sm-8 blog-main">
+                <div class="blog-post">
     <h2 class="blog-post-title">Terrain generation in Simulopolis</h2>
     <p class="blog-post-meta">08 Oct 2018 by <a href="/">pierre</a></p>
     <p>Hi!</p>
@@ -218,8 +215,8 @@ s.setAttribute('data-timestamp', +new Date());
 })();
 </script>
 <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-</div><!-- /.blog-main -->
-<div class="col-sm-3 col-sm-offset-1 blog-sidebar">
+                </div>
+                <div class="col-sm-3 col-sm-offset-1 blog-sidebar">
 	<div class="sidebar-module">
         <h4>Tags</h4>
         <ol class="list-unstyled">

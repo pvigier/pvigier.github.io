@@ -4,14 +4,11 @@
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="description" content="">
-        <meta name="author" content="Pierre Vigier">
 
-        <title>Vagabond &#8211; Audio Engine - pvigier's blog</title>
         <link rel="shortcut icon" href="/media/img/favicon.png">
         <!-- SEO -->
         <!-- Begin Jekyll SEO tag v2.6.1 -->
-<title>Vagabond – Audio Engine | Pierre Vigier</title>
+<title>Vagabond – Audio Engine | pvigier’s blog</title>
 <meta name="generator" content="Jekyll v3.8.4" />
 <meta property="og:title" content="Vagabond – Audio Engine" />
 <meta name="author" content="pierre" />
@@ -20,11 +17,11 @@
 <meta property="og:description" content="After the graphics engine and the physics engine, this week, I have worked on the audio engine. To play sounds and music I use the audio part of SFML which is really good. It is a thin wrapper around OpenAL. It supports WAV, OGG/Vorbis and FLAC. Moreover, it also supports spatialization and it is really easy to use. There are only two things for which an audio engine is needed. The first one is to make sure that the total number of sounds and music never exceeds 256 (which is an internal limit according to SFML documentation). To do that, the audio engine refuses to play a new sound or music if the limit has already been reached. And as soon as a sound or a music finishes, it removes its instance to be able to play a new one. The second thing is being able to pause all sounds and music, play other sounds and music and then be able to resume all the sounds and music that have been paused. This use case happens when you are in-game and some sounds or music are playing. Then you go to the pause menu, all the game simulation is paused, so the sounds and music should be paused too. Some sounds are played by the user interface in the pause menu. Finally, when the player returns to the game, the simulation resumes and all the sounds and music should be resumed too. To achieve that, I will use two abstractions, one for each of the two issues, respectively the audio engine and the audio scene. Let us dive into the details of these abstractions." />
 <link rel="canonical" href="https://pvigier.github.io/2019/08/18/vagabond-audio-engine.html" />
 <meta property="og:url" content="https://pvigier.github.io/2019/08/18/vagabond-audio-engine.html" />
-<meta property="og:site_name" content="Pierre Vigier" />
+<meta property="og:site_name" content="pvigier’s blog" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2019-08-18T00:00:00+02:00" />
 <script type="application/ld+json">
-{"mainEntityOfPage":{"@type":"WebPage","@id":"https://pvigier.github.io/2019/08/18/vagabond-audio-engine.html"},"@type":"BlogPosting","url":"https://pvigier.github.io/2019/08/18/vagabond-audio-engine.html","headline":"Vagabond – Audio Engine","dateModified":"2019-08-18T00:00:00+02:00","datePublished":"2019-08-18T00:00:00+02:00","author":{"@type":"Person","name":"pierre"},"description":"After the graphics engine and the physics engine, this week, I have worked on the audio engine. To play sounds and music I use the audio part of SFML which is really good. It is a thin wrapper around OpenAL. It supports WAV, OGG/Vorbis and FLAC. Moreover, it also supports spatialization and it is really easy to use. There are only two things for which an audio engine is needed. The first one is to make sure that the total number of sounds and music never exceeds 256 (which is an internal limit according to SFML documentation). To do that, the audio engine refuses to play a new sound or music if the limit has already been reached. And as soon as a sound or a music finishes, it removes its instance to be able to play a new one. The second thing is being able to pause all sounds and music, play other sounds and music and then be able to resume all the sounds and music that have been paused. This use case happens when you are in-game and some sounds or music are playing. Then you go to the pause menu, all the game simulation is paused, so the sounds and music should be paused too. Some sounds are played by the user interface in the pause menu. Finally, when the player returns to the game, the simulation resumes and all the sounds and music should be resumed too. To achieve that, I will use two abstractions, one for each of the two issues, respectively the audio engine and the audio scene. Let us dive into the details of these abstractions.","@context":"https://schema.org"}</script>
+{"dateModified":"2019-08-18T00:00:00+02:00","datePublished":"2019-08-18T00:00:00+02:00","@type":"BlogPosting","headline":"Vagabond – Audio Engine","mainEntityOfPage":{"@type":"WebPage","@id":"https://pvigier.github.io/2019/08/18/vagabond-audio-engine.html"},"url":"https://pvigier.github.io/2019/08/18/vagabond-audio-engine.html","author":{"@type":"Person","name":"pierre"},"description":"After the graphics engine and the physics engine, this week, I have worked on the audio engine. To play sounds and music I use the audio part of SFML which is really good. It is a thin wrapper around OpenAL. It supports WAV, OGG/Vorbis and FLAC. Moreover, it also supports spatialization and it is really easy to use. There are only two things for which an audio engine is needed. The first one is to make sure that the total number of sounds and music never exceeds 256 (which is an internal limit according to SFML documentation). To do that, the audio engine refuses to play a new sound or music if the limit has already been reached. And as soon as a sound or a music finishes, it removes its instance to be able to play a new one. The second thing is being able to pause all sounds and music, play other sounds and music and then be able to resume all the sounds and music that have been paused. This use case happens when you are in-game and some sounds or music are playing. Then you go to the pause menu, all the game simulation is paused, so the sounds and music should be paused too. Some sounds are played by the user interface in the pause menu. Finally, when the player returns to the game, the simulation resumes and all the sounds and music should be resumed too. To achieve that, I will use two abstractions, one for each of the two issues, respectively the audio engine and the audio scene. Let us dive into the details of these abstractions.","@context":"https://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 
         <!-- Bootstrap -->
@@ -58,8 +55,8 @@
                 <p class="lead blog-description">computer science, programming and other ideas</p>
             </div>
             <div class="row">
-            <div class="col-sm-8 blog-main">
-<div class="blog-post">
+                <div class="col-sm-8 blog-main">
+                <div class="blog-post">
     <h2 class="blog-post-title">Vagabond &#8211; Audio Engine</h2>
     <p class="blog-post-meta">18 Aug 2019 by <a href="/">pierre</a></p>
     <p>After the <a href="/2019/07/28/vagabond-2d-light-system.html">graphics engine</a> and the <a href="/2019/08/11/vagabond-2d-physics-engine.html">physics engine</a>, this week, I have worked on the audio engine.</p>
@@ -167,8 +164,8 @@ s.setAttribute('data-timestamp', +new Date());
 })();
 </script>
 <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-</div><!-- /.blog-main -->
-<div class="col-sm-3 col-sm-offset-1 blog-sidebar">
+                </div>
+                <div class="col-sm-3 col-sm-offset-1 blog-sidebar">
 	<div class="sidebar-module">
         <h4>Tags</h4>
         <ol class="list-unstyled">
