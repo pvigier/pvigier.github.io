@@ -7,9 +7,9 @@
 
         <link rel="shortcut icon" href="/media/img/favicon.png">
         <!-- SEO -->
-        <!-- Begin Jekyll SEO tag v2.6.1 -->
+        <!-- Begin Jekyll SEO tag v2.7.1 -->
 <title>Vagabond – Borders, Rivers, Cities and Roads | pvigier’s blog</title>
-<meta name="generator" content="Jekyll v3.8.4" />
+<meta name="generator" content="Jekyll v4.1.1" />
 <meta property="og:title" content="Vagabond – Borders, Rivers, Cities and Roads" />
 <meta name="author" content="pierre" />
 <meta property="og:locale" content="en_US" />
@@ -20,8 +20,10 @@
 <meta property="og:site_name" content="pvigier’s blog" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2019-05-19T00:00:00+02:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Vagabond – Borders, Rivers, Cities and Roads" />
 <script type="application/ld+json">
-{"dateModified":"2019-05-19T00:00:00+02:00","datePublished":"2019-05-19T00:00:00+02:00","@type":"BlogPosting","headline":"Vagabond – Borders, Rivers, Cities and Roads","mainEntityOfPage":{"@type":"WebPage","@id":"https://pvigier.github.io/2019/05/19/vagabond-borders-rivers-cities-roads.html"},"url":"https://pvigier.github.io/2019/05/19/vagabond-borders-rivers-cities-roads.html","author":{"@type":"Person","name":"pierre"},"description":"In this week’s devlog, I take up the map generator where I left it last week. I explain how I improved cell borders and added rivers, cities and roads to the map generator.","@context":"https://schema.org"}</script>
+{"author":{"@type":"Person","name":"pierre"},"description":"In this week’s devlog, I take up the map generator where I left it last week. I explain how I improved cell borders and added rivers, cities and roads to the map generator.","@type":"BlogPosting","headline":"Vagabond – Borders, Rivers, Cities and Roads","dateModified":"2019-05-19T00:00:00+02:00","datePublished":"2019-05-19T00:00:00+02:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://pvigier.github.io/2019/05/19/vagabond-borders-rivers-cities-roads.html"},"url":"https://pvigier.github.io/2019/05/19/vagabond-borders-rivers-cities-roads.html","@context":"https://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 
         <!-- Bootstrap -->
@@ -43,6 +45,8 @@
         <a class="blog-nav-item" href="/articles/">Articles</a>
     
         <a class="blog-nav-item" href="/projects/">Projects</a>
+    
+        <a class="blog-nav-item" href="https://www.vagabondgame.com/">Vagabond</a>
     
         <a class="blog-nav-item" href="/about/">About</a>
     
@@ -178,11 +182,11 @@
 
 <p>The idea is pretty simple, we will compute the shortest path between each pair of cities and add roads to link them. To compute the shortest paths, I use <a href="https://en.wikipedia.org/wiki/A*_search_algorithm">A* algorithm</a>.</p>
 
-<p>The problem is that in doing that, we will obtain a very dense network with a large amount of redundancy. To avoid that, when I compute the path between a new pair of cities I give a discount if it uses a road that already exists. For instance, creating a new road segment costs <script type="math/tex">d</script> where <script type="math/tex">d</script> is its distance while using an existing road segment costs only <script type="math/tex">\gamma \times d</script> where <script type="math/tex">\gamma</script> is the discount factor ranging between 0 and 1. Here is an animation that shows how the road network changes depending on the value of the discount factor:</p>
+<p>The problem is that in doing that, we will obtain a very dense network with a large amount of redundancy. To avoid that, when I compute the path between a new pair of cities I give a discount if it uses a road that already exists. For instance, creating a new road segment costs \(d\) where \(d\) is its distance while using an existing road segment costs only \(\gamma \times d\) where \(\gamma\) is the discount factor ranging between 0 and 1. Here is an animation that shows how the road network changes depending on the value of the discount factor:</p>
 
 <p><img src="/media/img/vagabond-borders-rivers-cities-roads/gifs/roads_discount.gif" alt="" width="400" class="center-image modal-image" /></p>
 
-<p>When <script type="math/tex">\gamma</script> is low, it is really advantageous to reuse an already built road segment so the road network is sparse. On the contrary, when <script type="math/tex">\gamma</script> is high, there is no big difference between reusing a road segment or constructing a new one so the network is dense.</p>
+<p>When \(\gamma\) is low, it is really advantageous to reuse an already built road segment so the road network is sparse. On the contrary, when \(\gamma\) is high, there is no big difference between reusing a road segment or constructing a new one so the network is dense.</p>
 
 <p>Another issue is the order in which we process the pair of cities. Indeed, if we first compute the shortest paths between a city and all the others, we will have a network centered on this city like a star network:</p>
 
@@ -267,6 +271,7 @@ s.setAttribute('data-timestamp', +new Date());
 <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
                 </div>
                 <div class="col-sm-3 col-sm-offset-1 blog-sidebar">
+    <p><strong><a href="https://vagabondgame.com">Get Vagabond</a></strong></p>
 	<div class="sidebar-module">
         <h4>Tags</h4>
         <ol class="list-unstyled">
@@ -289,7 +294,7 @@ s.setAttribute('data-timestamp', +new Date());
 		
 			<li><a href="/tag/git">git (1)</a></li>
 		
-			<li><a href="/tag/vagabond">vagabond (23)</a></li>
+			<li><a href="/tag/vagabond">vagabond (24)</a></li>
 		
 			<li><a href="/tag/ecs">ecs (2)</a></li>
 		
@@ -301,6 +306,14 @@ s.setAttribute('data-timestamp', +new Date());
         <h4>Archives</h4>
         <ol class="list-unstyled">
 		
+        
+            
+            
+            
+            
+			<li id="yDecember 2020"><a href="/2020/12">December 2020 (1)</a></li>
+				
+            
         
             
             

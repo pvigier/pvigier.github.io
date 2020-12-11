@@ -7,21 +7,23 @@
 
         <link rel="shortcut icon" href="/media/img/favicon.png">
         <!-- SEO -->
-        <!-- Begin Jekyll SEO tag v2.6.1 -->
+        <!-- Begin Jekyll SEO tag v2.7.1 -->
 <title>Fortune’s algorithm, the details | pvigier’s blog</title>
-<meta name="generator" content="Jekyll v3.8.4" />
+<meta name="generator" content="Jekyll v4.1.1" />
 <meta property="og:title" content="Fortune’s algorithm, the details" />
 <meta name="author" content="pierre" />
 <meta property="og:locale" content="en_US" />
-<meta name="description" content="The last few weeks, I worked on an implementation of the Fortune’s algorithm in C++. This algorithm takes a set of 2D points and construct the Voronoi diagram of these points. If you wonder what is a Voronoi diagram, it looks like this: For each input point, which is called a site, we want to find the set of points which are nearer to this site than to any other site. These sets of points form cells as you can see on the image above. What is remarkable about the Fortune’s algorithm is that it constructs such diagrams in time (which is optimal for an algorithm which uses comparisons) where is the number of sites. I am writing this article because I find it very hard to implement this algorithm. Until now, it is surely the hardest algorithm I have ever implemented. Thus, I want to share with you the issues I faced and how I solved them. The code is, as usual, available on github and you will find all the references I used at the bottom of this article." />
-<meta property="og:description" content="The last few weeks, I worked on an implementation of the Fortune’s algorithm in C++. This algorithm takes a set of 2D points and construct the Voronoi diagram of these points. If you wonder what is a Voronoi diagram, it looks like this: For each input point, which is called a site, we want to find the set of points which are nearer to this site than to any other site. These sets of points form cells as you can see on the image above. What is remarkable about the Fortune’s algorithm is that it constructs such diagrams in time (which is optimal for an algorithm which uses comparisons) where is the number of sites. I am writing this article because I find it very hard to implement this algorithm. Until now, it is surely the hardest algorithm I have ever implemented. Thus, I want to share with you the issues I faced and how I solved them. The code is, as usual, available on github and you will find all the references I used at the bottom of this article." />
+<meta name="description" content="The last few weeks, I worked on an implementation of the Fortune’s algorithm in C++. This algorithm takes a set of 2D points and construct the Voronoi diagram of these points. If you wonder what is a Voronoi diagram, it looks like this: For each input point, which is called a site, we want to find the set of points which are nearer to this site than to any other site. These sets of points form cells as you can see on the image above. What is remarkable about the Fortune’s algorithm is that it constructs such diagrams in \(O(n\log n)\) time (which is optimal for an algorithm which uses comparisons) where \(n\) is the number of sites. I am writing this article because I find it very hard to implement this algorithm. Until now, it is surely the hardest algorithm I have ever implemented. Thus, I want to share with you the issues I faced and how I solved them. The code is, as usual, available on github and you will find all the references I used at the bottom of this article." />
+<meta property="og:description" content="The last few weeks, I worked on an implementation of the Fortune’s algorithm in C++. This algorithm takes a set of 2D points and construct the Voronoi diagram of these points. If you wonder what is a Voronoi diagram, it looks like this: For each input point, which is called a site, we want to find the set of points which are nearer to this site than to any other site. These sets of points form cells as you can see on the image above. What is remarkable about the Fortune’s algorithm is that it constructs such diagrams in \(O(n\log n)\) time (which is optimal for an algorithm which uses comparisons) where \(n\) is the number of sites. I am writing this article because I find it very hard to implement this algorithm. Until now, it is surely the hardest algorithm I have ever implemented. Thus, I want to share with you the issues I faced and how I solved them. The code is, as usual, available on github and you will find all the references I used at the bottom of this article." />
 <link rel="canonical" href="https://pvigier.github.io/2018/11/18/fortune-algorithm-details.html" />
 <meta property="og:url" content="https://pvigier.github.io/2018/11/18/fortune-algorithm-details.html" />
 <meta property="og:site_name" content="pvigier’s blog" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2018-11-18T00:00:00+01:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Fortune’s algorithm, the details" />
 <script type="application/ld+json">
-{"dateModified":"2018-11-18T00:00:00+01:00","datePublished":"2018-11-18T00:00:00+01:00","@type":"BlogPosting","headline":"Fortune’s algorithm, the details","mainEntityOfPage":{"@type":"WebPage","@id":"https://pvigier.github.io/2018/11/18/fortune-algorithm-details.html"},"url":"https://pvigier.github.io/2018/11/18/fortune-algorithm-details.html","author":{"@type":"Person","name":"pierre"},"description":"The last few weeks, I worked on an implementation of the Fortune’s algorithm in C++. This algorithm takes a set of 2D points and construct the Voronoi diagram of these points. If you wonder what is a Voronoi diagram, it looks like this: For each input point, which is called a site, we want to find the set of points which are nearer to this site than to any other site. These sets of points form cells as you can see on the image above. What is remarkable about the Fortune’s algorithm is that it constructs such diagrams in time (which is optimal for an algorithm which uses comparisons) where is the number of sites. I am writing this article because I find it very hard to implement this algorithm. Until now, it is surely the hardest algorithm I have ever implemented. Thus, I want to share with you the issues I faced and how I solved them. The code is, as usual, available on github and you will find all the references I used at the bottom of this article.","@context":"https://schema.org"}</script>
+{"author":{"@type":"Person","name":"pierre"},"description":"The last few weeks, I worked on an implementation of the Fortune’s algorithm in C++. This algorithm takes a set of 2D points and construct the Voronoi diagram of these points. If you wonder what is a Voronoi diagram, it looks like this: For each input point, which is called a site, we want to find the set of points which are nearer to this site than to any other site. These sets of points form cells as you can see on the image above. What is remarkable about the Fortune’s algorithm is that it constructs such diagrams in \\(O(n\\log n)\\) time (which is optimal for an algorithm which uses comparisons) where \\(n\\) is the number of sites. I am writing this article because I find it very hard to implement this algorithm. Until now, it is surely the hardest algorithm I have ever implemented. Thus, I want to share with you the issues I faced and how I solved them. The code is, as usual, available on github and you will find all the references I used at the bottom of this article.","@type":"BlogPosting","headline":"Fortune’s algorithm, the details","dateModified":"2018-11-18T00:00:00+01:00","datePublished":"2018-11-18T00:00:00+01:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://pvigier.github.io/2018/11/18/fortune-algorithm-details.html"},"url":"https://pvigier.github.io/2018/11/18/fortune-algorithm-details.html","@context":"https://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 
         <!-- Bootstrap -->
@@ -44,6 +46,8 @@
     
         <a class="blog-nav-item" href="/projects/">Projects</a>
     
+        <a class="blog-nav-item" href="https://www.vagabondgame.com/">Vagabond</a>
+    
         <a class="blog-nav-item" href="/about/">About</a>
     
 </nav>
@@ -65,7 +69,7 @@
 
 <p>For each input point, which is called a site, we want to find the set of points which are nearer to this site than to any other site. These sets of points form cells as you can see on the image above.</p>
 
-<p>What is remarkable about the Fortune’s algorithm is that it constructs such diagrams in <script type="math/tex">O(n\log n)</script> time (which is optimal for an algorithm which uses comparisons) where <script type="math/tex">n</script> is the number of sites.</p>
+<p>What is remarkable about the Fortune’s algorithm is that it constructs such diagrams in \(O(n\log n)\) time (which is optimal for an algorithm which uses comparisons) where \(n\) is the number of sites.</p>
 
 <p>I am writing this article because I find it very hard to implement this algorithm. Until now, it is surely the hardest algorithm I have ever implemented. Thus, I want to share with you the issues I faced and how I solved them.</p>
 
@@ -81,7 +85,7 @@
 
 <p>I just put a pseudo-code of the algorithm so that we all agree on the global structure of the algorithm:</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>add a site event in the event queue for each site
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>add a site event in the event queue for each site
 while the event queue is not empty
     pop the top event
     if the event is a site event
@@ -100,14 +104,14 @@ while the event queue is not empty
 
 <p>I choose to use a data structure which is widely used in computational geometry called <a href="https://en.wikipedia.org/wiki/Doubly_connected_edge_list">doubly connected edge list</a> (DCEL).</p>
 
-<p>My <code class="highlighter-rouge">VoronoiDiagram</code> class has four containers as fields:</p>
+<p>My <code class="language-plaintext highlighter-rouge">VoronoiDiagram</code> class has four containers as fields:</p>
 
 <div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">VoronoiDiagram</span>
 <span class="p">{</span>
-<span class="k">public</span><span class="o">:</span>
+<span class="nl">public:</span>
     <span class="c1">// ...</span>
 
-<span class="k">private</span><span class="o">:</span>
+<span class="nl">private:</span>
     <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Site</span><span class="o">&gt;</span> <span class="n">mSites</span><span class="p">;</span>
     <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Face</span><span class="o">&gt;</span> <span class="n">mFaces</span><span class="p">;</span>
     <span class="n">std</span><span class="o">::</span><span class="n">list</span><span class="o">&lt;</span><span class="n">Vertex</span><span class="o">&gt;</span> <span class="n">mVertices</span><span class="p">;</span>
@@ -117,9 +121,9 @@ while the event queue is not empty
 
 <p>I will detail each of them.</p>
 
-<p>The <code class="highlighter-rouge">Site</code> class represents an input point. Each site has an index, which is useful to query them, coordinates and a pointer to their cell (<code class="highlighter-rouge">face</code>):</p>
+<p>The <code class="language-plaintext highlighter-rouge">Site</code> class represents an input point. Each site has an index, which is useful to query them, coordinates and a pointer to their cell (<code class="language-plaintext highlighter-rouge">face</code>):</p>
 
-<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="k">struct</span> <span class="n">Site</span>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="k">struct</span> <span class="nc">Site</span>
 <span class="p">{</span>
     <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">index</span><span class="p">;</span>
     <span class="n">Vector2</span> <span class="n">point</span><span class="p">;</span>
@@ -127,9 +131,9 @@ while the event queue is not empty
 <span class="p">};</span>
 </code></pre></div></div>
 
-<p>The vertices of the cells are represented by the <code class="highlighter-rouge">Vertex</code> class, they just have a coordinates field:</p>
+<p>The vertices of the cells are represented by the <code class="language-plaintext highlighter-rouge">Vertex</code> class, they just have a coordinates field:</p>
 
-<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">struct</span> <span class="n">Vertex</span>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">struct</span> <span class="nc">Vertex</span>
 <span class="p">{</span>
     <span class="n">Vector2</span> <span class="n">point</span><span class="p">;</span>
 <span class="p">};</span>
@@ -137,7 +141,7 @@ while the event queue is not empty
 
 <p>Here is the implementation of half-edges:</p>
 
-<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">struct</span> <span class="n">HalfEdge</span>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">struct</span> <span class="nc">HalfEdge</span>
 <span class="p">{</span>
     <span class="n">Vertex</span><span class="o">*</span> <span class="n">origin</span><span class="p">;</span>
     <span class="n">Vertex</span><span class="o">*</span> <span class="n">destination</span><span class="p">;</span>
@@ -148,15 +152,15 @@ while the event queue is not empty
 <span class="p">};</span>
 </code></pre></div></div>
 
-<p>You might wonder what is a half-edge. An edge in a Voronoi diagram is shared by two adjacent cells. In the DCEL data structure, we split these edges in two half-edges, one for each cell, and they are linked by the <code class="highlighter-rouge">twin</code> pointer. Moreover, a half-edge has an origin vertex and a destination vertex. The <code class="highlighter-rouge">incidentFace</code> field points to the face to which the half-edge belongs to. Finally, in DCEL, cells are implemented as a circular doubly linked list of half-edges where adjacent half-edges are linked together. Thus the <code class="highlighter-rouge">prev</code> and <code class="highlighter-rouge">next</code> fields points to the previous and next half-edges in the cell.</p>
+<p>You might wonder what is a half-edge. An edge in a Voronoi diagram is shared by two adjacent cells. In the DCEL data structure, we split these edges in two half-edges, one for each cell, and they are linked by the <code class="language-plaintext highlighter-rouge">twin</code> pointer. Moreover, a half-edge has an origin vertex and a destination vertex. The <code class="language-plaintext highlighter-rouge">incidentFace</code> field points to the face to which the half-edge belongs to. Finally, in DCEL, cells are implemented as a circular doubly linked list of half-edges where adjacent half-edges are linked together. Thus the <code class="language-plaintext highlighter-rouge">prev</code> and <code class="language-plaintext highlighter-rouge">next</code> fields points to the previous and next half-edges in the cell.</p>
 
 <p>On the image below, you can visualize all these fields for the red half-edge:</p>
 
 <p><img src="/media/img/fortune/half_edge.svg" alt="Half-edge" class="center-image modal-image" /></p>
 
-<p>Finally, the <code class="highlighter-rouge">Face</code> class represents a cell and it just contains a pointer to its site and another to one of its half-edges. It does not matter which half-edge it is because a cell is a closed polygon. Thus we can access to all of its half-edges by traversing the circular linked list.</p>
+<p>Finally, the <code class="language-plaintext highlighter-rouge">Face</code> class represents a cell and it just contains a pointer to its site and another to one of its half-edges. It does not matter which half-edge it is because a cell is a closed polygon. Thus we can access to all of its half-edges by traversing the circular linked list.</p>
 
-<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">struct</span> <span class="n">Face</span>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">struct</span> <span class="nc">Face</span>
 <span class="p">{</span>
     <span class="n">Site</span><span class="o">*</span> <span class="n">site</span><span class="p">;</span>
     <span class="n">HalfEdge</span><span class="o">*</span> <span class="n">outerComponent</span><span class="p">;</span>
@@ -165,15 +169,15 @@ while the event queue is not empty
 
 <h1 id="event-queue">Event queue</h1>
 
-<p>The standard way to implement the event queue is to use a priority queue. During the processing of site and circle events we may need to remove circle events from the queue because they are not valid anymore. But most of the standard implementations of priority queues do not allow to remove an element which is not the top one. In particular that is the case for <code class="highlighter-rouge">std::priority_queue</code>.</p>
+<p>The standard way to implement the event queue is to use a priority queue. During the processing of site and circle events we may need to remove circle events from the queue because they are not valid anymore. But most of the standard implementations of priority queues do not allow to remove an element which is not the top one. In particular that is the case for <code class="language-plaintext highlighter-rouge">std::priority_queue</code>.</p>
 
-<p>There are two ways to tackle this problem. The first and simplest one is to add a <code class="highlighter-rouge">valid</code> flag to events. We set <code class="highlighter-rouge">valid</code> to <code class="highlighter-rouge">true</code> initially. Then instead of removing the circle event from the queue, we just set its flag to <code class="highlighter-rouge">false</code>. Finally, when we process the events in the main loop, if the <code class="highlighter-rouge">valid</code> flag of an event equals to <code class="highlighter-rouge">false</code>, we simply discard it and process the next one.</p>
+<p>There are two ways to tackle this problem. The first and simplest one is to add a <code class="language-plaintext highlighter-rouge">valid</code> flag to events. We set <code class="language-plaintext highlighter-rouge">valid</code> to <code class="language-plaintext highlighter-rouge">true</code> initially. Then instead of removing the circle event from the queue, we just set its flag to <code class="language-plaintext highlighter-rouge">false</code>. Finally, when we process the events in the main loop, if the <code class="language-plaintext highlighter-rouge">valid</code> flag of an event equals to <code class="language-plaintext highlighter-rouge">false</code>, we simply discard it and process the next one.</p>
 
-<p>The second method which I adopted is not to use <code class="highlighter-rouge">std::priority_queue</code>. Instead, I implemented my own priority queue which supports removal of any element it contains. The implementation of such a queue is pretty straightforward. I choose this method because I find it makes the code for the algorithm clearer.</p>
+<p>The second method which I adopted is not to use <code class="language-plaintext highlighter-rouge">std::priority_queue</code>. Instead, I implemented my own priority queue which supports removal of any element it contains. The implementation of such a queue is pretty straightforward. I choose this method because I find it makes the code for the algorithm clearer.</p>
 
 <h1 id="beachline">Beachline</h1>
 
-<p>The beachline data structure is the tricky part of the algorithm. If not implemented correctly there is no guarantee that the algorithm will run in <script type="math/tex">O(n\log n)</script>. The key to reach this time complexity is to use a self-balancing tree. That’s easier said than done!</p>
+<p>The beachline data structure is the tricky part of the algorithm. If not implemented correctly there is no guarantee that the algorithm will run in \(O(n\log n)\). The key to reach this time complexity is to use a self-balancing tree. That’s easier said than done!</p>
 
 <p>In most resources I have consulted (the two blog articles aforementioned and <em>Computational Geometry</em>), they advise to implement the beachline as a tree where interior nodes represent breakpoints and leaves represent arcs. But they do not indicate how to balance the tree. I think that this representation is not the best possible because:</p>
 
@@ -184,9 +188,9 @@ while the event queue is not empty
 
 <p>Thus, I decided to represent the beachline differently. In my implementation the beachline is still a tree, but all nodes represent an arc. This representation has none of the previous shortcomings.</p>
 
-<p>Here is the definition of an <code class="highlighter-rouge">Arc</code> in my implementation:</p>
+<p>Here is the definition of an <code class="language-plaintext highlighter-rouge">Arc</code> in my implementation:</p>
 
-<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">struct</span> <span class="n">Arc</span>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">struct</span> <span class="nc">Arc</span>
 <span class="p">{</span>
     <span class="k">enum</span> <span class="k">class</span> <span class="nc">Color</span><span class="p">{</span><span class="n">RED</span><span class="p">,</span> <span class="n">BLACK</span><span class="p">};</span>
 
@@ -207,11 +211,11 @@ while the event queue is not empty
 <span class="p">};</span>
 </code></pre></div></div>
 
-<p>The first three fields are for the tree structure. The <code class="highlighter-rouge">leftHalfEdge</code> field points to the half-edge drawn by the left extremity of the arc. And <code class="highlighter-rouge">rightHalfEdge</code> to the half-edge drawn by the right extremity. The two pointers <code class="highlighter-rouge">prev</code> and <code class="highlighter-rouge">next</code> are useful to have a direct access to the previous and next arcs in the beachline. They also allow to traverse the beachline like a doubly linked list. Finally, every arc has a color which is used to balance the beachline.</p>
+<p>The first three fields are for the tree structure. The <code class="language-plaintext highlighter-rouge">leftHalfEdge</code> field points to the half-edge drawn by the left extremity of the arc. And <code class="language-plaintext highlighter-rouge">rightHalfEdge</code> to the half-edge drawn by the right extremity. The two pointers <code class="language-plaintext highlighter-rouge">prev</code> and <code class="language-plaintext highlighter-rouge">next</code> are useful to have a direct access to the previous and next arcs in the beachline. They also allow to traverse the beachline like a doubly linked list. Finally, every arc has a color which is used to balance the beachline.</p>
 
-<p>I choose to use the <a href="https://en.wikipedia.org/wiki/Red%E2%80%93black_tree">red-black scheme</a> to balance the beachline. My code is directly inspired from <a href="https://en.wikipedia.org/wiki/Introduction_to_Algorithms">CLRS</a>. The two interesting algorithms described in the chapter 13 of the book are <code class="highlighter-rouge">insertFixup</code> and <code class="highlighter-rouge">deleteFixup</code> which balance the tree after insertion/deletion.</p>
+<p>I choose to use the <a href="https://en.wikipedia.org/wiki/Red%E2%80%93black_tree">red-black scheme</a> to balance the beachline. My code is directly inspired from <a href="https://en.wikipedia.org/wiki/Introduction_to_Algorithms">CLRS</a>. The two interesting algorithms described in the chapter 13 of the book are <code class="language-plaintext highlighter-rouge">insertFixup</code> and <code class="language-plaintext highlighter-rouge">deleteFixup</code> which balance the tree after insertion/deletion.</p>
 
-<p>However, we cannot reuse the <code class="highlighter-rouge">insert</code> method of the book because it uses keys to find the correct place where to insert a node. In Fortune’s algorithm we have no key, we only know that we want to insert an arc before or after another in the beachline. To do that, I create methods <code class="highlighter-rouge">insertBefore</code> and <code class="highlighter-rouge">insertAfter</code>:</p>
+<p>However, we cannot reuse the <code class="language-plaintext highlighter-rouge">insert</code> method of the book because it uses keys to find the correct place where to insert a node. In Fortune’s algorithm we have no key, we only know that we want to insert an arc before or after another in the beachline. To do that, I create methods <code class="language-plaintext highlighter-rouge">insertBefore</code> and <code class="language-plaintext highlighter-rouge">insertAfter</code>:</p>
 
 <div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="n">Beachline</span><span class="o">::</span><span class="n">insertBefore</span><span class="p">(</span><span class="n">Arc</span><span class="o">*</span> <span class="n">x</span><span class="p">,</span> <span class="n">Arc</span><span class="o">*</span> <span class="n">y</span><span class="p">)</span>
 <span class="p">{</span>
@@ -237,15 +241,15 @@ while the event queue is not empty
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p>The insertion of <code class="highlighter-rouge">y</code> before <code class="highlighter-rouge">x</code> is made in three steps:</p>
+<p>The insertion of <code class="language-plaintext highlighter-rouge">y</code> before <code class="language-plaintext highlighter-rouge">x</code> is made in three steps:</p>
 
 <ol>
-  <li>Find the place to insert the new node. To do that I use the following observation: either the left child of <code class="highlighter-rouge">x</code> is <code class="highlighter-rouge">Nil</code> or it is the right child of <code class="highlighter-rouge">x-&gt;prev</code>, and the one that is <code class="highlighter-rouge">Nil</code> is before <code class="highlighter-rouge">x</code> and after<code class="highlighter-rouge">x-&gt;prev</code>.</li>
-  <li>We maintain a structure of doubly linked list inside the beachline so we must update the <code class="highlighter-rouge">prev</code> and <code class="highlighter-rouge">next</code> pointers of <code class="highlighter-rouge">x-&gt;prev</code>, <code class="highlighter-rouge">y</code> and <code class="highlighter-rouge">x</code> accordingly.</li>
-  <li>Finally, we just call the <code class="highlighter-rouge">insertFixup</code> method described in the book to balance the tree.</li>
+  <li>Find the place to insert the new node. To do that I use the following observation: either the left child of <code class="language-plaintext highlighter-rouge">x</code> is <code class="language-plaintext highlighter-rouge">Nil</code> or it is the right child of <code class="language-plaintext highlighter-rouge">x-&gt;prev</code>, and the one that is <code class="language-plaintext highlighter-rouge">Nil</code> is before <code class="language-plaintext highlighter-rouge">x</code> and after<code class="language-plaintext highlighter-rouge">x-&gt;prev</code>.</li>
+  <li>We maintain a structure of doubly linked list inside the beachline so we must update the <code class="language-plaintext highlighter-rouge">prev</code> and <code class="language-plaintext highlighter-rouge">next</code> pointers of <code class="language-plaintext highlighter-rouge">x-&gt;prev</code>, <code class="language-plaintext highlighter-rouge">y</code> and <code class="language-plaintext highlighter-rouge">x</code> accordingly.</li>
+  <li>Finally, we just call the <code class="language-plaintext highlighter-rouge">insertFixup</code> method described in the book to balance the tree.</li>
 </ol>
 
-<p><code class="highlighter-rouge">insertAfter</code> is implemented analogously.</p>
+<p><code class="language-plaintext highlighter-rouge">insertAfter</code> is implemented analogously.</p>
 
 <p>Finally, the deletion method from the book can be implemented as it is.</p>
 
@@ -322,10 +326,10 @@ while the event queue is not empty
 <p>To finish this article and to be sure we have not done all of this for nothing I have measured the time it takes to compute the Voronoi diagram for different numbers of sites on my (cheap) laptop:</p>
 
 <ul>
-  <li><script type="math/tex">n = 1000</script>: 2ms</li>
-  <li><script type="math/tex">n = 10000</script>: 33ms</li>
-  <li><script type="math/tex">n = 100000</script>: 450ms</li>
-  <li><script type="math/tex">n = 1000000</script>: 6600ms</li>
+  <li>\(n = 1000\): 2ms</li>
+  <li>\(n = 10000\): 33ms</li>
+  <li>\(n = 100000\): 450ms</li>
+  <li>\(n = 1000000\): 6600ms</li>
 </ul>
 
 <p>I have nothing to compare these durations with, but it seems blazing fast!</p>
@@ -390,6 +394,7 @@ s.setAttribute('data-timestamp', +new Date());
 <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
                 </div>
                 <div class="col-sm-3 col-sm-offset-1 blog-sidebar">
+    <p><strong><a href="https://vagabondgame.com">Get Vagabond</a></strong></p>
 	<div class="sidebar-module">
         <h4>Tags</h4>
         <ol class="list-unstyled">
@@ -412,7 +417,7 @@ s.setAttribute('data-timestamp', +new Date());
 		
 			<li><a href="/tag/git">git (1)</a></li>
 		
-			<li><a href="/tag/vagabond">vagabond (23)</a></li>
+			<li><a href="/tag/vagabond">vagabond (24)</a></li>
 		
 			<li><a href="/tag/ecs">ecs (2)</a></li>
 		
@@ -424,6 +429,14 @@ s.setAttribute('data-timestamp', +new Date());
         <h4>Archives</h4>
         <ol class="list-unstyled">
 		
+        
+            
+            
+            
+            
+			<li id="yDecember 2020"><a href="/2020/12">December 2020 (1)</a></li>
+				
+            
         
             
             

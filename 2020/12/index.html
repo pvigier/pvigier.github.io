@@ -8,20 +8,20 @@
         <link rel="shortcut icon" href="/media/img/favicon.png">
         <!-- SEO -->
         <!-- Begin Jekyll SEO tag v2.7.1 -->
-<title>Page 6 of 8 for Blog | pvigier’s blog</title>
+<title>pvigier’s blog</title>
 <meta name="generator" content="Jekyll v4.1.1" />
-<meta property="og:title" content="Blog" />
+<meta property="og:title" content="pvigier’s blog" />
 <meta name="author" content="Pierre Vigier" />
 <meta property="og:locale" content="en_US" />
-<link rel="canonical" href="https://pvigier.github.io/6/" />
-<meta property="og:url" content="https://pvigier.github.io/6/" />
+<link rel="canonical" href="https://pvigier.github.io/2020/12/" />
+<meta property="og:url" content="https://pvigier.github.io/2020/12/" />
 <meta property="og:site_name" content="pvigier’s blog" />
-<link rel="prev" href="https://pvigier.github.io/5/" />
-<link rel="next" href="https://pvigier.github.io/7/" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-12-01T00:00:00+01:00" />
 <meta name="twitter:card" content="summary" />
-<meta property="twitter:title" content="Blog" />
+<meta property="twitter:title" content="pvigier’s blog" />
 <script type="application/ld+json">
-{"author":{"@type":"Person","name":"Pierre Vigier"},"@type":"WebPage","headline":"Blog","url":"https://pvigier.github.io/6/","@context":"https://schema.org"}</script>
+{"author":{"@type":"Person","name":"Pierre Vigier"},"@type":"BlogPosting","headline":"pvigier’s blog","dateModified":"2020-12-01T00:00:00+01:00","datePublished":"2020-12-01T00:00:00+01:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://pvigier.github.io/2020/12/"},"url":"https://pvigier.github.io/2020/12/","@context":"https://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 
         <!-- Bootstrap -->
@@ -58,120 +58,15 @@
             </div>
             <div class="row">
                 <div class="col-sm-8 blog-main">
-                
-    <div class="blog-post">
-        <h2 class="blog-post-title"><a href="/2019/05/05/simulopolis-is-dead.html">Simulopolis is dead</a></h2>
-        <p class="blog-post-meta">05 May 2019 by <a href="/">pierre</a></p>
-        <p>As some of you noticed, Simulopolis is not active since last November. I had still many ideas and many things to do before the game was finished. I started to work on the version 0.0.4 and even had some small features ready.</p>
+                <h2>Archive of posts from December 2020</h2>
+<ul>
 
-<p>However, the internship and the master thesis (see <a href="/2019/05/06/commit-graph-drawing-algorithms.html">next article</a>) for more info) I was doing since September were not going well. Thus, I had to completely stop working on Simulopolis on my free time and work on my master thesis instead to have a little chance to see my thesis accepted by the jury. It was exhausting but eventually I succeeded!</p>
+  <li>
+    <a class="post-link" href="/2020/12/11/vagabond-enters-in-alpha.html">Vagabond enters in alpha!</a>
+    <span class="post-date">(Dec 11, 2020)</span>
+  </li>
 
-<p>My oral defense was in April so I did not work on Simulopolis for five months. Then, I had to take decisions concerning my future. I chose to leave Paris and to join my girlfriend in a smaller city in the center of France. Moreover, I decided that I did not want to work in a big company. Indeed, I am still young and relatively free from any constraint so I think it is the right moment in order to take my chance as an indie developer.</p>
-
-<p>The bad news is, as you have guessed with the title, that I am not going to resume the development of Simulopolis. But the good news is that I have already started to work on a new project. It is called <em>Vagabond</em> (the name can still change). I will try to blog as much as possible about it so stay tuned! :)</p>
-
-
-        <p><a href="/2019/05/05/simulopolis-is-dead.html">Read more ...</a></p>
-        
-        <p>Tags: <span class="label label-primary"><a href="/tag/simulopolis">simulopolis</a></span> </p>
-        
-    </div>
-    <hr />
-
-    <div class="blog-post">
-        <h2 class="blog-post-title"><a href="/2018/11/18/fortune-algorithm-details.html">Fortune's algorithm, the details</a></h2>
-        <p class="blog-post-meta">18 Nov 2018 by <a href="/">pierre</a></p>
-        <p>The last few weeks, I worked on an implementation of the <a href="https://en.wikipedia.org/wiki/Fortune%27s_algorithm">Fortune’s algorithm</a> in C++. This algorithm takes a set of 2D points and construct the <a href="https://en.wikipedia.org/wiki/Voronoi_diagram">Voronoi diagram</a> of these points. If you wonder what is a Voronoi diagram, it looks like this:</p>
-
-<p><img src="/media/img/fortune/voronoi_intersected.png" alt="Voronoi diagram" width="400" class="center-image modal-image" /></p>
-
-<p>For each input point, which is called a site, we want to find the set of points which are nearer to this site than to any other site. These sets of points form cells as you can see on the image above.</p>
-
-<p>What is remarkable about the Fortune’s algorithm is that it constructs such diagrams in \(O(n\log n)\) time (which is optimal for an algorithm which uses comparisons) where \(n\) is the number of sites.</p>
-
-<p>I am writing this article because I find it very hard to implement this algorithm. Until now, it is surely the hardest algorithm I have ever implemented. Thus, I want to share with you the issues I faced and how I solved them.</p>
-
-<p>The code is, as usual, available on <a href="https://github.com/pvigier/FortuneAlgorithm">github</a> and you will find all the references I used at the bottom of this article.</p>
-
-
-        <p><a href="/2018/11/18/fortune-algorithm-details.html">Read more ...</a></p>
-        
-        <p>Tags: <span class="label label-primary"><a href="/tag/cpp">cpp</a></span> <span class="label label-primary"><a href="/tag/geometry">geometry</a></span> </p>
-        
-    </div>
-    <hr />
-
-    <div class="blog-post">
-        <h2 class="blog-post-title"><a href="/2018/11/03/simulopolis-alpha-3.html">Simulopolis alpha 3 is released</a></h2>
-        <p class="blog-post-meta">03 Nov 2018 by <a href="/">pierre</a></p>
-        <p>Today, I release the third alpha version of Simulopolis.</p>
-
-<p>In this post, I will detail a bit what’s new since the <a href="/2018/10/06/simulopolis-alpha-1.html">initial release</a>.</p>
-
-<p><img src="/media/img/simulopolis-alpha-3/newspaper.png" alt="Cover" class="center-image modal-image" /></p>
-
-<p>On this screenshot, you can saw some minor changes on the interface and the main new feature: the newspaper.</p>
-
-
-        <p><a href="/2018/11/03/simulopolis-alpha-3.html">Read more ...</a></p>
-        
-        <p>Tags: <span class="label label-primary"><a href="/tag/simulopolis">simulopolis</a></span> </p>
-        
-    </div>
-    <hr />
-
-    <div class="blog-post">
-        <h2 class="blog-post-title"><a href="/2018/11/02/3d-perlin-noise-numpy.html">3D Perlin noise with numpy</a></h2>
-        <p class="blog-post-meta">02 Nov 2018 by <a href="/">pierre</a></p>
-        <p>Few weeks ago, a professor from the university of Waterloo contacted me to ask if it was possible to adapt my code for <a href="/2018/06/13/perlin-noise-numpy.html">2D Perlin noise</a> to 3D Perlin noise.</p>
-
-<p>I was very happy that someone was interested by this piece of code. After some thoughts, I answer him that it was possible and I decided to do it.</p>
-
-<p>I move the old code which generates 2D Perlin noise in the file <code class="language-plaintext highlighter-rouge">perlin2d.py</code> and I place the code described below for 3D Perlin noise in the file <code class="language-plaintext highlighter-rouge">perlin3d.py</code>. You can find all the code in this <a href="https://github.com/pvigier/perlin-numpy">github repo</a>.</p>
-
-
-        <p><a href="/2018/11/02/3d-perlin-noise-numpy.html">Read more ...</a></p>
-        
-        <p>Tags: <span class="label label-primary"><a href="/tag/pcg">pcg</a></span> <span class="label label-primary"><a href="/tag/python">python</a></span> </p>
-        
-    </div>
-    <hr />
-
-    <div class="blog-post">
-        <h2 class="blog-post-title"><a href="/2018/10/08/terrain-generation-simulopolis.html">Terrain generation in Simulopolis</a></h2>
-        <p class="blog-post-meta">08 Oct 2018 by <a href="/">pierre</a></p>
-        <p>Hi!</p>
-
-<p>Today I will describe the generator of terrains I made for Simulopolis.</p>
-
-<p>Here are some screenshots of terrains from the game.</p>
-
-<p><img src="/media/img/terrain-generation-simulopolis/terrain_pcg_gif.gif" alt="Cover" class="center-image modal-image" /></p>
-
-<p>In this article, I will not describe the C++ code used in the game as it is verbose and unnecessarily complicated. Instead, I will use the Python code I used to design the generator.</p>
-
-<p>Indeed, I found much more pleasant to use Python for prototyping as it is really fast to write something which works, there are good libraries and we do not have to wait for compilation every time we make a change. It is especially true for procedural content generation where we have to iterate a lot before obtaining something decent.</p>
-
-<p>The code I will present is the exact translation in Python of what is currently implemented in the game. It is based on the implementation of Perlin noise I described previously in this <a href="/2018/06/13/perlin-noise-numpy.html">article</a>. As usual, you can find the whole project on <a href="https://github.com/pvigier/simulopolis-terrain-generator">github</a>.</p>
-
-
-        <p><a href="/2018/10/08/terrain-generation-simulopolis.html">Read more ...</a></p>
-        
-        <p>Tags: <span class="label label-primary"><a href="/tag/pcg">pcg</a></span> <span class="label label-primary"><a href="/tag/simulopolis">simulopolis</a></span> </p>
-        
-    </div>
-    <hr />
-
-<nav>
-    <ul class="pager">
-        
-        <li><a href="/5/">Previous</a></li>
-        
-        
-        <li><a href="/7/">Next</a></li>
-        
-    </ul>
-</nav>
+</ul>
 
                 </div>
                 <div class="col-sm-3 col-sm-offset-1 blog-sidebar">

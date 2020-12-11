@@ -7,9 +7,9 @@
 
         <link rel="shortcut icon" href="/media/img/favicon.png">
         <!-- SEO -->
-        <!-- Begin Jekyll SEO tag v2.6.1 -->
+        <!-- Begin Jekyll SEO tag v2.7.1 -->
 <title>Vagabond – 2D Physics Engine | pvigier’s blog</title>
-<meta name="generator" content="Jekyll v3.8.4" />
+<meta name="generator" content="Jekyll v4.1.1" />
 <meta property="og:title" content="Vagabond – 2D Physics Engine" />
 <meta name="author" content="pierre" />
 <meta property="og:locale" content="en_US" />
@@ -20,8 +20,10 @@
 <meta property="og:site_name" content="pvigier’s blog" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2019-08-11T00:00:00+02:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Vagabond – 2D Physics Engine" />
 <script type="application/ld+json">
-{"dateModified":"2019-08-11T00:00:00+02:00","datePublished":"2019-08-11T00:00:00+02:00","@type":"BlogPosting","headline":"Vagabond – 2D Physics Engine","mainEntityOfPage":{"@type":"WebPage","@id":"https://pvigier.github.io/2019/08/11/vagabond-2d-physics-engine.html"},"url":"https://pvigier.github.io/2019/08/11/vagabond-2d-physics-engine.html","author":{"@type":"Person","name":"pierre"},"description":"This week, I worked on the physics engine. It was the first time, I wrote a physics engine thus it took me a lot of time to design an algorithm that works well. In this article, I will try to share with you the issues I faced and then my current design of the physics engine. Sorry, your browser doesn&#39;t support embedded videos.","@context":"https://schema.org"}</script>
+{"author":{"@type":"Person","name":"pierre"},"description":"This week, I worked on the physics engine. It was the first time, I wrote a physics engine thus it took me a lot of time to design an algorithm that works well. In this article, I will try to share with you the issues I faced and then my current design of the physics engine. Sorry, your browser doesn&#39;t support embedded videos.","@type":"BlogPosting","headline":"Vagabond – 2D Physics Engine","dateModified":"2019-08-11T00:00:00+02:00","datePublished":"2019-08-11T00:00:00+02:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://pvigier.github.io/2019/08/11/vagabond-2d-physics-engine.html"},"url":"https://pvigier.github.io/2019/08/11/vagabond-2d-physics-engine.html","@context":"https://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 
         <!-- Bootstrap -->
@@ -43,6 +45,8 @@
         <a class="blog-nav-item" href="/articles/">Articles</a>
     
         <a class="blog-nav-item" href="/projects/">Projects</a>
+    
+        <a class="blog-nav-item" href="https://www.vagabondgame.com/">Vagabond</a>
     
         <a class="blog-nav-item" href="/about/">About</a>
     
@@ -122,20 +126,20 @@
 
 <p>The class that will model the static nodes is an abstract class in my implementation, it has two virtual methods: one for getting the bounding box of the entity to be able to insert the node in a quadtree, the other to detect a collision with a dynamic node:</p>
 
-<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">struct</span> <span class="n">StaticNode</span>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">struct</span> <span class="nc">StaticNode</span>
 <span class="p">{</span>
     <span class="k">virtual</span> <span class="k">const</span> <span class="n">Box</span><span class="o">&amp;</span> <span class="n">getBoundingBox</span><span class="p">()</span> <span class="k">const</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
     <span class="k">virtual</span> <span class="n">CollisionResult</span><span class="o">&amp;</span> <span class="n">detectCollision</span><span class="p">(</span><span class="k">const</span> <span class="n">DynamicNode</span><span class="o">&amp;</span> <span class="n">node</span><span class="p">)</span> <span class="k">const</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
 <span class="p">};</span>
 </code></pre></div></div>
 
-<p><code class="highlighter-rouge">CollisionResult</code> is a simple structure which contains information about the collision such as the time of impact <code class="highlighter-rouge">t</code> and the normal of the axis of collision <code class="highlighter-rouge">n</code>.</p>
+<p><code class="language-plaintext highlighter-rouge">CollisionResult</code> is a simple structure which contains information about the collision such as the time of impact <code class="language-plaintext highlighter-rouge">t</code> and the normal of the axis of collision <code class="language-plaintext highlighter-rouge">n</code>.</p>
 
-<p>Currently, I have two derived classes of <code class="highlighter-rouge">StaticNode</code>: <code class="highlighter-rouge">TileNode</code> for tiled terrains and <code class="highlighter-rouge">BoxNode</code> for other entities that are just a box.</p>
+<p>Currently, I have two derived classes of <code class="language-plaintext highlighter-rouge">StaticNode</code>: <code class="language-plaintext highlighter-rouge">TileNode</code> for tiled terrains and <code class="language-plaintext highlighter-rouge">BoxNode</code> for other entities that are just a box.</p>
 
 <p>Here is the data structure for dynamic nodes:</p>
 
-<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">struct</span> <span class="n">DynamicNode</span>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">struct</span> <span class="nc">DynamicNode</span>
 <span class="p">{</span>
     <span class="kt">float</span> <span class="n">mass</span><span class="p">;</span>
     <span class="n">Box</span> <span class="n">box</span><span class="p">;</span>
@@ -144,13 +148,13 @@
 <span class="p">};</span>
 </code></pre></div></div>
 
-<p><code class="highlighter-rouge">mass</code> is the mass of the object, <code class="highlighter-rouge">box</code> contains the position of the entity and its size, <code class="highlighter-rouge">velocity</code> is its current velocity and <code class="highlighter-rouge">netForce</code> is the sum of all the forces that are currently applying on the object.</p>
+<p><code class="language-plaintext highlighter-rouge">mass</code> is the mass of the object, <code class="language-plaintext highlighter-rouge">box</code> contains the position of the entity and its size, <code class="language-plaintext highlighter-rouge">velocity</code> is its current velocity and <code class="language-plaintext highlighter-rouge">netForce</code> is the sum of all the forces that are currently applying on the object.</p>
 
 <h2 id="algorithm">Algorithm</h2>
 
 <p>Here are the three steps done in the physics engine:</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1. Compute the new positions for all dynamic nodes.
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1. Compute the new positions for all dynamic nodes.
 2. For each dynamic node, find its first collision with a static node and resolve it.
 3. Detect collisions between dynamic nodes.
 </code></pre></div></div>
@@ -161,7 +165,7 @@
 
 <p>To update the position, I just integrate the <a href="https://en.wikipedia.org/wiki/Newton%27s_laws_of_motion">second law of motion</a> using <a href="https://en.wikipedia.org/wiki/Euler_method">Euler method</a>:</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>acceleration = node.netForce / node.mass
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>acceleration = node.netForce / node.mass
 node.velocity += acceleration * dt
 newPosition = node.box.position + node.velocity * dt
 newBox = Box(newPosition, node.box.size)
@@ -171,18 +175,18 @@ newBox = Box(newPosition, node.box.size)
 
 <h3 id="dynamic-static-collisions">Dynamic-static collisions</h3>
 
-<p>The next step is to find the collisions with static nodes, to do that I use a quadtree <code class="highlighter-rouge">staticNodeQuadtree</code> that contains all the static nodes. Then, I look for the first collision, move the dynamic node at the place where it collides. Finally, I reset its velocity in the direction of the normal so that it remains only the tangential component and it stops trying to enter in the static node:</p>
+<p>The next step is to find the collisions with static nodes, to do that I use a quadtree <code class="language-plaintext highlighter-rouge">staticNodeQuadtree</code> that contains all the static nodes. Then, I look for the first collision, move the dynamic node at the place where it collides. Finally, I reset its velocity in the direction of the normal so that it remains only the tangential component and it stops trying to enter in the static node:</p>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">staticNodesHit</span> <span class="o">=</span> <span class="n">staticNodeQuadtree</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">newBox</span><span class="p">)</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">staticNodesHit</span> <span class="o">=</span> <span class="n">staticNodeQuadtree</span><span class="p">.</span><span class="n">query</span><span class="p">(</span><span class="n">newBox</span><span class="p">)</span>
 <span class="n">minT</span> <span class="o">=</span> <span class="n">infinity</span>
 <span class="n">normal</span> <span class="o">=</span> <span class="n">nil</span>
 <span class="k">for</span> <span class="n">staticNode</span> <span class="ow">in</span> <span class="n">staticNodesHit</span>
-    <span class="n">result</span> <span class="o">=</span> <span class="n">staticNode</span><span class="o">.</span><span class="n">detectCollision</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">t</span> <span class="o">&lt;</span> <span class="n">minT</span>
-        <span class="n">minT</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">t</span>
-        <span class="n">normal</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">n</span>
-<span class="n">node</span><span class="o">.</span><span class="n">box</span><span class="o">.</span><span class="n">position</span> <span class="o">+=</span> <span class="n">minT</span> <span class="o">*</span> <span class="n">node</span><span class="o">.</span><span class="n">velocity</span>
-<span class="n">node</span><span class="o">.</span><span class="n">box</span><span class="o">.</span><span class="n">velocity</span> <span class="o">-=</span> <span class="n">node</span><span class="o">.</span><span class="n">box</span><span class="o">.</span><span class="n">velocity</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">normal</span><span class="p">)</span> <span class="o">*</span> <span class="n">normal</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">staticNode</span><span class="p">.</span><span class="n">detectCollision</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">result</span><span class="p">.</span><span class="n">t</span> <span class="o">&lt;</span> <span class="n">minT</span>
+        <span class="n">minT</span> <span class="o">=</span> <span class="n">result</span><span class="p">.</span><span class="n">t</span>
+        <span class="n">normal</span> <span class="o">=</span> <span class="n">result</span><span class="p">.</span><span class="n">n</span>
+<span class="n">node</span><span class="p">.</span><span class="n">box</span><span class="p">.</span><span class="n">position</span> <span class="o">+=</span> <span class="n">minT</span> <span class="o">*</span> <span class="n">node</span><span class="p">.</span><span class="n">velocity</span>
+<span class="n">node</span><span class="p">.</span><span class="n">box</span><span class="p">.</span><span class="n">velocity</span> <span class="o">-=</span> <span class="n">node</span><span class="p">.</span><span class="n">box</span><span class="p">.</span><span class="n">velocity</span><span class="p">.</span><span class="n">dot</span><span class="p">(</span><span class="n">normal</span><span class="p">)</span> <span class="o">*</span> <span class="n">normal</span>
 </code></pre></div></div>
 
 <h3 id="dynamic-dynamic-collisions">Dynamic-dynamic collisions</h3>
@@ -191,8 +195,8 @@ newBox = Box(newPosition, node.box.size)
 
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">dynamicNodeQuadtree</span> <span class="o">=</span> <span class="n">Quadtree</span><span class="p">()</span>
 <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">dynamicNodes</span>
-    <span class="n">dynamicNodeQuadtree</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
-<span class="n">collisions</span> <span class="o">=</span> <span class="n">dynamicNodeQuadtree</span><span class="o">.</span><span class="n">findAllIntersections</span><span class="p">()</span>
+    <span class="n">dynamicNodeQuadtree</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+<span class="n">collisions</span> <span class="o">=</span> <span class="n">dynamicNodeQuadtree</span><span class="p">.</span><span class="n">findAllIntersections</span><span class="p">()</span>
 <span class="k">for</span> <span class="n">node1</span><span class="p">,</span> <span class="n">node2</span> <span class="ow">in</span> <span class="n">collisions</span>
     <span class="n">sendMessage</span><span class="p">(</span><span class="n">CollisionMessage</span><span class="p">(</span><span class="n">node1</span><span class="p">,</span> <span class="n">node2</span><span class="p">))</span>
 </code></pre></div></div>
@@ -234,14 +238,14 @@ newBox = Box(newPosition, node.box.size)
 
 <p>However, with a low velocity, I don’t think it is noticeable. The second reason is that it works only if all the walls are vertical or horizontal, it is not expandable.</p>
 
-<p>An alternative, that is in my opinion better, is after the first collision that occurs at <code class="highlighter-rouge">t</code> if there is time left, we try to move again with the new velocity that just has been updated (we kept only the tangential component). We can even do that several times until we reach <code class="highlighter-rouge">dt</code> or a maximum number of iterations:</p>
+<p>An alternative, that is in my opinion better, is after the first collision that occurs at <code class="language-plaintext highlighter-rouge">t</code> if there is time left, we try to move again with the new velocity that just has been updated (we kept only the tangential component). We can even do that several times until we reach <code class="language-plaintext highlighter-rouge">dt</code> or a maximum number of iterations:</p>
 
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">t</span> <span class="o">=</span> <span class="mi">0</span>
 <span class="n">nbCollisions</span> <span class="o">=</span> <span class="mi">0</span>
 <span class="k">while</span> <span class="n">t</span> <span class="o">&lt;</span> <span class="n">dt</span> <span class="ow">and</span> <span class="n">nbCollisions</span> <span class="o">&lt;</span> <span class="n">maxNbCollisions</span>
     <span class="n">collision</span> <span class="o">=</span> <span class="n">findFirstCollision</span><span class="p">()</span>
     <span class="n">update</span> <span class="n">position</span> <span class="ow">and</span> <span class="n">velocity</span>
-    <span class="n">t</span> <span class="o">+=</span> <span class="n">collision</span><span class="o">.</span><span class="n">t</span>
+    <span class="n">t</span> <span class="o">+=</span> <span class="n">collision</span><span class="p">.</span><span class="n">t</span>
     <span class="n">nbCollisions</span> <span class="o">+=</span> <span class="mi">1</span>
 </code></pre></div></div>
 
@@ -255,7 +259,7 @@ newBox = Box(newPosition, node.box.size)
 
 <p><img src="/media/img/vagabond-2d-physics-engine/hitboxes.png" alt="" class="center-image" /></p>
 
-<p>I would simply add a list of hitboxes in the definition of <code class="highlighter-rouge">DynamicNode</code> and when there is a collision between the bounding boxes of two dynamic nodes, I would test the collision between their respective hitboxes.</p>
+<p>I would simply add a list of hitboxes in the definition of <code class="language-plaintext highlighter-rouge">DynamicNode</code> and when there is a collision between the bounding boxes of two dynamic nodes, I would test the collision between their respective hitboxes.</p>
 
 <h1 id="useful-resources">Useful resources</h1>
 
@@ -323,6 +327,7 @@ s.setAttribute('data-timestamp', +new Date());
 <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
                 </div>
                 <div class="col-sm-3 col-sm-offset-1 blog-sidebar">
+    <p><strong><a href="https://vagabondgame.com">Get Vagabond</a></strong></p>
 	<div class="sidebar-module">
         <h4>Tags</h4>
         <ol class="list-unstyled">
@@ -345,7 +350,7 @@ s.setAttribute('data-timestamp', +new Date());
 		
 			<li><a href="/tag/git">git (1)</a></li>
 		
-			<li><a href="/tag/vagabond">vagabond (23)</a></li>
+			<li><a href="/tag/vagabond">vagabond (24)</a></li>
 		
 			<li><a href="/tag/ecs">ecs (2)</a></li>
 		
@@ -357,6 +362,14 @@ s.setAttribute('data-timestamp', +new Date());
         <h4>Archives</h4>
         <ol class="list-unstyled">
 		
+        
+            
+            
+            
+            
+			<li id="yDecember 2020"><a href="/2020/12">December 2020 (1)</a></li>
+				
+            
         
             
             

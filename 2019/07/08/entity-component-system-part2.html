@@ -7,9 +7,9 @@
 
         <link rel="shortcut icon" href="/media/img/favicon.png">
         <!-- SEO -->
-        <!-- Begin Jekyll SEO tag v2.6.1 -->
+        <!-- Begin Jekyll SEO tag v2.7.1 -->
 <title>Entity-component-system – Part 2 | pvigier’s blog</title>
-<meta name="generator" content="Jekyll v3.8.4" />
+<meta name="generator" content="Jekyll v4.1.1" />
 <meta property="og:title" content="Entity-component-system – Part 2" />
 <meta name="author" content="pierre" />
 <meta property="og:locale" content="en_US" />
@@ -20,8 +20,10 @@
 <meta property="og:site_name" content="pvigier’s blog" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2019-07-08T00:00:00+02:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Entity-component-system – Part 2" />
 <script type="application/ld+json">
-{"dateModified":"2019-07-08T00:00:00+02:00","datePublished":"2019-07-08T00:00:00+02:00","@type":"BlogPosting","headline":"Entity-component-system – Part 2","mainEntityOfPage":{"@type":"WebPage","@id":"https://pvigier.github.io/2019/07/08/entity-component-system-part2.html"},"url":"https://pvigier.github.io/2019/07/08/entity-component-system-part2.html","author":{"@type":"Person","name":"pierre"},"description":"In this article, we will take back our entity-component-system implementation where we left it in the previous article and try to improve it.","@context":"https://schema.org"}</script>
+{"author":{"@type":"Person","name":"pierre"},"description":"In this article, we will take back our entity-component-system implementation where we left it in the previous article and try to improve it.","@type":"BlogPosting","headline":"Entity-component-system – Part 2","dateModified":"2019-07-08T00:00:00+02:00","datePublished":"2019-07-08T00:00:00+02:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://pvigier.github.io/2019/07/08/entity-component-system-part2.html"},"url":"https://pvigier.github.io/2019/07/08/entity-component-system-part2.html","@context":"https://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 
         <!-- Bootstrap -->
@@ -44,6 +46,8 @@
     
         <a class="blog-nav-item" href="/projects/">Projects</a>
     
+        <a class="blog-nav-item" href="https://www.vagabondgame.com/">Vagabond</a>
+    
         <a class="blog-nav-item" href="/about/">About</a>
     
 </nav>
@@ -63,15 +67,15 @@
 
 <!--more-->
 
-<h1 id="replacing-stdunordered_maps-by-stdvectors">Replacing <code class="highlighter-rouge">std::unordered_map</code>s by <code class="highlighter-rouge">std::vector</code>s</h1>
+<h1 id="replacing-stdunordered_maps-by-stdvectors">Replacing <code class="language-plaintext highlighter-rouge">std::unordered_map</code>s by <code class="language-plaintext highlighter-rouge">std::vector</code>s</h1>
 
-<p>As we saw in the last article, <code class="highlighter-rouge">std::unordered_map</code>s were the bottleneck of our implementation. Thus, instead of using <code class="highlighter-rouge">std::unordered_map</code>s for <code class="highlighter-rouge">mEntityToComponent</code> in <code class="highlighter-rouge">ComponentContainer</code> and <code class="highlighter-rouge">mEntityToManagedEntity</code> in <code class="highlighter-rouge">System</code>, we will use <code class="highlighter-rouge">std::vector</code>s.</p>
+<p>As we saw in the last article, <code class="language-plaintext highlighter-rouge">std::unordered_map</code>s were the bottleneck of our implementation. Thus, instead of using <code class="language-plaintext highlighter-rouge">std::unordered_map</code>s for <code class="language-plaintext highlighter-rouge">mEntityToComponent</code> in <code class="language-plaintext highlighter-rouge">ComponentContainer</code> and <code class="language-plaintext highlighter-rouge">mEntityToManagedEntity</code> in <code class="language-plaintext highlighter-rouge">System</code>, we will use <code class="language-plaintext highlighter-rouge">std::vector</code>s.</p>
 
 <h2 id="changes">Changes</h2>
 
 <p>The changes are really simple, you can review them <a href="https://github.com/pvigier/ecs/commit/290099e821036225b9d7fe75ca7ffcbb2c0ae7a4">here</a>.</p>
 
-<p>The only subtlety is that we have to ensure that the <code class="highlighter-rouge">vector</code>s <code class="highlighter-rouge">mEntityToComponent</code> and <code class="highlighter-rouge">mEntityToManagedEntity</code> are long enough to be indexed by any entity. To be able to do that easily, I chose to store those <code class="highlighter-rouge">vector</code>s in <code class="highlighter-rouge">EntityContainer</code> where we know the maximum entity id. Then I pass the <code class="highlighter-rouge">vector</code>s to component containers and systems by reference or pointer in the entity manager.</p>
+<p>The only subtlety is that we have to ensure that the <code class="language-plaintext highlighter-rouge">vector</code>s <code class="language-plaintext highlighter-rouge">mEntityToComponent</code> and <code class="language-plaintext highlighter-rouge">mEntityToManagedEntity</code> are long enough to be indexed by any entity. To be able to do that easily, I chose to store those <code class="language-plaintext highlighter-rouge">vector</code>s in <code class="language-plaintext highlighter-rouge">EntityContainer</code> where we know the maximum entity id. Then I pass the <code class="language-plaintext highlighter-rouge">vector</code>s to component containers and systems by reference or pointer in the entity manager.</p>
 
 <p>You can find the code after the changes in this <a href="https://github.com/pvigier/ecs/tree/vector">branch</a>.</p>
 
@@ -91,7 +95,7 @@
 
 <p>Here is the output of cachegrind with 10000 entities:</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>==1374== D   refs:       94,563,949  (72,082,880 rd   + 22,481,069 wr)
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>==1374== D   refs:       94,563,949  (72,082,880 rd   + 22,481,069 wr)
 ==1374== D1  misses:      4,813,780  ( 4,417,702 rd   +    396,078 wr)
 ==1374== LLd misses:        378,905  (     9,626 rd   +    369,279 wr)
 ==1374== D1  miss rate:         5.1% (       6.1%     +        1.8%  )
@@ -100,7 +104,7 @@
 
 <p>And the output with 100000 entities:</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>==1307== D   refs:        938,405,796  (715,424,940 rd   + 222,980,856 wr)
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>==1307== D   refs:        938,405,796  (715,424,940 rd   + 222,980,856 wr)
 ==1307== D1  misses:       51,034,738  ( 44,045,090 rd   +   6,989,648 wr)
 ==1307== LLd misses:        5,866,508  (  1,997,948 rd   +   3,868,560 wr)
 ==1307== D1  miss rate:           5.4% (        6.2%     +         3.1%  )
@@ -119,20 +123,20 @@
 
 <p>The idea to be able to assign one different id to each component type is to take advantage of CRTP and a function with a static counter:</p>
 
-<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="nc">T</span><span class="p">&gt;</span>
 <span class="k">class</span> <span class="nc">Component</span>
 <span class="p">{</span>
-<span class="k">public</span><span class="o">:</span>
+<span class="nl">public:</span>
     <span class="k">static</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">type</span><span class="p">;</span>
 <span class="p">};</span>
 
-<span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">generateComponentType</span><span class="p">()</span>
+<span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="nf">generateComponentType</span><span class="p">()</span>
 <span class="p">{</span>
     <span class="k">static</span> <span class="k">auto</span> <span class="n">counter</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
     <span class="k">return</span> <span class="n">counter</span><span class="o">++</span><span class="p">;</span>
 <span class="p">}</span>
 
-<span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span>
+<span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="nc">T</span><span class="p">&gt;</span>
 <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">Component</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;::</span><span class="n">type</span> <span class="o">=</span> <span class="n">generateComponentType</span><span class="p">();</span>
 </code></pre></div></div>
 
@@ -160,11 +164,11 @@
 
 <h2 id="dynamic-number-of-components-and-systems">Dynamic number of components and systems</h2>
 
-<p>It is not convenient to have to specify in advance the maximum number of components and systems as template parameters. I think it would be possible to replace the <code class="highlighter-rouge">std::array</code>s in <code class="highlighter-rouge">EntityManager</code> by <code class="highlighter-rouge">std::vector</code>s without a big penalty in performance.</p>
+<p>It is not convenient to have to specify in advance the maximum number of components and systems as template parameters. I think it would be possible to replace the <code class="language-plaintext highlighter-rouge">std::array</code>s in <code class="language-plaintext highlighter-rouge">EntityManager</code> by <code class="language-plaintext highlighter-rouge">std::vector</code>s without a big penalty in performance.</p>
 
-<p>However, <code class="highlighter-rouge">std::bitset</code> requires to know its number of bits at compile time. Currently, my idea to fix this issue is that instead of having a <code class="highlighter-rouge">std::vector&lt;bitset&lt;ComponentCount&gt;&gt;</code> in <code class="highlighter-rouge">EntityContainer</code>, we just use a <code class="highlighter-rouge">std::vector&lt;char&gt;</code> and we allocate enough bytes to represent the bit sets of all the entities. Then, we implement a lightweight class <code class="highlighter-rouge">BitsetView</code> that takes as input a pair of pointers for the beginning and the end of the bit set and we perform all the useful operations of <code class="highlighter-rouge">std::bitset</code> in this range of memory.</p>
+<p>However, <code class="language-plaintext highlighter-rouge">std::bitset</code> requires to know its number of bits at compile time. Currently, my idea to fix this issue is that instead of having a <code class="language-plaintext highlighter-rouge">std::vector&lt;bitset&lt;ComponentCount&gt;&gt;</code> in <code class="language-plaintext highlighter-rouge">EntityContainer</code>, we just use a <code class="language-plaintext highlighter-rouge">std::vector&lt;char&gt;</code> and we allocate enough bytes to represent the bit sets of all the entities. Then, we implement a lightweight class <code class="language-plaintext highlighter-rouge">BitsetView</code> that takes as input a pair of pointers for the beginning and the end of the bit set and we perform all the useful operations of <code class="language-plaintext highlighter-rouge">std::bitset</code> in this range of memory.</p>
 
-<p>Another idea is to not use bit sets anymore and just rely on <code class="highlighter-rouge">mEntityToComponent</code> to determine if an entity has a component or not.</p>
+<p>Another idea is to not use bit sets anymore and just rely on <code class="language-plaintext highlighter-rouge">mEntityToComponent</code> to determine if an entity has a component or not.</p>
 
 <h2 id="easier-iteration-of-components">Easier iteration of components</h2>
 
@@ -185,17 +189,17 @@
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p>This will be a piece of cake with C++20 <code class="highlighter-rouge">std::view::transform</code> from the <a href="https://en.cppreference.com/w/cpp/ranges">ranges library</a>.</p>
+<p>This will be a piece of cake with C++20 <code class="language-plaintext highlighter-rouge">std::view::transform</code> from the <a href="https://en.cppreference.com/w/cpp/ranges">ranges library</a>.</p>
 
 <p>Unfortunately, this is not ready yet. I could have used Eric Niebler’s <a href="https://github.com/ericniebler/range-v3">range library</a> but I do not want to add a dependency.</p>
 
-<p>The solution would be implement a class <code class="highlighter-rouge">EntityRangeView</code> that would take as template parameters the component types to retrieve and as constructor parameter a reference to a <code class="highlighter-rouge">std::vector</code> of entities. Then, we just have to implement <code class="highlighter-rouge">begin</code>, <code class="highlighter-rouge">end</code> and an iterator type to be able to obtain the desired behavior. It is not really difficult but a bit cumbersome to write.</p>
+<p>The solution would be implement a class <code class="language-plaintext highlighter-rouge">EntityRangeView</code> that would take as template parameters the component types to retrieve and as constructor parameter a reference to a <code class="language-plaintext highlighter-rouge">std::vector</code> of entities. Then, we just have to implement <code class="language-plaintext highlighter-rouge">begin</code>, <code class="language-plaintext highlighter-rouge">end</code> and an iterator type to be able to obtain the desired behavior. It is not really difficult but a bit cumbersome to write.</p>
 
 <h2 id="optimization-of-event-dispatching">Optimization of event dispatching</h2>
 
-<p>Currently, when we add or remove a component to an entity, we call the <code class="highlighter-rouge">onEntityUpdated</code> of all systems. It is a bit inefficient as many systems are not interested by the component type that just has been modified.</p>
+<p>Currently, when we add or remove a component to an entity, we call the <code class="language-plaintext highlighter-rouge">onEntityUpdated</code> of all systems. It is a bit inefficient as many systems are not interested by the component type that just has been modified.</p>
 
-<p>To mitigate that, we can store pointers to systems interested by a given component type in a data structure like <code class="highlighter-rouge">std::array&lt;std::vector&lt;System&lt;ComponentCount, SystemCount&gt;&gt;, ComponentCount&gt;</code>. Then, when we add or remove a component, we just call the method <code class="highlighter-rouge">onEntityUpdated</code> of the systems that are interested by this component.</p>
+<p>To mitigate that, we can store pointers to systems interested by a given component type in a data structure like <code class="language-plaintext highlighter-rouge">std::array&lt;std::vector&lt;System&lt;ComponentCount, SystemCount&gt;&gt;, ComponentCount&gt;</code>. Then, when we add or remove a component, we just call the method <code class="language-plaintext highlighter-rouge">onEntityUpdated</code> of the systems that are interested by this component.</p>
 
 <h2 id="subsets-of-entities-managed-by-the-entity-manager-instead-of-systems">Subsets of entities managed by the entity manager instead of systems</h2>
 
@@ -279,6 +283,7 @@ s.setAttribute('data-timestamp', +new Date());
 <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
                 </div>
                 <div class="col-sm-3 col-sm-offset-1 blog-sidebar">
+    <p><strong><a href="https://vagabondgame.com">Get Vagabond</a></strong></p>
 	<div class="sidebar-module">
         <h4>Tags</h4>
         <ol class="list-unstyled">
@@ -301,7 +306,7 @@ s.setAttribute('data-timestamp', +new Date());
 		
 			<li><a href="/tag/git">git (1)</a></li>
 		
-			<li><a href="/tag/vagabond">vagabond (23)</a></li>
+			<li><a href="/tag/vagabond">vagabond (24)</a></li>
 		
 			<li><a href="/tag/ecs">ecs (2)</a></li>
 		
@@ -313,6 +318,14 @@ s.setAttribute('data-timestamp', +new Date());
         <h4>Archives</h4>
         <ol class="list-unstyled">
 		
+        
+            
+            
+            
+            
+			<li id="yDecember 2020"><a href="/2020/12">December 2020 (1)</a></li>
+				
+            
         
             
             

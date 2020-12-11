@@ -7,9 +7,9 @@
 
         <link rel="shortcut icon" href="/media/img/favicon.png">
         <!-- SEO -->
-        <!-- Begin Jekyll SEO tag v2.6.1 -->
+        <!-- Begin Jekyll SEO tag v2.7.1 -->
 <title>Pychain Part 2 - Application: MNIST | pvigier’s blog</title>
-<meta name="generator" content="Jekyll v3.8.4" />
+<meta name="generator" content="Jekyll v4.1.1" />
 <meta property="og:title" content="Pychain Part 2 - Application: MNIST" />
 <meta name="author" content="pierre" />
 <meta property="og:locale" content="en_US" />
@@ -20,8 +20,10 @@
 <meta property="og:site_name" content="pvigier’s blog" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2017-08-13T00:00:00+02:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Pychain Part 2 - Application: MNIST" />
 <script type="application/ld+json">
-{"dateModified":"2017-08-13T00:00:00+02:00","datePublished":"2017-08-13T00:00:00+02:00","@type":"BlogPosting","headline":"Pychain Part 2 - Application: MNIST","mainEntityOfPage":{"@type":"WebPage","@id":"https://pvigier.github.io/2017/08/13/pychain-part2-mnist.html"},"url":"https://pvigier.github.io/2017/08/13/pychain-part2-mnist.html","author":{"@type":"Person","name":"pierre"},"description":"In part 1, we have created a fully functional library which is able to create and train neural networks using computational graphs. We used them on very simple examples. Today, we are going to try it on a more serious problem: character recognition. We are going to use a well-known database in the machine learning and deep learning world named MNIST. The database is available on Yann LeCun’s website. If you have read a bit about neural networks before you should have already seen his name. He is a French scientist who is one of the pioneers of neural networks and inventors of convolutional neural networks and he is now the director of AI at Facebook. Character recognition is an emblematic problem for two reasons. Firstly, it is one of the first successes and industrial applications of neural networks. It was used since the 90’s to read checks. Secondly, computer vision has always been a leading application domain for neural networks. In this part, we are going to briefly discover the MNIST database. Then, we are going to train some networks on it and finally, we are going to explore a bit how a neural network works.","@context":"https://schema.org"}</script>
+{"author":{"@type":"Person","name":"pierre"},"description":"In part 1, we have created a fully functional library which is able to create and train neural networks using computational graphs. We used them on very simple examples. Today, we are going to try it on a more serious problem: character recognition. We are going to use a well-known database in the machine learning and deep learning world named MNIST. The database is available on Yann LeCun’s website. If you have read a bit about neural networks before you should have already seen his name. He is a French scientist who is one of the pioneers of neural networks and inventors of convolutional neural networks and he is now the director of AI at Facebook. Character recognition is an emblematic problem for two reasons. Firstly, it is one of the first successes and industrial applications of neural networks. It was used since the 90’s to read checks. Secondly, computer vision has always been a leading application domain for neural networks. In this part, we are going to briefly discover the MNIST database. Then, we are going to train some networks on it and finally, we are going to explore a bit how a neural network works.","@type":"BlogPosting","headline":"Pychain Part 2 - Application: MNIST","dateModified":"2017-08-13T00:00:00+02:00","datePublished":"2017-08-13T00:00:00+02:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://pvigier.github.io/2017/08/13/pychain-part2-mnist.html"},"url":"https://pvigier.github.io/2017/08/13/pychain-part2-mnist.html","@context":"https://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 
         <!-- Bootstrap -->
@@ -43,6 +45,8 @@
         <a class="blog-nav-item" href="/articles/">Articles</a>
     
         <a class="blog-nav-item" href="/projects/">Projects</a>
+    
+        <a class="blog-nav-item" href="https://www.vagabondgame.com/">Vagabond</a>
     
         <a class="blog-nav-item" href="/about/">About</a>
     
@@ -81,25 +85,25 @@
 
 <h2 id="preprocessings">Preprocessings</h2>
 
-<p>Firstly, before training our computational graphs, we should preprocess the data. In general, a good thing to do is to center the data. To be clear, if we have <script type="math/tex">x^{(1)}, ..., x^{(N)} \in \mathbb{R}^n</script> as data, the centered vectors are defined by:</p>
+<p>Firstly, before training our computational graphs, we should preprocess the data. In general, a good thing to do is to center the data. To be clear, if we have \(x^{(1)}, ..., x^{(N)} \in \mathbb{R}^n\) as data, the centered vectors are defined by:</p>
 
-<script type="math/tex; mode=display">x^{(i)}_{c_j} = x^{(i)}_j - \mu_j</script>
+\[x^{(i)}_{c_j} = x^{(i)}_j - \mu_j\]
 
-<p>with <script type="math/tex">\mu_j = \frac{1}{N}\sum_{i=1}^{N}{x^{(i)}_j}</script>.</p>
+<p>with \(\mu_j = \frac{1}{N}\sum_{i=1}^{N}{x^{(i)}_j}\).</p>
 
 <p>Consequently, each dimension has its values centered around zero.</p>
 
-<p>The other common preprocessing is to apply <a href="https://en.wikipedia.org/wiki/Principal_component_analysis">PCA</a>. PCA gives an orthonormal basis in which the dimensions are decorrelated. If we note <script type="math/tex">V</script> the matrix which transforms the standard basis to this orthonormal basis. The new input vectors are:</p>
+<p>The other common preprocessing is to apply <a href="https://en.wikipedia.org/wiki/Principal_component_analysis">PCA</a>. PCA gives an orthonormal basis in which the dimensions are decorrelated. If we note \(V\) the matrix which transforms the standard basis to this orthonormal basis. The new input vectors are:</p>
 
-<script type="math/tex; mode=display">x^{(i)}_{d_j} = x^{(i)}_{c_j}V</script>
+\[x^{(i)}_{d_j} = x^{(i)}_{c_j}V\]
 
 <p>We left multiply because we have adopted a row convention.</p>
 
 <p>Finally, the last common preprocessing is to equalize the covariance. For doing this, we divide each dimension by its standard deviation:</p>
 
-<script type="math/tex; mode=display">\tilde{x}^{(i)}_j = \frac{x^{(i)}_{d_j}}{\sigma_j}</script>
+\[\tilde{x}^{(i)}_j = \frac{x^{(i)}_{d_j}}{\sigma_j}\]
 
-<p>with <script type="math/tex">\sigma_j^2 = \frac{1}{N}\sum_{i=1}^{N}{(x^{(i)}_{d_j})^2}</script>.</p>
+<p>with \(\sigma_j^2 = \frac{1}{N}\sum_{i=1}^{N}{(x^{(i)}_{d_j})^2}\).</p>
 
 <p>Dividing by the standard deviation scales the values so that their order of magnitude is about 1.</p>
 
@@ -109,7 +113,7 @@
 
 <p>You might ask why it is useful to preprocess the data before training. I think there are at least two reasons.</p>
 
-<p>The first one is as there is no dominant or privileged dimension in the data, it can speed up the training. I think it is not totally obvious to see how the shape of the dataset can modify the shape of the cost function and help the gradient descent algorithm. So, I made a little simulation. I created a very simple dataset where the inputs have only one dimension with a mean of 2 and a standard deviation of 3. The outputs are given by <script type="math/tex">f : x \mapsto 3x + 1</script>. Then I chose a very simple model, the linear regression, with only two parameters so that we can easily visualize the cost function. Finally, I chose the mean squared error as cost function.</p>
+<p>The first one is as there is no dominant or privileged dimension in the data, it can speed up the training. I think it is not totally obvious to see how the shape of the dataset can modify the shape of the cost function and help the gradient descent algorithm. So, I made a little simulation. I created a very simple dataset where the inputs have only one dimension with a mean of 2 and a standard deviation of 3. The outputs are given by \(f : x \mapsto 3x + 1\). Then I chose a very simple model, the linear regression, with only two parameters so that we can easily visualize the cost function. Finally, I chose the mean squared error as cost function.</p>
 
 <p><img src="/media/img/part2/cost_function.gif" alt="Effect of preprocessings on the cost function" class="center-image modal-image" /></p>
 
@@ -119,42 +123,41 @@
 
 <p>The other advantage, is that when the data are normalized, it is easier to compare the parameters and the results with other problems. Many of the thumb rules for setting the hyperparameters such as the learning rates assume that the data are preprocessed.</p>
 
-<p>In our case, we won’t use all these fancy things. We will keep things simple and only cancel the mean and divide by 255 to have the values in <script type="math/tex">[-0.5, 0.5]</script>. A reason why we don’t divide by the standard deviation is that some pixels are white in all the images and consequently their standard deviation is equal to zero.</p>
+<p>In our case, we won’t use all these fancy things. We will keep things simple and only cancel the mean and divide by 255 to have the values in \([-0.5, 0.5]\). A reason why we don’t divide by the standard deviation is that some pixels are white in all the images and consequently their standard deviation is equal to zero.</p>
 
 <figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">preprocess_dataset</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">mean</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
-    <span class="n">mean_X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="k">if</span> <span class="n">mean</span> <span class="ow">is</span> <span class="bp">None</span> <span class="k">else</span> <span class="n">mean</span>
+    <span class="n">mean_X</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">mean</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="k">if</span> <span class="n">mean</span> <span class="ow">is</span> <span class="bp">None</span> <span class="k">else</span> <span class="n">mean</span>
     <span class="k">return</span> <span class="p">(</span><span class="n">X</span> <span class="o">-</span> <span class="n">mean_X</span><span class="p">)</span> <span class="o">/</span> <span class="mi">255</span><span class="p">,</span> <span class="n">mean_X</span></code></pre></figure>
 
-<p>In the function <code class="highlighter-rouge">normalized_dataset</code>, <code class="highlighter-rouge">mean</code> is an optional parameter because we want to compute the mean for the training set, but we want to apply the same preprocessings the test set.</p>
+<p>In the function <code class="language-plaintext highlighter-rouge">normalized_dataset</code>, <code class="language-plaintext highlighter-rouge">mean</code> is an optional parameter because we want to compute the mean for the training set, but we want to apply the same preprocessings the test set.</p>
 
 <p>Below, you can find all the steps to prepare the dataset.</p>
 
-<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="c"># Prepare dataset</span>
-<span class="n">X</span><span class="p">,</span> <span class="p">(</span><span class="n">nb_rows</span><span class="p">,</span> <span class="n">nb_columns</span><span class="p">),</span> <span class="n">Y</span> <span class="o">=</span> <span class="n">get_training_set</span><span class="p">(</span><span class="s">'examples/mnist/mnist'</span><span class="p">)</span>
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="c1"># Prepare dataset
+</span><span class="n">X</span><span class="p">,</span> <span class="p">(</span><span class="n">nb_rows</span><span class="p">,</span> <span class="n">nb_columns</span><span class="p">),</span> <span class="n">Y</span> <span class="o">=</span> <span class="n">get_training_set</span><span class="p">(</span><span class="s">'examples/mnist/mnist'</span><span class="p">)</span>
 <span class="n">X</span><span class="p">,</span> <span class="n">mean</span> <span class="o">=</span> <span class="n">preprocess_dataset</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
 <span class="n">X</span><span class="p">,</span> <span class="n">Y</span> <span class="o">=</span> <span class="n">shuffle_dataset</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">)</span>
-<span class="n">Y</span> <span class="o">=</span> <span class="n">Y</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">Y</span><span class="p">),</span> <span class="mi">1</span><span class="p">))</span>
+<span class="n">Y</span> <span class="o">=</span> <span class="n">Y</span><span class="p">.</span><span class="n">reshape</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">Y</span><span class="p">),</span> <span class="mi">1</span><span class="p">))</span>
 <span class="n">ohe_Y</span> <span class="o">=</span> <span class="n">one_hot_encode</span><span class="p">(</span><span class="n">Y</span><span class="p">)</span>
 
 <span class="n">X_test</span><span class="p">,</span> <span class="p">(</span><span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">),</span> <span class="n">Y_test</span> <span class="o">=</span> <span class="n">get_test_set</span><span class="p">(</span><span class="s">'examples/mnist/mnist'</span><span class="p">)</span>
 <span class="n">X_test</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">preprocess_dataset</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">mean</span><span class="p">)</span>
 <span class="n">X_test</span><span class="p">,</span> <span class="n">Y_test</span> <span class="o">=</span> <span class="n">shuffle_dataset</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">Y_test</span><span class="p">)</span>
-<span class="n">Y_test</span> <span class="o">=</span> <span class="n">Y_test</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">Y_test</span><span class="p">),</span> <span class="mi">1</span><span class="p">))</span></code></pre></figure>
+<span class="n">Y_test</span> <span class="o">=</span> <span class="n">Y_test</span><span class="p">.</span><span class="n">reshape</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">Y_test</span><span class="p">),</span> <span class="mi">1</span><span class="p">))</span></code></pre></figure>
 
-<p>First, we retrieve the images thanks to the functions in mnist.py. Then we preprocess the dataset and shuffle it. Finally for the training, we create a one-hot encoded matrix for the labels called <code class="highlighter-rouge">ohe_Y</code>.</p>
+<p>First, we retrieve the images thanks to the functions in mnist.py. Then we preprocess the dataset and shuffle it. Finally for the training, we create a one-hot encoded matrix for the labels called <code class="language-plaintext highlighter-rouge">ohe_Y</code>.</p>
 
-<p>Our neural network won’t output a class directly. Instead it will output the probability distribution <script type="math/tex">p(y \mid x)</script> where <script type="math/tex">x</script> is the input. Concretely, for MNIST, the network will output a vector of <script type="math/tex">\mathbb{R}^{10}</script> which represents <script type="math/tex">(p(y=0 \mid x), \ldots, p(y=9 \mid x))</script>. So the network will learn to map an input to a distribution probability. Thus, our target outputs should also be a distribution probability. Consequently, we transform <script type="math/tex">y^{(i)}</script> to <script type="math/tex">y^{(i)}_{ohe}</script> according to:</p>
+<p>Our neural network won’t output a class directly. Instead it will output the probability distribution \(p(y \mid x)\) where \(x\) is the input. Concretely, for MNIST, the network will output a vector of \(\mathbb{R}^{10}\) which represents \((p(y=0 \mid x), \ldots, p(y=9 \mid x))\). So the network will learn to map an input to a distribution probability. Thus, our target outputs should also be a distribution probability. Consequently, we transform \(y^{(i)}\) to \(y^{(i)}_{ohe}\) according to:</p>
 
-<script type="math/tex; mode=display">% <![CDATA[
-\begin{array}{rcl}
-    y^{(i)}_{ohe} = (0, \ldots, 0, & 1 & , 0, \ldots, 0) \\
-    & \uparrow & \\
-    & y^{(i)^{th}} & element \\
-\end{array} %]]></script>
+\[\begin{array}{rcl}
+    y^{(i)}_{ohe} = (0, \ldots, 0, &amp; 1 &amp; , 0, \ldots, 0) \\
+    &amp; \uparrow &amp; \\
+    &amp; y^{(i)^{th}} &amp; element \\
+\end{array}\]
 
-<p>(with the convention that the <script type="math/tex">0^{th}</script> element is the first one)</p>
+<p>(with the convention that the \(0^{th}\) element is the first one)</p>
 
-<p>For instance, <script type="math/tex">3</script> will be mapped to <script type="math/tex">(0, 0, 0, 1, 0, 0, 0, 0, 0, 0)</script> and <script type="math/tex">9</script> to <script type="math/tex">(0, 0, 0, 0, 0, 0, 0, 0, 0, 1)</script>.</p>
+<p>For instance, \(3\) will be mapped to \((0, 0, 0, 1, 0, 0, 0, 0, 0, 0)\) and \(9\) to \((0, 0, 0, 0, 0, 0, 0, 0, 0, 1)\).</p>
 
 <p>That’s all for the dataset and preprocessings. We are now ready to train some neural networks!</p>
 
@@ -162,49 +165,49 @@
 
 <p>Let’s start by creating a very simple network with only one layer of 10 neurons.</p>
 
-<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="c"># Create the graph</span>
-<span class="n">layers</span> <span class="o">=</span> <span class="p">[</span><span class="mi">10</span><span class="p">]</span>
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="c1"># Create the graph
+</span><span class="n">layers</span> <span class="o">=</span> <span class="p">[</span><span class="mi">10</span><span class="p">]</span>
 <span class="n">batch_size</span> <span class="o">=</span> <span class="mi">128</span>
 <span class="n">learning_rate</span> <span class="o">=</span> <span class="mi">1</span>
 <span class="n">nb_times_dataset</span> <span class="o">=</span> <span class="mi">1</span>
 <span class="n">graph</span> <span class="o">=</span> <span class="n">create_fully_connected_network</span><span class="p">(</span><span class="n">layers</span><span class="p">)</span></code></pre></figure>
 
-<p>The function <code class="highlighter-rouge">create_fully_connected_network</code> is very similar to the one of the previous part. I didn’t paste the code, you can retrieve it <a href="https://github.com/pvigier/pychain-part2">there</a> in examples/mnist. But I add a little diagram to visualize what the function is doing:</p>
+<p>The function <code class="language-plaintext highlighter-rouge">create_fully_connected_network</code> is very similar to the one of the previous part. I didn’t paste the code, you can retrieve it <a href="https://github.com/pvigier/pychain-part2">there</a> in examples/mnist. But I add a little diagram to visualize what the function is doing:</p>
 
 <p><img src="/media/img/part2/graph_mnist.svg" alt="Graph used for MNIST" class="center-image modal-image" /></p>
 
-<p>As you can see, the function creates a multilayer network where the hidden layers use <script type="math/tex">\tanh</script> as activation function and the output layer uses <script type="math/tex">softmax</script> to create a distribution probability. Finally, the cost function is included in the graph and it is a categorical cross entropy. You can learn more about the output functions and cost functions in the corresponding appendix.</p>
+<p>As you can see, the function creates a multilayer network where the hidden layers use \(\tanh\) as activation function and the output layer uses \(softmax\) to create a distribution probability. Finally, the cost function is included in the graph and it is a categorical cross entropy. You can learn more about the output functions and cost functions in the corresponding appendix.</p>
 
-<p>The function <code class="highlighter-rouge">train_and_monitor</code> train the graph, it is also similar to the code of the previous part but a little more complete.</p>
+<p>The function <code class="language-plaintext highlighter-rouge">train_and_monitor</code> train the graph, it is also similar to the code of the previous part but a little more complete.</p>
 
 <figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">train_and_monitor</span><span class="p">(</span><span class="n">monitor</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
-    <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="p">.</span><span class="n">time</span><span class="p">()</span>
     <span class="n">t</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">accuracies_training</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">accuracies_test</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">i_batch</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="c"># Optimization algorithm</span>
-    <span class="n">sgd</span> <span class="o">=</span> <span class="n">GradientDescent</span><span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">get_parameter_nodes</span><span class="p">(),</span> <span class="n">learning_rate</span><span class="p">)</span>
+    <span class="c1"># Optimization algorithm
+</span>    <span class="n">sgd</span> <span class="o">=</span> <span class="n">GradientDescent</span><span class="p">(</span><span class="n">graph</span><span class="p">.</span><span class="n">get_parameter_nodes</span><span class="p">(),</span> <span class="n">learning_rate</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nb_times_dataset</span><span class="p">):</span>
-        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">batch_size</span><span class="p">):</span>
-            <span class="c"># Train</span>
-            <span class="n">graph</span><span class="o">.</span><span class="n">propagate</span><span class="p">([</span><span class="n">X</span><span class="p">[</span><span class="n">j</span><span class="p">:</span><span class="n">j</span><span class="o">+</span><span class="n">batch_size</span><span class="p">]])</span>
-            <span class="n">cost</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">backpropagate</span><span class="p">([</span><span class="n">ohe_Y</span><span class="p">[</span><span class="n">j</span><span class="p">:</span><span class="n">j</span><span class="o">+</span><span class="n">batch_size</span><span class="p">]])</span>
-            <span class="n">sgd</span><span class="o">.</span><span class="n">optimize</span><span class="p">(</span><span class="n">batch_size</span><span class="p">)</span>
-            <span class="c"># Monitor</span>
-            <span class="n">i_batch</span> <span class="o">+=</span> <span class="mi">1</span>
-            <span class="k">print</span><span class="p">(</span><span class="s">'pass: {}/{}, batch: {}/{}, cost: {}'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">nb_times_dataset</span><span class="p">,</span> \
-                    <span class="n">j</span> <span class="o">//</span> <span class="n">batch_size</span><span class="p">,</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">//</span> <span class="n">batch_size</span><span class="p">,</span> <span class="n">cost</span> <span class="o">/</span> <span class="n">batch_size</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">X</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">batch_size</span><span class="p">):</span>
+            <span class="c1"># Train
+</span>            <span class="n">graph</span><span class="p">.</span><span class="n">propagate</span><span class="p">([</span><span class="n">X</span><span class="p">[</span><span class="n">j</span><span class="p">:</span><span class="n">j</span><span class="o">+</span><span class="n">batch_size</span><span class="p">]])</span>
+            <span class="n">cost</span> <span class="o">=</span> <span class="n">graph</span><span class="p">.</span><span class="n">backpropagate</span><span class="p">([</span><span class="n">ohe_Y</span><span class="p">[</span><span class="n">j</span><span class="p">:</span><span class="n">j</span><span class="o">+</span><span class="n">batch_size</span><span class="p">]])</span>
+            <span class="n">sgd</span><span class="p">.</span><span class="n">optimize</span><span class="p">(</span><span class="n">batch_size</span><span class="p">)</span>
+            <span class="c1"># Monitor
+</span>            <span class="n">i_batch</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">print</span><span class="p">(</span><span class="s">'pass: {}/{}, batch: {}/{}, cost: {}'</span><span class="p">.</span><span class="nb">format</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">nb_times_dataset</span><span class="p">,</span> \
+                    <span class="n">j</span> <span class="o">//</span> <span class="n">batch_size</span><span class="p">,</span> <span class="n">X</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">//</span> <span class="n">batch_size</span><span class="p">,</span> <span class="n">cost</span> <span class="o">/</span> <span class="n">batch_size</span><span class="p">))</span>
             <span class="k">if</span> <span class="n">monitor</span> <span class="ow">and</span> <span class="p">(</span><span class="n">i_batch</span> <span class="o">%</span> <span class="mi">256</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-                <span class="n">t</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i_batch</span><span class="p">)</span>
-                <span class="n">accuracies_training</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">accuracy</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">))</span>
-                <span class="n">accuracies_test</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">accuracy</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">Y_test</span><span class="p">))</span></code></pre></figure>
+                <span class="n">t</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">i_batch</span><span class="p">)</span>
+                <span class="n">accuracies_training</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">accuracy</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">))</span>
+                <span class="n">accuracies_test</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">accuracy</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">Y_test</span><span class="p">))</span></code></pre></figure>
 
-<p>There is a parameter <code class="highlighter-rouge">monitor</code> which allows to enable monitoring. If it is activated, the accuracy on the training and the test set will be computed periodically. Then at the end of the training, the learning curves will be shown. It is very practical to analyze the dynamic of training or to check if overfitting occurred.</p>
+<p>There is a parameter <code class="language-plaintext highlighter-rouge">monitor</code> which allows to enable monitoring. If it is activated, the accuracy on the training and the test set will be computed periodically. Then at the end of the training, the learning curves will be shown. It is very practical to analyze the dynamic of training or to check if overfitting occurred.</p>
 
 <p>All that remains to do is calling the function! With this architecture, you should obtain about 91.5% of accuracy with only one pass over the dataset and reach more than 92% with more passes. One pass takes a little less than 3s on my computer. I find the performance pretty decent!</p>
 
-<p>To modify the architecture, you just have to change the value of the variable <code class="highlighter-rouge">layer</code>. For instance, to use a 3 layers neural network whose layers have respectively a size of 128, 64 and 10, you just have to replace <code class="highlighter-rouge">layers = [10]</code> by <code class="highlighter-rouge">layers = [128, 64, 10]</code>. After 10 passes, these architectures achieve 97.8% of accuracy. It is an incredible result for our little library!</p>
+<p>To modify the architecture, you just have to change the value of the variable <code class="language-plaintext highlighter-rouge">layer</code>. For instance, to use a 3 layers neural network whose layers have respectively a size of 128, 64 and 10, you just have to replace <code class="language-plaintext highlighter-rouge">layers = [10]</code> by <code class="language-plaintext highlighter-rouge">layers = [128, 64, 10]</code>. After 10 passes, these architectures achieve 97.8% of accuracy. It is an incredible result for our little library!</p>
 
 <h1 id="interpretation">Interpretation</h1>
 
@@ -214,13 +217,13 @@
 
 <p>The first layer of neurons directly takes the intensities of pixels as inputs. Consequently, it is possible to visualize the weights and to interpret them.</p>
 
-<p>If <script type="math/tex">W</script> is the weights matrix of the first layer which contains <script type="math/tex">m</script> neurons then the <script type="math/tex">j^{th}</script> column corresponds to the <script type="math/tex">j^{th}</script> neuron and the coefficient <script type="math/tex">w_{ij}</script> to the weight of neuron <script type="math/tex">j</script> associated to pixel <script type="math/tex">i</script>. Thus, it is possible to reshape the <script type="math/tex">j^{th}</script> column into an image and see the importance of each pixel for each neuron. The image below shows clearly how to interpret the weights matrix:</p>
+<p>If \(W\) is the weights matrix of the first layer which contains \(m\) neurons then the \(j^{th}\) column corresponds to the \(j^{th}\) neuron and the coefficient \(w_{ij}\) to the weight of neuron \(j\) associated to pixel \(i\). Thus, it is possible to reshape the \(j^{th}\) column into an image and see the importance of each pixel for each neuron. The image below shows clearly how to interpret the weights matrix:</p>
 
 <p><img src="/media/img/part2/weights_visualization.svg" alt="Interpretation of the weights matrix of the first layer" class="center-image modal-image" /></p>
 
 <p>If we take a one layer neural network, there are 10 neurons which corresponds respectively to the digits 0, 1, …, 9. So the first neuron must find weights that determines well what is a zero, the second what is a one, …</p>
 
-<p>Let’s call the function <code class="highlighter-rouge">display_weights</code> which reshape the weights and plot them see to check our hypothesis:</p>
+<p>Let’s call the function <code class="language-plaintext highlighter-rouge">display_weights</code> which reshape the weights and plot them see to check our hypothesis:</p>
 
 <p><img src="/media/img/part2/weights_10.png" alt="Weights of the first layer for one layer network" class="center-image modal-image" /></p>
 
@@ -254,20 +257,19 @@
 
 <p>The output of a binary linear classifier is a single real number given by:</p>
 
-<script type="math/tex; mode=display">f(x)=\sigma(w^Tx)</script>
+\[f(x)=\sigma(w^Tx)\]
 
-<p>Then the chosen class is <script type="math/tex">% <![CDATA[
-g(x) = \left\{\begin{array}{rl}1 & \text{ if } f(x) \geq 0.5 \\ 0 & otherwise \end{array}\right. %]]></script>.</p>
+<p>Then the chosen class is \(g(x) = \left\{\begin{array}{rl}1 &amp; \text{ if } f(x) \geq 0.5 \\ 0 &amp; otherwise \end{array}\right.\).</p>
 
-<p>And the output of multiclass is a probability distribution stored in a vector where the <script type="math/tex">k^{th}</script> coordinate is given by:</p>
+<p>And the output of multiclass is a probability distribution stored in a vector where the \(k^{th}\) coordinate is given by:</p>
 
-<script type="math/tex; mode=display">f(x)_k=softmax(x)_k=\frac{\exp(w_k^Tx)}{\sum_{j}{\exp(w_j^Tx)}}</script>
+\[f(x)_k=softmax(x)_k=\frac{\exp(w_k^Tx)}{\sum_{j}{\exp(w_j^Tx)}}\]
 
-<p>Then the chosen class is <script type="math/tex">g(x) = \underset{k}{argmax}(f(x)_k)</script>.</p>
+<p>Then the chosen class is \(g(x) = \underset{k}{argmax}(f(x)_k)\).</p>
 
 <p>By the way they are called linear classifiers because they use linear combinations of the input to compute the output.</p>
 
-<p>What it is interesting to know for a classifier is the shape of its <em>frontiers</em>. Let <script type="math/tex">A_k = \{ x \in \mathcal{X}, g(x) = k \}</script>, it is the subset of the input space for which the output class is <script type="math/tex">k</script>, we will call <script type="math/tex">A_k</script> the <em>decision area</em> for class <script type="math/tex">k</script>. The frontiers are the areas which separate an <script type="math/tex">A_i</script> from another <script type="math/tex">A_j</script>.</p>
+<p>What it is interesting to know for a classifier is the shape of its <em>frontiers</em>. Let \(A_k = \{ x \in \mathcal{X}, g(x) = k \}\), it is the subset of the input space for which the output class is \(k\), we will call \(A_k\) the <em>decision area</em> for class \(k\). The frontiers are the areas which separate an \(A_i\) from another \(A_j\).</p>
 
 <p>Let’s determine the decision areas and the frontiers. In order to do that, I have written a small program which randomly creates a linear classifier and plots the decision areas. You can get it <a href="https://github.com/pvigier/linear-classifiers">here</a>. Here are the results for a binary classifier and a multiclass classifier:</p>
 
@@ -296,7 +298,7 @@ g(x) = \left\{\begin{array}{rl}1 & \text{ if } f(x) \geq 0.5 \\ 0 & otherwise \e
 
 <p>Generally, the classes are not linearly separable so the accuracy of linear classifiers is not great. That’s a reason why we use neural networks to create non-linear functions which are able to model non-linear frontiers.</p>
 
-<p>This is a point of view, now we can see another one. Multilayer neural networks try to find a transformation from the input space <script type="math/tex">\mathcal{X}</script> where the classes are not linearly separable to a space of deep features where they are.</p>
+<p>This is a point of view, now we can see another one. Multilayer neural networks try to find a transformation from the input space \(\mathcal{X}\) where the classes are not linearly separable to a space of deep features where they are.</p>
 
 <p>In the next parts, we will show several examples where neural networks are indeed able to create deep features that make classes linearly separable or almost.</p>
 
@@ -306,24 +308,24 @@ g(x) = \left\{\begin{array}{rl}1 & \text{ if } f(x) \geq 0.5 \\ 0 & otherwise \e
 
 <p>I have slightly modified the code which creates the computational graph in order to have access to the output of the last layer.</p>
 
-<p>In addition, I have added the function <code class="highlighter-rouge">display_deep_features</code> which displays the deep features. I copy the code below:</p>
+<p>In addition, I have added the function <code class="language-plaintext highlighter-rouge">display_deep_features</code> which displays the deep features. I copy the code below:</p>
 
 <figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">display_deep_features</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">):</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
-    <span class="c"># Compute the deep features</span>
-    <span class="n">features</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">propagate</span><span class="p">([</span><span class="n">X</span><span class="p">])[</span><span class="mi">1</span><span class="p">]</span>
-    <span class="c"># PCA with 2 components</span>
-    <span class="n">features</span> <span class="o">-=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-    <span class="n">U</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">V</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">svd</span><span class="p">(</span><span class="n">features</span><span class="p">)</span>
-    <span class="n">points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">V</span><span class="o">.</span><span class="n">T</span><span class="p">[:,:</span><span class="mi">2</span><span class="p">])</span>
-    <span class="c"># Plot points for each digit</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
-        <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">points</span><span class="p">[</span><span class="n">Y</span> <span class="o">==</span> <span class="n">i</span><span class="p">,:]</span><span class="o">.</span><span class="n">T</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="s">'o'</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s">'Deep features'</span><span class="p">)</span></code></pre></figure>
+    <span class="n">plt</span><span class="p">.</span><span class="n">figure</span><span class="p">()</span>
+    <span class="c1"># Compute the deep features
+</span>    <span class="n">features</span> <span class="o">=</span> <span class="n">graph</span><span class="p">.</span><span class="n">propagate</span><span class="p">([</span><span class="n">X</span><span class="p">])[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="c1"># PCA with 2 components
+</span>    <span class="n">features</span> <span class="o">-=</span> <span class="n">np</span><span class="p">.</span><span class="n">mean</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">U</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">V</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">linalg</span><span class="p">.</span><span class="n">svd</span><span class="p">(</span><span class="n">features</span><span class="p">)</span>
+    <span class="n">points</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">dot</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">V</span><span class="p">.</span><span class="n">T</span><span class="p">[:,:</span><span class="mi">2</span><span class="p">])</span>
+    <span class="c1"># Plot points for each digit
+</span>    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
+        <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">points</span><span class="p">[</span><span class="n">Y</span> <span class="o">==</span> <span class="n">i</span><span class="p">,:].</span><span class="n">T</span>
+        <span class="n">plt</span><span class="p">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="s">'o'</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+    <span class="n">plt</span><span class="p">.</span><span class="n">legend</span><span class="p">()</span>
+    <span class="n">plt</span><span class="p">.</span><span class="n">title</span><span class="p">(</span><span class="s">'Deep features'</span><span class="p">)</span></code></pre></figure>
 
-<p>It computes the deep features for at most 1000 points. Note that we select the second output of the graph with <code class="highlighter-rouge">[1]</code> which is the output of the penultimate layer.</p>
+<p>It computes the deep features for at most 1000 points. Note that we select the second output of the graph with <code class="language-plaintext highlighter-rouge">[1]</code> which is the output of the penultimate layer.</p>
 
 <p>Then it applies PCA to project the deep features into the 2D space. The deep features space could have a high dimension so we must project them in 2D to be able to visualize them. Recall that PCA finds a good subspace in which to project to loss the minimum of information.</p>
 
@@ -483,6 +485,7 @@ s.setAttribute('data-timestamp', +new Date());
 <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
                 </div>
                 <div class="col-sm-3 col-sm-offset-1 blog-sidebar">
+    <p><strong><a href="https://vagabondgame.com">Get Vagabond</a></strong></p>
 	<div class="sidebar-module">
         <h4>Tags</h4>
         <ol class="list-unstyled">
@@ -505,7 +508,7 @@ s.setAttribute('data-timestamp', +new Date());
 		
 			<li><a href="/tag/git">git (1)</a></li>
 		
-			<li><a href="/tag/vagabond">vagabond (23)</a></li>
+			<li><a href="/tag/vagabond">vagabond (24)</a></li>
 		
 			<li><a href="/tag/ecs">ecs (2)</a></li>
 		
@@ -517,6 +520,14 @@ s.setAttribute('data-timestamp', +new Date());
         <h4>Archives</h4>
         <ol class="list-unstyled">
 		
+        
+            
+            
+            
+            
+			<li id="yDecember 2020"><a href="/2020/12">December 2020 (1)</a></li>
+				
+            
         
             
             
