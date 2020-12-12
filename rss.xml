@@ -1,4 +1,67 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="https://pvigier.github.io/rss.xml" rel="self" type="application/atom+xml" /><link href="https://pvigier.github.io/" rel="alternate" type="text/html" /><updated>2020-12-11T17:22:42+01:00</updated><id>https://pvigier.github.io/rss.xml</id><title type="html">pvigier’s blog</title><author><name>Pierre Vigier</name></author><entry><title type="html">Vagabond enters in alpha!</title><link href="https://pvigier.github.io/2020/12/11/vagabond-enters-in-alpha.html" rel="alternate" type="text/html" title="Vagabond enters in alpha!" /><published>2020-12-11T00:00:00+01:00</published><updated>2020-12-11T00:00:00+01:00</updated><id>https://pvigier.github.io/2020/12/11/vagabond-enters-in-alpha</id><content type="html" xml:base="https://pvigier.github.io/2020/12/11/vagabond-enters-in-alpha.html">&lt;iframe width=&quot;100%&quot; height=&quot;400&quot; src=&quot;https://www.youtube.com/embed/N69NKycYRV4&quot; frameborder=&quot;0&quot; allow=&quot;accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture&quot; allowfullscreen=&quot;&quot;&gt;&lt;/iframe&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="https://pvigier.github.io/rss.xml" rel="self" type="application/atom+xml" /><link href="https://pvigier.github.io/" rel="alternate" type="text/html" /><updated>2020-12-12T19:39:53+01:00</updated><id>https://pvigier.github.io/rss.xml</id><title type="html">pvigier’s blog</title><author><name>Pierre Vigier</name></author><entry><title type="html">Procedural Death Animation with Falling Sand Automata</title><link href="https://pvigier.github.io/2020/12/12/procedural-death-animation-with-falling-sand-automata.html" rel="alternate" type="text/html" title="Procedural Death Animation with Falling Sand Automata" /><published>2020-12-12T00:00:00+01:00</published><updated>2020-12-12T00:00:00+01:00</updated><id>https://pvigier.github.io/2020/12/12/procedural-death-animation-with-falling-sand-automata</id><content type="html" xml:base="https://pvigier.github.io/2020/12/12/procedural-death-animation-with-falling-sand-automata.html">&lt;p&gt;Hi everyone!&lt;/p&gt;
+
+&lt;p&gt;In this post, I will show you how I used falling sand automata to generate death animations for monsters of my game &lt;a href=&quot;https://www.vagabondgame.com/&quot;&gt;Vagabond&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/media/img/procedural-death-animation-with-falling-sand-automata/death_animations.gif&quot; alt=&quot;&quot; class=&quot;center-image modal-image&quot; /&gt;&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;h1 id=&quot;falling-sand-automata&quot;&gt;Falling Sand Automata&lt;/h1&gt;
+
+&lt;p&gt;A falling sand automaton is a &lt;a href=&quot;https://en.wikipedia.org/wiki/Cellular_automaton&quot;&gt;cellular automaton&lt;/a&gt; that simulates how grains of sand move due to gravity and create piles.&lt;/p&gt;
+
+&lt;p&gt;The rules are simple:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;If the cell below a sand grain is empty, the sand grain moves to the empty cell (see (a)).&lt;/li&gt;
+  &lt;li&gt;If the cell below a sand grain is full but the cell at bottom left or the cell at bottom right is free, the sand grain moves there (see (b)). If both are free, choose one randomly.&lt;/li&gt;
+  &lt;li&gt;In the other cases, the sand grain does not move.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;img src=&quot;/media/img/procedural-death-animation-with-falling-sand-automata/automata_rules.png&quot; alt=&quot;&quot; class=&quot;center-image modal-image&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;If you want to know more about falling sand automata, you can look at this &lt;a href=&quot;https://w-shadow.com/blog/2009/09/29/falling-sand-style-water-simulation/&quot;&gt;article&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;With these simple rules you can obtain animations like this:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/media/img/procedural-death-animation-with-falling-sand-automata/sand.gif&quot; alt=&quot;&quot; class=&quot;center-image modal-image&quot; /&gt;&lt;/p&gt;
+
+&lt;h1 id=&quot;generating-death-animations&quot;&gt;Generating death animations&lt;/h1&gt;
+
+&lt;p&gt;Now let us see how to use the falling sand automata to create death animations for the monsters.&lt;/p&gt;
+
+&lt;p&gt;The idea is to consider the non transparent pixels of the image as the sand grains and to make them fall to create a pile from the corpse of the monster. The only difference with the rules previously mentionned is that each sand grain has now a color. Here is what we obtain:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/media/img/procedural-death-animation-with-falling-sand-automata/death_animation.gif&quot; alt=&quot;&quot; class=&quot;center-image modal-image&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;In my opinion it is not very appealing for two reasons: the pile is very high and everything is falling at the same speed.&lt;/p&gt;
+
+&lt;p&gt;To fix the height issue, I use a 3D cellular automaton. I use several layers of the simple 2D cellular automaton. At the initial state, the image is in the middle layer, then the grain sands can not only move to bottom left and bottom right cells but also to the bottom cells of the previous and next layers:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/media/img/procedural-death-animation-with-falling-sand-automata/3d_automata_rules.png&quot; alt=&quot;&quot; class=&quot;center-image modal-image&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;To obtain an image from the 3D state of the cellular automaton, I project the state to 2D by taking, for each (i, j) coordinates, the first non transparent cell where k iterates the layers. Here is the result with three layers:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/media/img/procedural-death-animation-with-falling-sand-automata/death_animation_3d.gif&quot; alt=&quot;&quot; class=&quot;center-image modal-image&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;To improve the speed issue, I randomize the number of rows a grain fall in one step between 1 and \(n\). In practice, I use \(n = 2\) or \(n = 3\). Here is the result:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/media/img/procedural-death-animation-with-falling-sand-automata/death_animation_3d_speed.gif&quot; alt=&quot;&quot; class=&quot;center-image modal-image&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;It produces some holes during the fall as if the monster is disintegrating.&lt;/p&gt;
+
+&lt;p&gt;Finally, I skip some frames to have animations with exactly 6 frames. Here is the final result:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/media/img/procedural-death-animation-with-falling-sand-automata/death_animation_3d_speed_skip.gif&quot; alt=&quot;&quot; class=&quot;center-image modal-image&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;The grains are falling, on average, at a constant pace, while the gravity should make them accelerate. If you want you can skip more frames at the end of the animation to simulate that.&lt;/p&gt;
+
+&lt;p&gt;You can find the complete script on &lt;a href=&quot;https://github.com/pvigier/lpc-scripts/blob/main/death_animation.py&quot;&gt;GitHub&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;What’s nice is that if we are not happy with the result, we can rerun the script with a different seed to obtain a new animation. Here are several animations for the bat:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/media/img/procedural-death-animation-with-falling-sand-automata/death_animation_seeds.gif&quot; alt=&quot;&quot; class=&quot;center-image modal-image&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;See you next time for more!&lt;/p&gt;</content><author><name>pierre</name></author><category term="vagabond" /><category term="pcg" /><summary type="html">Hi everyone! In this post, I will show you how I used falling sand automata to generate death animations for monsters of my game Vagabond.</summary></entry><entry><title type="html">Vagabond enters in alpha!</title><link href="https://pvigier.github.io/2020/12/11/vagabond-enters-in-alpha.html" rel="alternate" type="text/html" title="Vagabond enters in alpha!" /><published>2020-12-11T00:00:00+01:00</published><updated>2020-12-11T00:00:00+01:00</updated><id>https://pvigier.github.io/2020/12/11/vagabond-enters-in-alpha</id><content type="html" xml:base="https://pvigier.github.io/2020/12/11/vagabond-enters-in-alpha.html">&lt;iframe width=&quot;100%&quot; height=&quot;400&quot; src=&quot;https://www.youtube.com/embed/N69NKycYRV4&quot; frameborder=&quot;0&quot; allow=&quot;accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture&quot; allowfullscreen=&quot;&quot;&gt;&lt;/iframe&gt;
 
 &lt;p&gt;Hi everyone!&lt;/p&gt;
 
@@ -333,7 +396,7 @@
 
 &lt;p&gt;See you next week for more!&lt;/p&gt;</content><author><name>pierre</name></author><category term="vagabond" /><summary type="html">Hi everyone! Last two weeks, I was working on teleporting the players from one map to another. I will use this system to enter into dungeons, buildings, etc. and also to leave them. But it was not that easy to implement as it required some deep architectural changes in the game engine. Sorry, your browser doesn't support embedded videos.</summary></entry><entry><title type="html">Palette Swapping with Shaders</title><link href="https://pvigier.github.io/2019/10/06/palette-swapping-with-shaders.html" rel="alternate" type="text/html" title="Palette Swapping with Shaders" /><published>2019-10-06T00:00:00+02:00</published><updated>2019-10-06T00:00:00+02:00</updated><id>https://pvigier.github.io/2019/10/06/palette-swapping-with-shaders</id><content type="html" xml:base="https://pvigier.github.io/2019/10/06/palette-swapping-with-shaders.html">&lt;p&gt;Hi everyone!&lt;/p&gt;
 
-&lt;p&gt;In this devlog, I will show you a technique that I love and that I will abuse in Vagabond: palette swapping.&lt;/p&gt;
+&lt;p&gt;In this devlog, I will show you a technique that I love and that I will abuse in &lt;a href=&quot;https://www.vagabondgame.com&quot;&gt;Vagabond&lt;/a&gt;: palette swapping.&lt;/p&gt;
 
 &lt;p&gt;Palette swapping is simply changing the palette of a texture. Here, we will do that at runtime using shaders. It was a useful technique in the old days to add variety in the assets without using too much memory. Now, it is used in procedural generation to produce new assets, I will show many examples in later devlogs.&lt;/p&gt;
 
@@ -759,59 +822,4 @@
 
 &lt;p&gt;The next and last step for the game engine is networking. It will be a big part so it may take me more than one week to work on that. But after that, I will work more directly on the game and I am really excited to be there.&lt;/p&gt;
 
-&lt;p&gt;See you next week for more!&lt;/p&gt;</content><author><name>pierre</name></author><category term="vagabond" /><category term="game-engine" /><category term="cpp" /><summary type="html">The goal of this week was to find a GUI library for the in-game interface. While making some custom widgets may seem easy, writing a general, production-ready, full-fledged GUI library is notoriously difficult. Thus there are few open-source and well-maintained GUI libraries that work with OpenGL or SFML. In this article, I will enumerate the alternatives I considered and give some details about them. Finally, I will select one and explain my choice.</summary></entry><entry><title type="html">Vagabond – Audio Engine</title><link href="https://pvigier.github.io/2019/08/18/vagabond-audio-engine.html" rel="alternate" type="text/html" title="Vagabond – Audio Engine" /><published>2019-08-18T00:00:00+02:00</published><updated>2019-08-18T00:00:00+02:00</updated><id>https://pvigier.github.io/2019/08/18/vagabond-audio-engine</id><content type="html" xml:base="https://pvigier.github.io/2019/08/18/vagabond-audio-engine.html">&lt;p&gt;After the &lt;a href=&quot;/2019/07/28/vagabond-2d-light-system.html&quot;&gt;graphics engine&lt;/a&gt; and the &lt;a href=&quot;/2019/08/11/vagabond-2d-physics-engine.html&quot;&gt;physics engine&lt;/a&gt;, this week, I have worked on the audio engine.&lt;/p&gt;
-
-&lt;p&gt;To play sounds and music I use the &lt;a href=&quot;https://www.sfml-dev.org/tutorials/2.5/audio-sounds.php&quot;&gt;audio part of SFML&lt;/a&gt; which is really good. It is a thin wrapper around OpenAL. It supports WAV, OGG/Vorbis and FLAC. Moreover, it also supports &lt;a href=&quot;https://www.sfml-dev.org/tutorials/2.5/audio-spatialization.php&quot;&gt;spatialization&lt;/a&gt; and it is really easy to use.&lt;/p&gt;
-
-&lt;p&gt;There are only two things for which an audio engine is needed.&lt;/p&gt;
-
-&lt;p&gt;The first one is to make sure that the total number of sounds and music never exceeds 256 (which is an internal limit according to SFML documentation). To do that, the audio engine refuses to play a new sound or music if the limit has already been reached. And as soon as a sound or a music finishes, it removes its instance to be able to play a new one.&lt;/p&gt;
-
-&lt;p&gt;The second thing is being able to pause all sounds and music, play other sounds and music and then be able to resume all the sounds and music that have been paused. This use case happens when you are in-game and some sounds or music are playing. Then you go to the pause menu, all the game simulation is paused, so the sounds and music should be paused too. Some sounds are played by the user interface in the pause menu. Finally, when the player returns to the game, the simulation resumes and all the sounds and music should be resumed too.&lt;/p&gt;
-
-&lt;p&gt;To achieve that, I will use two abstractions, one for each of the two issues, respectively the audio engine and the audio scene.&lt;/p&gt;
-
-&lt;p&gt;Let us dive into the details of these abstractions.&lt;/p&gt;
-
-&lt;!--more--&gt;
-
-&lt;h1 id=&quot;audio-engine&quot;&gt;Audio Engine&lt;/h1&gt;
-
-&lt;p&gt;The audio engine will manage all the audio sources i.e. the sounds and the music. All creation of a new audio source should be done through the audio engine.&lt;/p&gt;
-
-&lt;p&gt;To do that, I use 4 data structures:&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;a sparse set for sounds;&lt;/li&gt;
-  &lt;li&gt;a sparse set for music;&lt;/li&gt;
-  &lt;li&gt;a priority queue for sounds;&lt;/li&gt;
-  &lt;li&gt;a priority queue for music.&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;A sparse set is a data structure that I like and that is quite common in the video game industry. The idea is to associate an id to each object of the set. The container that makes the link between the ids and the objects may be sparse but the container that contains the objects is dense as shown on the image below.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/media/img/vagabond-audio-engine/sparse_set.svg&quot; alt=&quot;&quot; width=&quot;400&quot; class=&quot;center-image&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;If you want more details about sparse sets, you can read this &lt;a href=&quot;http://bitsquid.blogspot.com/2011/09/managing-decoupling-part-4-id-lookup.html&quot;&gt;article&lt;/a&gt; on bitsquid’s blog. I think it is the article that democratizes this data structure. I may write an article on my implementation later that is a bit more modern than theirs.&lt;/p&gt;
-
-&lt;p&gt;I use sparse sets to store only the sounds and music that are currently playing and to have an id that can be used to pause or stop the audio source later on. An alternative is to use an &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;std::map&lt;/code&gt; or &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;std::unordered_map&lt;/code&gt; but it is a bit less efficient.&lt;/p&gt;
-
-&lt;p&gt;The priority queues are used to know when sounds or music should be removed. When an audio source is played, an event with its expected stop time is added to the corresponding priority queue. Then at each frame, we check the current time against the stop time of the first element of the priority queue, if it is more, we remove the audio source and check again, otherwise, we do nothing. For an audio source that loops or that is paused, I set the stop time to infinity.&lt;/p&gt;
-
-&lt;p&gt;I do not use an &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;std::priority_queue&lt;/code&gt; to implement the priority queues because we cannot easily remove an element from the queue. Instead, I use an &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;std::set&lt;/code&gt; which sorts elements and hence can be used as a priority queue. Moreover, it allows removing any element.&lt;/p&gt;
-
-&lt;h1 id=&quot;audio-scene&quot;&gt;Audio Scene&lt;/h1&gt;
-
-&lt;p&gt;The audio scene will keep track of all the ids of sounds and music that are played in the scene. Then, when we want to pause the current audio scene, it saves the state of all currently playing audio sources and stops them. Finally, when we want to resume the audio scene, it restores the audio sources with the saved states.&lt;/p&gt;
-
-&lt;p&gt;It is quite simple to save the states of an audio source with SFML API as you have an easy access to current playing offset, volume, pitch, position in the space, etc.&lt;/p&gt;
-
-&lt;p&gt;The last thing that must be saved and restored correctly is the position and direction of the listener. Again, the audio scene just keeps track of their values.&lt;/p&gt;
-
-&lt;h1 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h1&gt;
-
-&lt;p&gt;That is all for my audio engine, it is simple but robust and easy to use. I am happy with its design.&lt;/p&gt;
-
-&lt;p&gt;The next goals are choosing a GUI library and starting to work on the networking part.&lt;/p&gt;
-
-&lt;p&gt;See you next week for more!&lt;/p&gt;</content><author><name>pierre</name></author><category term="vagabond" /><category term="game-engine" /><summary type="html">After the graphics engine and the physics engine, this week, I have worked on the audio engine. To play sounds and music I use the audio part of SFML which is really good. It is a thin wrapper around OpenAL. It supports WAV, OGG/Vorbis and FLAC. Moreover, it also supports spatialization and it is really easy to use. There are only two things for which an audio engine is needed. The first one is to make sure that the total number of sounds and music never exceeds 256 (which is an internal limit according to SFML documentation). To do that, the audio engine refuses to play a new sound or music if the limit has already been reached. And as soon as a sound or a music finishes, it removes its instance to be able to play a new one. The second thing is being able to pause all sounds and music, play other sounds and music and then be able to resume all the sounds and music that have been paused. This use case happens when you are in-game and some sounds or music are playing. Then you go to the pause menu, all the game simulation is paused, so the sounds and music should be paused too. Some sounds are played by the user interface in the pause menu. Finally, when the player returns to the game, the simulation resumes and all the sounds and music should be resumed too. To achieve that, I will use two abstractions, one for each of the two issues, respectively the audio engine and the audio scene. Let us dive into the details of these abstractions.</summary></entry></feed>
+&lt;p&gt;See you next week for more!&lt;/p&gt;</content><author><name>pierre</name></author><category term="vagabond" /><category term="game-engine" /><category term="cpp" /><summary type="html">The goal of this week was to find a GUI library for the in-game interface. While making some custom widgets may seem easy, writing a general, production-ready, full-fledged GUI library is notoriously difficult. Thus there are few open-source and well-maintained GUI libraries that work with OpenGL or SFML. In this article, I will enumerate the alternatives I considered and give some details about them. Finally, I will select one and explain my choice.</summary></entry></feed>

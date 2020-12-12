@@ -23,7 +23,7 @@
 <meta name="twitter:card" content="summary" />
 <meta property="twitter:title" content="Quadtree and collision detection" />
 <script type="application/ld+json">
-{"author":{"@type":"Person","name":"pierre"},"description":"This week was short as I was still working on the 2D light system on Monday and Tuesday. I spent the rest of my time working on a quadtree implementation. In this article, I will share with you my implementation and my thoughts while designing it. Firstly, I want to argue why I decided to implement a quadtree. A Quadtree is a space partitioning data structure. Its main advantage against other data structures is its versatility. It offers good performance for insertion, removal and lookup. Thus, we can use it in a dynamic context where the data often change. Moreover, it is quite easy to understand and implement. If you are totally new to space partitioning, I advise you to read this article by Robert Nystrom. If you want a gentler introduction to quadtrees, you can read this article or this one. In my game, there are several places where using a quadtree is an instant win: During collision detection, using a quadtree is way more efficient than the brute-force approach (testing all pairs). It is not the most efficient approach though, see this article if you want an overview of possible approaches and benchmarks. But, I will start using this in the first version of my physics engine. I may change later and use a more specialized algorithm if I need to. In the scene graph, to perform culling, I can use a quadtree to find all the nodes that are visible. In the light system, I can use a quadtree to find the walls that are intersecting the light visibility polygon. In an AI system, I can use a quadtree to find all the objects or enemies that are close to an entity. etc. As you can notice, quadtrees are very versatile. They are a nice tool to have in your toolbox. You can find all the code that I will show next on GitHub.","@type":"BlogPosting","headline":"Quadtree and collision detection","dateModified":"2019-08-04T00:00:00+02:00","datePublished":"2019-08-04T00:00:00+02:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://pvigier.github.io/2019/08/04/quadtree-collision-detection.html"},"url":"https://pvigier.github.io/2019/08/04/quadtree-collision-detection.html","@context":"https://schema.org"}</script>
+{"author":{"@type":"Person","name":"pierre"},"headline":"Quadtree and collision detection","dateModified":"2019-08-04T00:00:00+02:00","datePublished":"2019-08-04T00:00:00+02:00","description":"This week was short as I was still working on the 2D light system on Monday and Tuesday. I spent the rest of my time working on a quadtree implementation. In this article, I will share with you my implementation and my thoughts while designing it. Firstly, I want to argue why I decided to implement a quadtree. A Quadtree is a space partitioning data structure. Its main advantage against other data structures is its versatility. It offers good performance for insertion, removal and lookup. Thus, we can use it in a dynamic context where the data often change. Moreover, it is quite easy to understand and implement. If you are totally new to space partitioning, I advise you to read this article by Robert Nystrom. If you want a gentler introduction to quadtrees, you can read this article or this one. In my game, there are several places where using a quadtree is an instant win: During collision detection, using a quadtree is way more efficient than the brute-force approach (testing all pairs). It is not the most efficient approach though, see this article if you want an overview of possible approaches and benchmarks. But, I will start using this in the first version of my physics engine. I may change later and use a more specialized algorithm if I need to. In the scene graph, to perform culling, I can use a quadtree to find all the nodes that are visible. In the light system, I can use a quadtree to find the walls that are intersecting the light visibility polygon. In an AI system, I can use a quadtree to find all the objects or enemies that are close to an entity. etc. As you can notice, quadtrees are very versatile. They are a nice tool to have in your toolbox. You can find all the code that I will show next on GitHub.","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://pvigier.github.io/2019/08/04/quadtree-collision-detection.html"},"url":"https://pvigier.github.io/2019/08/04/quadtree-collision-detection.html","@context":"https://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 
         <!-- Bootstrap -->
@@ -670,7 +670,7 @@
 
 <p>See you next week for more!</p>
 
-    <p><em>If you are interested in my adventures during the development of Vagabond, you can follow me on <a href="https://twitter.com/PierreVigier">Twitter</a>.</em></p>
+    <p><em>If you are interested in my adventures during the development of <a href="https://www.vagabondgame.com">Vagabond</a>, you can follow me on <a href="https://twitter.com/PierreVigier">Twitter</a>.</em></p>
     
 	<p>Tags: <span class="label label-primary"><a href="/tag/vagabond">vagabond</a></span> <span class="label label-primary"><a href="/tag/game-engine">game-engine</a></span> <span class="label label-primary"><a href="/tag/cpp">cpp</a></span> </p>
 	
@@ -720,7 +720,7 @@ s.setAttribute('data-timestamp', +new Date());
 <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
                 </div>
                 <div class="col-sm-3 col-sm-offset-1 blog-sidebar">
-    <p><strong><a href="https://vagabondgame.com">Get Vagabond</a></strong></p>
+    <p><strong><a href="https://www.vagabondgame.com">Get Vagabond</a></strong></p>
 	<div class="sidebar-module">
         <h4>Tags</h4>
         <ol class="list-unstyled">
@@ -731,7 +731,7 @@ s.setAttribute('data-timestamp', +new Date());
 		
 			<li><a href="/tag/cpp">cpp (8)</a></li>
 		
-			<li><a href="/tag/pcg">pcg (13)</a></li>
+			<li><a href="/tag/pcg">pcg (14)</a></li>
 		
 			<li><a href="/tag/simulopolis">simulopolis (5)</a></li>
 		
@@ -743,7 +743,7 @@ s.setAttribute('data-timestamp', +new Date());
 		
 			<li><a href="/tag/git">git (1)</a></li>
 		
-			<li><a href="/tag/vagabond">vagabond (24)</a></li>
+			<li><a href="/tag/vagabond">vagabond (25)</a></li>
 		
 			<li><a href="/tag/ecs">ecs (2)</a></li>
 		
@@ -760,7 +760,12 @@ s.setAttribute('data-timestamp', +new Date());
             
             
             
-			<li id="yDecember 2020"><a href="/2020/12">December 2020 (1)</a></li>
+        
+            
+            
+            
+            
+			<li id="yDecember 2020"><a href="/2020/12">December 2020 (2)</a></li>
 				
             
         

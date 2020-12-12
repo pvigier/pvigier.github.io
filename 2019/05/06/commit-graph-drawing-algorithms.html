@@ -23,7 +23,7 @@
 <meta name="twitter:card" content="summary" />
 <meta property="twitter:title" content="Commit graph drawing algorithms" />
 <script type="application/ld+json">
-{"author":{"@type":"Person","name":"pierre"},"description":"This article is one chapter of my master thesis entitled “Design and implementation of a graphical user interface for git”. It describes the algorithm I designed to draw the commit graph in my own prototype git client called gitamine. I have adapted the content so that it fits better with this blog. Drawing graphs is a very complex topic in general but here we want to draw a specific type of graphs: commit graphs. Commit graphs have several several pieces of information that simplify the problem. The most important ones are that the graph is directed and acyclic and that the commits have timestamps. Moreover, among the many ways we can draw a directed acyclic graph some are more appropriate for commit graphs. Indeed, programmers manipulate the branches of the graph thus it will be more convenient for them if the representation allows to visualize them easily. We will first study the different types of graph drawing algorithms used in other clients. Then, we will describe how to place the nodes so that the commit graph is nicely drawable. Finally, we will cover some optimizations done in gitamine to draw and browse the graph in real time.","@type":"BlogPosting","headline":"Commit graph drawing algorithms","dateModified":"2019-05-06T00:00:00+02:00","datePublished":"2019-05-06T00:00:00+02:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://pvigier.github.io/2019/05/06/commit-graph-drawing-algorithms.html"},"url":"https://pvigier.github.io/2019/05/06/commit-graph-drawing-algorithms.html","@context":"https://schema.org"}</script>
+{"author":{"@type":"Person","name":"pierre"},"headline":"Commit graph drawing algorithms","dateModified":"2019-05-06T00:00:00+02:00","datePublished":"2019-05-06T00:00:00+02:00","description":"This article is one chapter of my master thesis entitled “Design and implementation of a graphical user interface for git”. It describes the algorithm I designed to draw the commit graph in my own prototype git client called gitamine. I have adapted the content so that it fits better with this blog. Drawing graphs is a very complex topic in general but here we want to draw a specific type of graphs: commit graphs. Commit graphs have several several pieces of information that simplify the problem. The most important ones are that the graph is directed and acyclic and that the commits have timestamps. Moreover, among the many ways we can draw a directed acyclic graph some are more appropriate for commit graphs. Indeed, programmers manipulate the branches of the graph thus it will be more convenient for them if the representation allows to visualize them easily. We will first study the different types of graph drawing algorithms used in other clients. Then, we will describe how to place the nodes so that the commit graph is nicely drawable. Finally, we will cover some optimizations done in gitamine to draw and browse the graph in real time.","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://pvigier.github.io/2019/05/06/commit-graph-drawing-algorithms.html"},"url":"https://pvigier.github.io/2019/05/06/commit-graph-drawing-algorithms.html","@context":"https://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 
         <!-- Bootstrap -->
@@ -533,7 +533,7 @@ J(c) = J_{i_{min}}(c)\text{ with }i_{min} = \underset{c.mergeChildren}{\min}{d.i
 
 <p>The last optimization does not concern the graph rendering but the commit list which is displayed next to the graph. Displaying the whole list of commits does not scale well when there are thousands or tens of thousands commits. Thus, we can apply the same idea as previously and only display the commits that are visible. However, to give the impression to the user that all the commits are displayed and give him the ability to scroll, padding was added before and after the displayed items.</p>
 
-    <p><em>If you are interested in my adventures during the development of Vagabond, you can follow me on <a href="https://twitter.com/PierreVigier">Twitter</a>.</em></p>
+    <p><em>If you are interested in my adventures during the development of <a href="https://www.vagabondgame.com">Vagabond</a>, you can follow me on <a href="https://twitter.com/PierreVigier">Twitter</a>.</em></p>
     
 	<p>Tags: <span class="label label-primary"><a href="/tag/graph">graph</a></span> <span class="label label-primary"><a href="/tag/git">git</a></span> </p>
 	
@@ -583,7 +583,7 @@ s.setAttribute('data-timestamp', +new Date());
 <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
                 </div>
                 <div class="col-sm-3 col-sm-offset-1 blog-sidebar">
-    <p><strong><a href="https://vagabondgame.com">Get Vagabond</a></strong></p>
+    <p><strong><a href="https://www.vagabondgame.com">Get Vagabond</a></strong></p>
 	<div class="sidebar-module">
         <h4>Tags</h4>
         <ol class="list-unstyled">
@@ -594,7 +594,7 @@ s.setAttribute('data-timestamp', +new Date());
 		
 			<li><a href="/tag/cpp">cpp (8)</a></li>
 		
-			<li><a href="/tag/pcg">pcg (13)</a></li>
+			<li><a href="/tag/pcg">pcg (14)</a></li>
 		
 			<li><a href="/tag/simulopolis">simulopolis (5)</a></li>
 		
@@ -606,7 +606,7 @@ s.setAttribute('data-timestamp', +new Date());
 		
 			<li><a href="/tag/git">git (1)</a></li>
 		
-			<li><a href="/tag/vagabond">vagabond (24)</a></li>
+			<li><a href="/tag/vagabond">vagabond (25)</a></li>
 		
 			<li><a href="/tag/ecs">ecs (2)</a></li>
 		
@@ -623,7 +623,12 @@ s.setAttribute('data-timestamp', +new Date());
             
             
             
-			<li id="yDecember 2020"><a href="/2020/12">December 2020 (1)</a></li>
+        
+            
+            
+            
+            
+			<li id="yDecember 2020"><a href="/2020/12">December 2020 (2)</a></li>
 				
             
         

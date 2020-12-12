@@ -21,7 +21,7 @@
 <meta name="twitter:card" content="summary" />
 <meta property="twitter:title" content="Blog" />
 <script type="application/ld+json">
-{"author":{"@type":"Person","name":"Pierre Vigier"},"@type":"WebPage","headline":"Blog","url":"https://pvigier.github.io/2/","@context":"https://schema.org"}</script>
+{"author":{"@type":"Person","name":"Pierre Vigier"},"headline":"Blog","@type":"WebPage","url":"https://pvigier.github.io/2/","@context":"https://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 
         <!-- Bootstrap -->
@@ -60,11 +60,31 @@
                 <div class="col-sm-8 blog-main">
                 
     <div class="blog-post">
+        <h2 class="blog-post-title"><a href="/2019/10/20/vagabond-teleporting-into-dungeons.html">Vagabond &#8211; Teleporting into Dungeons</a></h2>
+        <p class="blog-post-meta">20 Oct 2019 by <a href="/">pierre</a></p>
+        <p>Hi everyone!</p>
+
+<p>Last two weeks, I was working on teleporting the players from one map to another. I will use this system to enter into dungeons, buildings, etc. and also to leave them. But it was not that easy to implement as it required some deep architectural changes in the game engine.</p>
+
+<video controls="" width="600">
+    <source src="/media/video/vagabond-teleporting-into-dungeons/dungeon_entrance.mp4" type="video/mp4" />
+    Sorry, your browser doesn't support embedded videos.
+</video>
+
+
+        <p><a href="/2019/10/20/vagabond-teleporting-into-dungeons.html">Read more ...</a></p>
+        
+        <p>Tags: <span class="label label-primary"><a href="/tag/vagabond">vagabond</a></span> </p>
+        
+    </div>
+    <hr />
+
+    <div class="blog-post">
         <h2 class="blog-post-title"><a href="/2019/10/06/palette-swapping-with-shaders.html">Palette Swapping with Shaders</a></h2>
         <p class="blog-post-meta">06 Oct 2019 by <a href="/">pierre</a></p>
         <p>Hi everyone!</p>
 
-<p>In this devlog, I will show you a technique that I love and that I will abuse in Vagabond: palette swapping.</p>
+<p>In this devlog, I will show you a technique that I love and that I will abuse in <a href="https://www.vagabondgame.com">Vagabond</a>: palette swapping.</p>
 
 <p>Palette swapping is simply changing the palette of a texture. Here, we will do that at runtime using shaders. It was a useful technique in the old days to add variety in the assets without using too much memory. Now, it is used in procedural generation to produce new assets, I will show many examples in later devlogs.</p>
 
@@ -141,31 +161,6 @@
     </div>
     <hr />
 
-    <div class="blog-post">
-        <h2 class="blog-post-title"><a href="/2019/08/18/vagabond-audio-engine.html">Vagabond &#8211; Audio Engine</a></h2>
-        <p class="blog-post-meta">18 Aug 2019 by <a href="/">pierre</a></p>
-        <p>After the <a href="/2019/07/28/vagabond-2d-light-system.html">graphics engine</a> and the <a href="/2019/08/11/vagabond-2d-physics-engine.html">physics engine</a>, this week, I have worked on the audio engine.</p>
-
-<p>To play sounds and music I use the <a href="https://www.sfml-dev.org/tutorials/2.5/audio-sounds.php">audio part of SFML</a> which is really good. It is a thin wrapper around OpenAL. It supports WAV, OGG/Vorbis and FLAC. Moreover, it also supports <a href="https://www.sfml-dev.org/tutorials/2.5/audio-spatialization.php">spatialization</a> and it is really easy to use.</p>
-
-<p>There are only two things for which an audio engine is needed.</p>
-
-<p>The first one is to make sure that the total number of sounds and music never exceeds 256 (which is an internal limit according to SFML documentation). To do that, the audio engine refuses to play a new sound or music if the limit has already been reached. And as soon as a sound or a music finishes, it removes its instance to be able to play a new one.</p>
-
-<p>The second thing is being able to pause all sounds and music, play other sounds and music and then be able to resume all the sounds and music that have been paused. This use case happens when you are in-game and some sounds or music are playing. Then you go to the pause menu, all the game simulation is paused, so the sounds and music should be paused too. Some sounds are played by the user interface in the pause menu. Finally, when the player returns to the game, the simulation resumes and all the sounds and music should be resumed too.</p>
-
-<p>To achieve that, I will use two abstractions, one for each of the two issues, respectively the audio engine and the audio scene.</p>
-
-<p>Let us dive into the details of these abstractions.</p>
-
-
-        <p><a href="/2019/08/18/vagabond-audio-engine.html">Read more ...</a></p>
-        
-        <p>Tags: <span class="label label-primary"><a href="/tag/vagabond">vagabond</a></span> <span class="label label-primary"><a href="/tag/game-engine">game-engine</a></span> </p>
-        
-    </div>
-    <hr />
-
 <nav>
     <ul class="pager">
         
@@ -179,7 +174,7 @@
 
                 </div>
                 <div class="col-sm-3 col-sm-offset-1 blog-sidebar">
-    <p><strong><a href="https://vagabondgame.com">Get Vagabond</a></strong></p>
+    <p><strong><a href="https://www.vagabondgame.com">Get Vagabond</a></strong></p>
 	<div class="sidebar-module">
         <h4>Tags</h4>
         <ol class="list-unstyled">
@@ -190,7 +185,7 @@
 		
 			<li><a href="/tag/cpp">cpp (8)</a></li>
 		
-			<li><a href="/tag/pcg">pcg (13)</a></li>
+			<li><a href="/tag/pcg">pcg (14)</a></li>
 		
 			<li><a href="/tag/simulopolis">simulopolis (5)</a></li>
 		
@@ -202,7 +197,7 @@
 		
 			<li><a href="/tag/git">git (1)</a></li>
 		
-			<li><a href="/tag/vagabond">vagabond (24)</a></li>
+			<li><a href="/tag/vagabond">vagabond (25)</a></li>
 		
 			<li><a href="/tag/ecs">ecs (2)</a></li>
 		
@@ -219,7 +214,12 @@
             
             
             
-			<li id="yDecember 2020"><a href="/2020/12">December 2020 (1)</a></li>
+        
+            
+            
+            
+            
+			<li id="yDecember 2020"><a href="/2020/12">December 2020 (2)</a></li>
 				
             
         

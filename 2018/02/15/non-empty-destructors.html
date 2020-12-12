@@ -23,7 +23,7 @@
 <meta name="twitter:card" content="summary" />
 <meta property="twitter:title" content="Non empty destructors in C++" />
 <script type="application/ld+json">
-{"author":{"@type":"Person","name":"pierre"},"description":"Have you already faced problems with nontrivial destructors? I face one recently which was really annoying. In this article, I want to share with you my knowledge of this problem and the solutions I use to address it. The problem The problem is not really that the destructor is nonempty but that the destructor is nontrivial: there is a release of memory or some states are changed in another part of the app. Let us take a very simple example with a class that does dynamic allocation to explain the problem: class A { public: A() : mPointer(new int(0)) { } ~A() { delete mPointer; } private: int* mPointer; } As we allocate an integer in the constructor, the natural solution for memory management is to free it in the destructor. However, this will have terrible consequences. For instance, if we do this: int main() { A a; A anotherA(a); return 0; } A segmentation fault will occur. Why? Because when the main function ends, the destructor of A is called to delete a and anotherA. When a is destroyed the memory cell to which a’s mPointer points to is freed. Then, when anotherA is destroyed, we try to free the memory to which anotherA’s mPointer points to. But as anotherA is a copy of a, its mPointer points to the same memory cell as a’s mPointer. Thus, we try to free twice the same memory cell which causes the Segmentation fault. So, the problem is that because of the copy the destructor is called twice on the same attributes. Note that the copy or move constructors are often called when we use containers. For instance, there is a copy or a move when the std::vector’s push_back is called.","@type":"BlogPosting","headline":"Non empty destructors in C++","dateModified":"2018-02-15T00:00:00+01:00","datePublished":"2018-02-15T00:00:00+01:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://pvigier.github.io/2018/02/15/non-empty-destructors.html"},"url":"https://pvigier.github.io/2018/02/15/non-empty-destructors.html","@context":"https://schema.org"}</script>
+{"author":{"@type":"Person","name":"pierre"},"headline":"Non empty destructors in C++","dateModified":"2018-02-15T00:00:00+01:00","datePublished":"2018-02-15T00:00:00+01:00","description":"Have you already faced problems with nontrivial destructors? I face one recently which was really annoying. In this article, I want to share with you my knowledge of this problem and the solutions I use to address it. The problem The problem is not really that the destructor is nonempty but that the destructor is nontrivial: there is a release of memory or some states are changed in another part of the app. Let us take a very simple example with a class that does dynamic allocation to explain the problem: class A { public: A() : mPointer(new int(0)) { } ~A() { delete mPointer; } private: int* mPointer; } As we allocate an integer in the constructor, the natural solution for memory management is to free it in the destructor. However, this will have terrible consequences. For instance, if we do this: int main() { A a; A anotherA(a); return 0; } A segmentation fault will occur. Why? Because when the main function ends, the destructor of A is called to delete a and anotherA. When a is destroyed the memory cell to which a’s mPointer points to is freed. Then, when anotherA is destroyed, we try to free the memory to which anotherA’s mPointer points to. But as anotherA is a copy of a, its mPointer points to the same memory cell as a’s mPointer. Thus, we try to free twice the same memory cell which causes the Segmentation fault. So, the problem is that because of the copy the destructor is called twice on the same attributes. Note that the copy or move constructors are often called when we use containers. For instance, there is a copy or a move when the std::vector’s push_back is called.","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://pvigier.github.io/2018/02/15/non-empty-destructors.html"},"url":"https://pvigier.github.io/2018/02/15/non-empty-destructors.html","@context":"https://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 
         <!-- Bootstrap -->
@@ -295,7 +295,7 @@
 
 <p>That’s all for this post, I hope you find it useful.</p>
 
-    <p><em>If you are interested in my adventures during the development of Vagabond, you can follow me on <a href="https://twitter.com/PierreVigier">Twitter</a>.</em></p>
+    <p><em>If you are interested in my adventures during the development of <a href="https://www.vagabondgame.com">Vagabond</a>, you can follow me on <a href="https://twitter.com/PierreVigier">Twitter</a>.</em></p>
     
 	<p>Tags: <span class="label label-primary"><a href="/tag/cpp">cpp</a></span> </p>
 	
@@ -345,7 +345,7 @@ s.setAttribute('data-timestamp', +new Date());
 <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
                 </div>
                 <div class="col-sm-3 col-sm-offset-1 blog-sidebar">
-    <p><strong><a href="https://vagabondgame.com">Get Vagabond</a></strong></p>
+    <p><strong><a href="https://www.vagabondgame.com">Get Vagabond</a></strong></p>
 	<div class="sidebar-module">
         <h4>Tags</h4>
         <ol class="list-unstyled">
@@ -356,7 +356,7 @@ s.setAttribute('data-timestamp', +new Date());
 		
 			<li><a href="/tag/cpp">cpp (8)</a></li>
 		
-			<li><a href="/tag/pcg">pcg (13)</a></li>
+			<li><a href="/tag/pcg">pcg (14)</a></li>
 		
 			<li><a href="/tag/simulopolis">simulopolis (5)</a></li>
 		
@@ -368,7 +368,7 @@ s.setAttribute('data-timestamp', +new Date());
 		
 			<li><a href="/tag/git">git (1)</a></li>
 		
-			<li><a href="/tag/vagabond">vagabond (24)</a></li>
+			<li><a href="/tag/vagabond">vagabond (25)</a></li>
 		
 			<li><a href="/tag/ecs">ecs (2)</a></li>
 		
@@ -385,7 +385,12 @@ s.setAttribute('data-timestamp', +new Date());
             
             
             
-			<li id="yDecember 2020"><a href="/2020/12">December 2020 (1)</a></li>
+        
+            
+            
+            
+            
+			<li id="yDecember 2020"><a href="/2020/12">December 2020 (2)</a></li>
 				
             
         
