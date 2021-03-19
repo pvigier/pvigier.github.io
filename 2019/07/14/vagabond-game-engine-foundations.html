@@ -8,9 +8,9 @@
         <link rel="shortcut icon" href="/media/img/favicon.png">
         <!-- SEO -->
         <!-- Begin Jekyll SEO tag v2.7.1 -->
-<title>Vagabond – Game engine foundations | pvigier’s blog</title>
+<title>Vagabond – Game Engine Foundations | pvigier’s blog</title>
 <meta name="generator" content="Jekyll v4.1.1" />
-<meta property="og:title" content="Vagabond – Game engine foundations" />
+<meta property="og:title" content="Vagabond – Game Engine Foundations" />
 <meta name="author" content="pierre" />
 <meta property="og:locale" content="en_US" />
 <meta name="description" content="This week, I have continued to develop my game engine. I have laid the foundation for a certain number of engines and systems. As you may know, I am using SFML and C++ to create my game. However, building a game directly with SFML is a bit tough as SFML is a low-level library. Thus I have decided to build a small game engine to help me later on. Nothing too fancy or general, just the necessary to be able to power Vagabond. But, I did not do everything from scratch. I used the experience I acquired during the development of Simulopolis. Moreover, when I finished developing Simulopolis, I read two books SFML Game Development and SFML Game Development By Example to compare their approaches and mine. It was really instructive." />
@@ -21,9 +21,9 @@
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2019-07-14T00:00:00+02:00" />
 <meta name="twitter:card" content="summary" />
-<meta property="twitter:title" content="Vagabond – Game engine foundations" />
+<meta property="twitter:title" content="Vagabond – Game Engine Foundations" />
 <script type="application/ld+json">
-{"author":{"@type":"Person","name":"pierre"},"headline":"Vagabond – Game engine foundations","dateModified":"2019-07-14T00:00:00+02:00","datePublished":"2019-07-14T00:00:00+02:00","description":"This week, I have continued to develop my game engine. I have laid the foundation for a certain number of engines and systems. As you may know, I am using SFML and C++ to create my game. However, building a game directly with SFML is a bit tough as SFML is a low-level library. Thus I have decided to build a small game engine to help me later on. Nothing too fancy or general, just the necessary to be able to power Vagabond. But, I did not do everything from scratch. I used the experience I acquired during the development of Simulopolis. Moreover, when I finished developing Simulopolis, I read two books SFML Game Development and SFML Game Development By Example to compare their approaches and mine. It was really instructive.","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://pvigier.github.io/2019/07/14/vagabond-game-engine-foundations.html"},"url":"https://pvigier.github.io/2019/07/14/vagabond-game-engine-foundations.html","@context":"https://schema.org"}</script>
+{"author":{"@type":"Person","name":"pierre"},"description":"This week, I have continued to develop my game engine. I have laid the foundation for a certain number of engines and systems. As you may know, I am using SFML and C++ to create my game. However, building a game directly with SFML is a bit tough as SFML is a low-level library. Thus I have decided to build a small game engine to help me later on. Nothing too fancy or general, just the necessary to be able to power Vagabond. But, I did not do everything from scratch. I used the experience I acquired during the development of Simulopolis. Moreover, when I finished developing Simulopolis, I read two books SFML Game Development and SFML Game Development By Example to compare their approaches and mine. It was really instructive.","@type":"BlogPosting","headline":"Vagabond – Game Engine Foundations","dateModified":"2019-07-14T00:00:00+02:00","datePublished":"2019-07-14T00:00:00+02:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://pvigier.github.io/2019/07/14/vagabond-game-engine-foundations.html"},"url":"https://pvigier.github.io/2019/07/14/vagabond-game-engine-foundations.html","@context":"https://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 
         <!-- Bootstrap -->
@@ -61,7 +61,7 @@
             <div class="row">
                 <div class="col-sm-8 blog-main">
                 <div class="blog-post">
-    <h2 class="blog-post-title">Vagabond &#8211; Game engine foundations</h2>
+    <h2 class="blog-post-title">Vagabond &#8211; Game Engine Foundations</h2>
     <p class="blog-post-meta">14 Jul 2019 by <a href="/">pierre</a></p>
     <p>This week, I have continued to develop my game engine. I have laid the foundation for a certain number of engines and systems.</p>
 
@@ -77,7 +77,7 @@
 
 <p>I decided to use a state stack and not a finite state machine as it is more powerful and flexible. For example, with a state stack, it is a possible to open a pause screen when playing and then get back the game. Doing so is not possible with a simple finite state machine.</p>
 
-<h1 id="render-engine">Render engine</h1>
+<h1 id="render-engine">Render Engine</h1>
 
 <p>Next, I worked on the render engine. SFML provides the <code class="language-plaintext highlighter-rouge">sf::RenderWindow</code> class which is used to open a window, poll events, and draw inside the window.</p>
 
@@ -85,13 +85,13 @@
 
 <p>Finally, its last mission is to forward input events to the input manager.</p>
 
-<h1 id="scene-graph">Scene graph</h1>
+<h1 id="scene-graph">Scene Graph</h1>
 
 <p>Then, I implemented a <a href="https://en.wikipedia.org/wiki/Scene_graph">scene graph</a>. The scene graph is used by the game state to draw all the game entities easily and efficiently. It provides several types of nodes to display sprites, animated sprites, tiles or particles. Moreover, it will also implement the light system with light nodes.</p>
 
 <p>The scene graph will also take care of drawing all the nodes in the right order. Finally, as all the nodes and the camera are managed by the scene graph it is easy to implement culling with a space-partitioning data structure such as a <a href="https://en.wikipedia.org/wiki/Quadtree">quadtree</a>.</p>
 
-<h1 id="input-management">Input management</h1>
+<h1 id="input-management">Input Management</h1>
 
 <p>I also work on an input manager. The input manager goal is to manage the bindings and to process the input events. It will allow the player to configure the bindings as he wants. When all the conditions of a binding are satisfied, the input manager simply calls the corresponding registered callback.</p>
 
@@ -159,7 +159,7 @@ s.setAttribute('data-timestamp', +new Date());
 <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
                 </div>
                 <div class="col-sm-3 col-sm-offset-1 blog-sidebar">
-    <p><strong><a href="https://www.vagabondgame.com">Get Vagabond</a></strong></p>
+    <p><strong><a href="https://www.vagabondgame.com">Try the free demo of Vagabond!</a></strong></p>
 	<div class="sidebar-module">
         <h4>Tags</h4>
         <ol class="list-unstyled">
@@ -170,7 +170,7 @@ s.setAttribute('data-timestamp', +new Date());
 		
 			<li><a href="/tag/cpp">cpp (8)</a></li>
 		
-			<li><a href="/tag/pcg">pcg (14)</a></li>
+			<li><a href="/tag/pcg">pcg (15)</a></li>
 		
 			<li><a href="/tag/simulopolis">simulopolis (5)</a></li>
 		
@@ -182,7 +182,7 @@ s.setAttribute('data-timestamp', +new Date());
 		
 			<li><a href="/tag/git">git (1)</a></li>
 		
-			<li><a href="/tag/vagabond">vagabond (25)</a></li>
+			<li><a href="/tag/vagabond">vagabond (26)</a></li>
 		
 			<li><a href="/tag/ecs">ecs (2)</a></li>
 		
@@ -194,6 +194,14 @@ s.setAttribute('data-timestamp', +new Date());
         <h4>Archives</h4>
         <ol class="list-unstyled">
 		
+        
+            
+            
+            
+            
+			<li id="yMarch 2021"><a href="/2021/03">March 2021 (1)</a></li>
+				
+            
         
             
             

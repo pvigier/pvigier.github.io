@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="shortcut icon" href="/media/img/favicon.png">
+        <!-- SEO -->
+        <!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>Vagabond – Dungeon and Cave Generation – Part 3 | pvigier’s blog</title>
+<meta name="generator" content="Jekyll v4.1.1" />
+<meta property="og:title" content="Vagabond – Dungeon and Cave Generation – Part 3" />
+<meta name="author" content="pierre" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Few weeks ago, I released the version alpha 2 of Vagabond. One of the new features is the ability to mine ore veins in caves. This article is the follow-up of the two previous parts on dungeon generation (part 1, part 2) where I explained how the structure of the caves were generated. However, the rooms were completely empty. In this article, I will explain how the rooms are filled with monsters, bosses, ore veins and treasures. If you want to try the game and explore the procedurally generated caves presented here, you can play the free demo available on itch.io. If you have any feedback, do not hesitate to send me a message, I would be delighted to read it. And if you like the project, it is still possible to support the game by buying the complete game with a special offer for early birds. ;)" />
+<meta property="og:description" content="Few weeks ago, I released the version alpha 2 of Vagabond. One of the new features is the ability to mine ore veins in caves. This article is the follow-up of the two previous parts on dungeon generation (part 1, part 2) where I explained how the structure of the caves were generated. However, the rooms were completely empty. In this article, I will explain how the rooms are filled with monsters, bosses, ore veins and treasures. If you want to try the game and explore the procedurally generated caves presented here, you can play the free demo available on itch.io. If you have any feedback, do not hesitate to send me a message, I would be delighted to read it. And if you like the project, it is still possible to support the game by buying the complete game with a special offer for early birds. ;)" />
+<link rel="canonical" href="https://pvigier.github.io/2021/03/20/vagabond-dungeon-cave-generation-part3.html" />
+<meta property="og:url" content="https://pvigier.github.io/2021/03/20/vagabond-dungeon-cave-generation-part3.html" />
+<meta property="og:site_name" content="pvigier’s blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2021-03-20T00:00:00+01:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Vagabond – Dungeon and Cave Generation – Part 3" />
+<script type="application/ld+json">
+{"author":{"@type":"Person","name":"pierre"},"description":"Few weeks ago, I released the version alpha 2 of Vagabond. One of the new features is the ability to mine ore veins in caves. This article is the follow-up of the two previous parts on dungeon generation (part 1, part 2) where I explained how the structure of the caves were generated. However, the rooms were completely empty. In this article, I will explain how the rooms are filled with monsters, bosses, ore veins and treasures. If you want to try the game and explore the procedurally generated caves presented here, you can play the free demo available on itch.io. If you have any feedback, do not hesitate to send me a message, I would be delighted to read it. And if you like the project, it is still possible to support the game by buying the complete game with a special offer for early birds. ;)","@type":"BlogPosting","headline":"Vagabond – Dungeon and Cave Generation – Part 3","dateModified":"2021-03-20T00:00:00+01:00","datePublished":"2021-03-20T00:00:00+01:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://pvigier.github.io/2021/03/20/vagabond-dungeon-cave-generation-part3.html"},"url":"https://pvigier.github.io/2021/03/20/vagabond-dungeon-cave-generation-part3.html","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+        <!-- Bootstrap -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+        <!-- My themes -->
+        <link href="/media/css/style.css" rel="stylesheet">
+        <link href="/media/css/syntax.css" rel="stylesheet">
+        <link href="/media/css/modal.css" rel="stylesheet">
+        <!-- RSS -->
+        <link type="application/atom+xml" rel="alternate" href="https://pvigier.github.io/rss.xml" title="pvigier's blog" />
+    </head>
+    <body>
+        <div class="blog-masthead">
+            <div class="container">
+                <nav class="blog-nav">
+    
+        <a class="blog-nav-item" href="/">Blog</a>
+    
+        <a class="blog-nav-item" href="/articles/">Articles</a>
+    
+        <a class="blog-nav-item" href="/projects/">Projects</a>
+    
+        <a class="blog-nav-item" href="https://www.vagabondgame.com/">Vagabond</a>
+    
+        <a class="blog-nav-item" href="/about/">About</a>
+    
+</nav>
+            </div>
+        </div>
+        <div class="container">
+            <div class="blog-header">
+                <h1 class="blog-title">pvigier's blog</h1>
+                <p class="lead blog-description">computer science, programming and other ideas</p>
+            </div>
+            <div class="row">
+                <div class="col-sm-8 blog-main">
+                <div class="blog-post">
+    <h2 class="blog-post-title">Vagabond &#8211; Dungeon and Cave Generation &#8211; Part 3</h2>
+    <p class="blog-post-meta">20 Mar 2021 by <a href="/">pierre</a></p>
+    <p><img src="/media/img/vagabond-dungeon-cave-generation-part3/dungeon_generation.gif" alt="" width="400" class="center-image modal-image" /></p>
+
+<p>Few weeks ago, I released the <a href="https://www.vagabondgame.com/2021/03/06/alpha-2-is-released.html">version alpha 2 of Vagabond</a>. One of the new features is the ability to mine ore veins in caves. This article is the follow-up of the two previous parts on dungeon generation (<a href="/2019/06/23/vagabond-dungeon-cave-generation.html">part 1</a>, <a href="/2019/06/30/vagabond-dungeon-cave-generation-part2.html">part 2</a>) where I explained how the structure of the caves were generated. However, the rooms were completely empty. In this article, I will explain how the rooms are filled with monsters, bosses, ore veins and treasures.</p>
+
+<p>If you want to try the game and explore the procedurally generated caves presented here, you can play the free demo available on <a href="https://pvigier.itch.io/vagabond">itch.io</a>. If you have any feedback, do not hesitate to send me a message, I would be delighted to read it. And if you like the project, it is still possible to support the game by buying the complete game with a special offer for early birds. ;)</p>
+
+<!--more-->
+
+<h1 id="current-state">Current State</h1>
+
+<p>To quickly recap where I stopped my dungeon generation algorithm, I use a BSP algorithm to create rooms, then I select a subset of the room edges as corridors, and I run a constrained cellular automaton to create walls with an organic shape. Finally, I run several post-processing steps to clean the result. You can see all this steps in the animation above.</p>
+
+<p>So, as we can see on the image below, I have a clean abstract structure of the dungeon: clearly delimited rooms, a graph of rooms and a 2D array of booleans that represents the obstacles.</p>
+
+<p><img src="/media/img/vagabond-dungeon-cave-generation-part3/previous_state.png" alt="" width="400" class="center-image modal-image" /></p>
+
+<h1 id="assigning-room-types">Assigning Room Types</h1>
+
+<p>My first step is to assign a type to each room. The type will then determine what the room will look like. I do that just before the cellular automaton pass to be able to add specific constraints if necessary.</p>
+
+<p>Firstly, I choose the entrance room. There is a specific constraint: the door needs a wall on which it can be placed on as in the image below.</p>
+
+<p><img src="/media/img/vagabond-dungeon-cave-generation-part3/door.png" alt="" width="400" class="center-image modal-image" /></p>
+
+<p>To achieve this, I randomly choose a room with no corridor on its north edge and a constraint is added in the cellular automaton. You can see this constraint in the example below: it is the little black square in the north western room:</p>
+
+<p><img src="/media/img/vagabond-dungeon-cave-generation-part3/cellular_automaton_initial_state.png" alt="" width="400" class="center-image modal-image" /></p>
+
+<p>Then, when tiles are generated a door is placed there:</p>
+
+<p><img src="/media/img/vagabond-dungeon-cave-generation-part3/door_result.png" alt="" width="400" class="center-image modal-image" /></p>
+
+<p>Secondly, I randomly choose a room to be the boss room but I give more weight to the rooms far from the entrance so that the boss is rarely next to the entrance.</p>
+
+<p>Finally, for the other rooms, a random type is chosen among the types for “normal” rooms.</p>
+
+<p>Nothing fancy here, but if you have a large pool of room types and different types of dungeons with different subsets of room types, you can already have interesting results.</p>
+
+<p>In the future, I may choose to use a more complex algorithm to choose room types. For instance, I can use the graph structure to place keys and locks.</p>
+
+<h1 id="decorating-the-rooms">Decorating the Rooms</h1>
+
+<p>To decorate the rooms, I reuse the room generator I originally created for the <a href="/2020/02/09/vagabond-building-generation.html">building generator</a>. It takes as input an abstract representation of the room as an array of booleans and a list of objects with their constraints, and it uses a <a href="https://en.wikipedia.org/wiki/Constraint_satisfaction_problem">CSP solver</a> to place the objects in the room. If you want to read more there is an entire section about it in <a href="/2020/02/09/vagabond-building-generation.html">this article</a>.</p>
+
+<p>For now, as there is only caves in the world, the normal rooms are pretty simple: they are filled with monsters and ore veins. The entrance room only contains the door. The boss room contains a chest filled with a procedurally generated loot. But beware, it is protected by a boss which have boosted stats and a unique name procedurally generated by handcrafted grammars.</p>
+
+<p>The only subtlety was that the room generator can only place objects in rooms not monsters. So I created an object “monster spawner” whose only purpose is to spawn monster to circumvent the issue.</p>
+
+<p>Here is the final result:</p>
+
+<p><img src="/media/img/vagabond-dungeon-cave-generation-part3/result.png" alt="" width="400" class="center-image modal-image" /></p>
+
+<h1 id="conclusion">Conclusion</h1>
+
+<p>That’s all for this quick update on the dungeon generator. The dungeons are now fully playable!</p>
+
+<p>In the future, I would like to make the dungeons more interesting, I have several avenues to explore in mind. On the one hand, I would like to work on the lore of dungeons: to generate stories and quests for each dungeons. On the other hand, I would like to make the dungeons more interesting by theirself: maybe by adding keys, locks and puzzles, and also to add some special objects in the corners and the dead ends to encourage the players to explore.</p>
+
+    <p><em>If you are interested in my adventures during the development of <a href="https://www.vagabondgame.com">Vagabond</a>, you can follow me on <a href="https://twitter.com/PierreVigier">Twitter</a>.</em></p>
+    
+	<p>Tags: <span class="label label-primary"><a href="/tag/vagabond">vagabond</a></span> <span class="label label-primary"><a href="/tag/pcg">pcg</a></span> </p>
+	
+</div><!-- /.blog-post -->
+<hr/>
+<p>Subscribe to the newsletter if you do not want to miss any new article:</p>
+<!-- Begin Mailchimp Signup Form -->
+<link href="//cdn-images.mailchimp.com/embedcode/horizontal-slim-10_7.css" rel="stylesheet" type="text/css">
+<style type="text/css">
+	#mc_embed_signup{background:#fff; clear:left; font:14px Helvetica,Arial,sans-serif; width:100%;}
+	/* Add your own Mailchimp form style overrides in your site stylesheet or in this style block.
+	   We recommend moving this block and the preceding CSS link to the HEAD of your HTML file. */
+</style>
+<div id="mc_embed_signup">
+<form action="https://ymail.us20.list-manage.com/subscribe/post?u=7bb3b720a12ef1d8e0b48d8da&amp;id=7516dd4562" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate" target="_blank" novalidate>
+    <div id="mc_embed_signup_scroll">
+
+	<input type="email" value="" name="EMAIL" class="email" id="mce-EMAIL" placeholder="email address" required>
+    <!-- real people should not fill this in and expect good things - do not remove this or risk form bot signups-->
+    <div style="position: absolute; left: -5000px;" aria-hidden="true"><input type="text" name="b_7bb3b720a12ef1d8e0b48d8da_7516dd4562" tabindex="-1" value=""></div>
+    <div class="clear"><input type="submit" value="Subscribe" name="subscribe" id="mc-embedded-subscribe" class="button"></div>
+    </div>
+</form>
+</div>
+<!--End mc_embed_signup-->
+<!-- Disqus -->
+<hr/>
+<div id="disqus_thread"></div>
+<script>
+
+/**
+*  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+*  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+/*
+var disqus_config = function () {
+this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+};
+*/
+(function() { // DON'T EDIT BELOW THIS LINE
+var d = document, s = d.createElement('script');
+s.src = 'https://pvigier-github-io.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+                </div>
+                <div class="col-sm-3 col-sm-offset-1 blog-sidebar">
+    <p><strong><a href="https://www.vagabondgame.com">Try the free demo of Vagabond!</a></strong></p>
+	<div class="sidebar-module">
+        <h4>Tags</h4>
+        <ol class="list-unstyled">
+		
+			<li><a href="/tag/math">math (3)</a></li>
+		
+			<li><a href="/tag/python">python (6)</a></li>
+		
+			<li><a href="/tag/cpp">cpp (8)</a></li>
+		
+			<li><a href="/tag/pcg">pcg (15)</a></li>
+		
+			<li><a href="/tag/simulopolis">simulopolis (5)</a></li>
+		
+			<li><a href="/tag/linux">linux (1)</a></li>
+		
+			<li><a href="/tag/geometry">geometry (1)</a></li>
+		
+			<li><a href="/tag/graph">graph (1)</a></li>
+		
+			<li><a href="/tag/git">git (1)</a></li>
+		
+			<li><a href="/tag/vagabond">vagabond (26)</a></li>
+		
+			<li><a href="/tag/ecs">ecs (2)</a></li>
+		
+			<li><a href="/tag/game-engine">game-engine (8)</a></li>
+		
+        </ol>
+    </div>
+    <div class="sidebar-module">
+        <h4>Archives</h4>
+        <ol class="list-unstyled">
+		
+        
+            
+            
+            
+            
+			<li id="yMarch 2021"><a href="/2021/03">March 2021 (1)</a></li>
+				
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+			<li id="yDecember 2020"><a href="/2020/12">December 2020 (2)</a></li>
+				
+            
+        
+            
+            
+            
+            
+			<li id="yMarch 2020"><a href="/2020/03">March 2020 (1)</a></li>
+				
+            
+        
+            
+            
+            
+            
+			<li id="yFebruary 2020"><a href="/2020/02">February 2020 (1)</a></li>
+				
+            
+        
+            
+            
+            
+            
+			<li id="yNovember 2019"><a href="/2019/11">November 2019 (1)</a></li>
+				
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+			<li id="yOctober 2019"><a href="/2019/10">October 2019 (2)</a></li>
+				
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+			<li id="ySeptember 2019"><a href="/2019/09">September 2019 (2)</a></li>
+				
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+			<li id="yAugust 2019"><a href="/2019/08">August 2019 (4)</a></li>
+				
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+			<li id="yJuly 2019"><a href="/2019/07">July 2019 (5)</a></li>
+				
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+			<li id="yJune 2019"><a href="/2019/06">June 2019 (4)</a></li>
+				
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+			<li id="yMay 2019"><a href="/2019/05">May 2019 (5)</a></li>
+				
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+			<li id="yNovember 2018"><a href="/2018/11">November 2018 (3)</a></li>
+				
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+			<li id="yOctober 2018"><a href="/2018/10">October 2018 (3)</a></li>
+				
+            
+        
+            
+            
+            
+            
+			<li id="yJune 2018"><a href="/2018/06">June 2018 (1)</a></li>
+				
+            
+        
+            
+            
+            
+            
+			<li id="yMay 2018"><a href="/2018/05">May 2018 (1)</a></li>
+				
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+			<li id="yFebruary 2018"><a href="/2018/02">February 2018 (2)</a></li>
+				
+            
+        
+            
+            
+            
+            
+			<li id="yAugust 2017"><a href="/2017/08">August 2017 (1)</a></li>
+				
+            
+        
+            
+            
+            
+            
+			<li id="yJuly 2017"><a href="/2017/07">July 2017 (1)</a></li>
+				
+            
+        
+            
+            
+            
+            
+			<li id="yFebruary 2017"><a href="/2017/02">February 2017 (1)</a></li>
+				
+            
+        
+        </ol>
+    </div>
+    <div class="sidebar-module">
+        <h4>Follow me</h4>
+        <ol class="list-unstyled">
+            <li><a href="https://github.com/pvigier">GitHub</a></li>
+            <li><a href="https://pvigier.itch.io/">itch.io</a></li>
+            <li><a href="https://twitter.com/PierreVigier">Twitter</a></li>
+            <li><a href="/rss.xml">RSS</a></li>
+        </ol>
+    </div>
+    <div class="sidebar-module">
+        <a class="twitter-timeline" data-height="400" href="https://twitter.com/PierreVigier?ref_src=twsrc%5Etfw">Tweets by PierreVigier</a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+    </div>
+</div><!-- /.blog-sidebar -->
+
+            </div><!-- /.row -->
+        </div><!-- /.container -->
+
+        <footer class="blog-footer">
+            <p>Powered by <a href="http://getbootstrap.com">Bootstrap</a> and <a href="http://jekyllrb.com">Jekyll</a>.</p>
+            <p>
+                <a href="#">Back to top</a>
+            </p>
+        </footer>
+        <!-- Javascript -->
+        <!-- jQuery -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+        <!-- Bootstrap -->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+        <!-- MathJax -->
+        <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+        <!-- Analytics -->
+        <script>
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+        ga('create', 'UA-30902264-4', 'auto');
+        ga('send', 'pageview');
+        </script>
+        <!-- Modal images -->
+        <script src="/media/js/modal.js"></script>
+    </body>
+</html>

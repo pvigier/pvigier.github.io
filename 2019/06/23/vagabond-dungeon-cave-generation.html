@@ -8,9 +8,9 @@
         <link rel="shortcut icon" href="/media/img/favicon.png">
         <!-- SEO -->
         <!-- Begin Jekyll SEO tag v2.7.1 -->
-<title>Vagabond – Dungeon and cave generation | pvigier’s blog</title>
+<title>Vagabond – Dungeon and Cave Generation – Part 1 | pvigier’s blog</title>
 <meta name="generator" content="Jekyll v4.1.1" />
-<meta property="og:title" content="Vagabond – Dungeon and cave generation" />
+<meta property="og:title" content="Vagabond – Dungeon and Cave Generation – Part 1" />
 <meta name="author" content="pierre" />
 <meta property="og:locale" content="en_US" />
 <meta name="description" content="I am sorry, there was no article last week as I was on vacation. But, this week I started working on a new topic: dungeon and cave generation. I used space partitioning to generate rooms, maze generation algorithms to generate the corridors and cellular automata to have a more organic look and feel for caves. Let’s dive in the details!" />
@@ -21,9 +21,9 @@
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2019-06-23T00:00:00+02:00" />
 <meta name="twitter:card" content="summary" />
-<meta property="twitter:title" content="Vagabond – Dungeon and cave generation" />
+<meta property="twitter:title" content="Vagabond – Dungeon and Cave Generation – Part 1" />
 <script type="application/ld+json">
-{"author":{"@type":"Person","name":"pierre"},"headline":"Vagabond – Dungeon and cave generation","dateModified":"2019-06-23T00:00:00+02:00","datePublished":"2019-06-23T00:00:00+02:00","description":"I am sorry, there was no article last week as I was on vacation. But, this week I started working on a new topic: dungeon and cave generation. I used space partitioning to generate rooms, maze generation algorithms to generate the corridors and cellular automata to have a more organic look and feel for caves. Let’s dive in the details!","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://pvigier.github.io/2019/06/23/vagabond-dungeon-cave-generation.html"},"url":"https://pvigier.github.io/2019/06/23/vagabond-dungeon-cave-generation.html","@context":"https://schema.org"}</script>
+{"author":{"@type":"Person","name":"pierre"},"description":"I am sorry, there was no article last week as I was on vacation. But, this week I started working on a new topic: dungeon and cave generation. I used space partitioning to generate rooms, maze generation algorithms to generate the corridors and cellular automata to have a more organic look and feel for caves. Let’s dive in the details!","@type":"BlogPosting","headline":"Vagabond – Dungeon and Cave Generation – Part 1","dateModified":"2019-06-23T00:00:00+02:00","datePublished":"2019-06-23T00:00:00+02:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://pvigier.github.io/2019/06/23/vagabond-dungeon-cave-generation.html"},"url":"https://pvigier.github.io/2019/06/23/vagabond-dungeon-cave-generation.html","@context":"https://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 
         <!-- Bootstrap -->
@@ -61,7 +61,7 @@
             <div class="row">
                 <div class="col-sm-8 blog-main">
                 <div class="blog-post">
-    <h2 class="blog-post-title">Vagabond &#8211; Dungeon and cave generation</h2>
+    <h2 class="blog-post-title">Vagabond &#8211; Dungeon and Cave Generation &#8211; Part 1</h2>
     <p class="blog-post-meta">23 Jun 2019 by <a href="/">pierre</a></p>
     <p><img src="/media/img/vagabond-dungeon-cave-generation/cave_generation.gif" alt="" width="400" class="center-image modal-image" /></p>
 
@@ -71,7 +71,7 @@
 
 <!--more-->
 
-<h1 id="space-partitioning">Space partitioning</h1>
+<h1 id="space-partitioning">Space Partitioning</h1>
 
 <p>There are many ways (<a href="https://gamedevelopment.tutsplus.com/tutorials/create-a-procedurally-generated-dungeon-cave-system--gamedev-10099">random placement</a>, <a href="http://pcgbook.com/wp-content/uploads/chapter03.pdf">agent based</a>, using <a href="https://www.reddit.com/r/roguelikes/comments/1dodsv/my_procedural_dungeon_generation_algorithm/">separation steering behavior</a> or <a href="https://www.gamasutra.com/blogs/AAdonaac/20150903/252889/Procedural_Dungeon_Generation_Algorithm.php">a physics engine</a>, etc.) to create rooms for a dungeon. But my favorite method is space partitioning because it is controllable and easily expandable.</p>
 
@@ -91,7 +91,7 @@
 
 <p><img src="/media/img/vagabond-dungeon-cave-generation/bsp.gif" alt="" width="400" class="center-image modal-image" /></p>
 
-<h1 id="room-generation">Room generation</h1>
+<h1 id="room-generation">Room Generation</h1>
 
 <p>The next step is to generate a room inside each cell. There is no special issue here, I just set some constraints so that the rooms are not too small nor too close to the walls of the cells.</p>
 
@@ -99,7 +99,7 @@
 
 <p><img src="/media/img/vagabond-dungeon-cave-generation/rooms.gif" alt="" width="400" class="center-image modal-image" /></p>
 
-<h1 id="edge-selection">Edge selection</h1>
+<h1 id="edge-selection">Edge Selection</h1>
 
 <p>Commonly in dungeon generators based on binary space partitioning, the binary tree used during space partitioning is used again for corridor generation. I did not do that because, in my opinion, it is quite limited.</p>
 
@@ -113,7 +113,7 @@
 
 <p><img src="/media/img/vagabond-dungeon-cave-generation/selected_edges.gif" alt="" width="400" class="center-image modal-image" /></p>
 
-<h1 id="corridor-generation">Corridor generation</h1>
+<h1 id="corridor-generation">Corridor Generation</h1>
 
 <p>The next step is the generation of corridors from the selected edges. This is maybe the trickiest part of the generator as we need to be careful that no corridor crosses another one.</p>
 
@@ -121,7 +121,7 @@
 
 <p><img src="/media/img/vagabond-dungeon-cave-generation/corridors.gif" alt="" width="400" class="center-image modal-image" /></p>
 
-<h1 id="cave-generation">Cave generation</h1>
+<h1 id="cave-generation">Cave Generation</h1>
 
 <p>The previous results are fine for dungeons, crypts or other man-made structures but I would like a more organic aspect for caves or mines. The classic method to generate caves is to use a cellular automaton as described in <a href="http://www.roguebasin.com/index.php?title=Cellular_Automata_Method_for_Generating_Random_Cave-Like_Levels">this article</a> on RogueBasin. The big issue with cellular automata is that the results are not really controllable.</p>
 
@@ -199,7 +199,7 @@ s.setAttribute('data-timestamp', +new Date());
 <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
                 </div>
                 <div class="col-sm-3 col-sm-offset-1 blog-sidebar">
-    <p><strong><a href="https://www.vagabondgame.com">Get Vagabond</a></strong></p>
+    <p><strong><a href="https://www.vagabondgame.com">Try the free demo of Vagabond!</a></strong></p>
 	<div class="sidebar-module">
         <h4>Tags</h4>
         <ol class="list-unstyled">
@@ -210,7 +210,7 @@ s.setAttribute('data-timestamp', +new Date());
 		
 			<li><a href="/tag/cpp">cpp (8)</a></li>
 		
-			<li><a href="/tag/pcg">pcg (14)</a></li>
+			<li><a href="/tag/pcg">pcg (15)</a></li>
 		
 			<li><a href="/tag/simulopolis">simulopolis (5)</a></li>
 		
@@ -222,7 +222,7 @@ s.setAttribute('data-timestamp', +new Date());
 		
 			<li><a href="/tag/git">git (1)</a></li>
 		
-			<li><a href="/tag/vagabond">vagabond (25)</a></li>
+			<li><a href="/tag/vagabond">vagabond (26)</a></li>
 		
 			<li><a href="/tag/ecs">ecs (2)</a></li>
 		
@@ -234,6 +234,14 @@ s.setAttribute('data-timestamp', +new Date());
         <h4>Archives</h4>
         <ol class="list-unstyled">
 		
+        
+            
+            
+            
+            
+			<li id="yMarch 2021"><a href="/2021/03">March 2021 (1)</a></li>
+				
+            
         
             
             

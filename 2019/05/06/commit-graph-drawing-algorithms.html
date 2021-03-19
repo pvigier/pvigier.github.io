@@ -8,9 +8,9 @@
         <link rel="shortcut icon" href="/media/img/favicon.png">
         <!-- SEO -->
         <!-- Begin Jekyll SEO tag v2.7.1 -->
-<title>Commit graph drawing algorithms | pvigier’s blog</title>
+<title>Commit Graph Drawing Algorithms | pvigier’s blog</title>
 <meta name="generator" content="Jekyll v4.1.1" />
-<meta property="og:title" content="Commit graph drawing algorithms" />
+<meta property="og:title" content="Commit Graph Drawing Algorithms" />
 <meta name="author" content="pierre" />
 <meta property="og:locale" content="en_US" />
 <meta name="description" content="This article is one chapter of my master thesis entitled “Design and implementation of a graphical user interface for git”. It describes the algorithm I designed to draw the commit graph in my own prototype git client called gitamine. I have adapted the content so that it fits better with this blog. Drawing graphs is a very complex topic in general but here we want to draw a specific type of graphs: commit graphs. Commit graphs have several several pieces of information that simplify the problem. The most important ones are that the graph is directed and acyclic and that the commits have timestamps. Moreover, among the many ways we can draw a directed acyclic graph some are more appropriate for commit graphs. Indeed, programmers manipulate the branches of the graph thus it will be more convenient for them if the representation allows to visualize them easily. We will first study the different types of graph drawing algorithms used in other clients. Then, we will describe how to place the nodes so that the commit graph is nicely drawable. Finally, we will cover some optimizations done in gitamine to draw and browse the graph in real time." />
@@ -21,9 +21,9 @@
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2019-05-06T00:00:00+02:00" />
 <meta name="twitter:card" content="summary" />
-<meta property="twitter:title" content="Commit graph drawing algorithms" />
+<meta property="twitter:title" content="Commit Graph Drawing Algorithms" />
 <script type="application/ld+json">
-{"author":{"@type":"Person","name":"pierre"},"headline":"Commit graph drawing algorithms","dateModified":"2019-05-06T00:00:00+02:00","datePublished":"2019-05-06T00:00:00+02:00","description":"This article is one chapter of my master thesis entitled “Design and implementation of a graphical user interface for git”. It describes the algorithm I designed to draw the commit graph in my own prototype git client called gitamine. I have adapted the content so that it fits better with this blog. Drawing graphs is a very complex topic in general but here we want to draw a specific type of graphs: commit graphs. Commit graphs have several several pieces of information that simplify the problem. The most important ones are that the graph is directed and acyclic and that the commits have timestamps. Moreover, among the many ways we can draw a directed acyclic graph some are more appropriate for commit graphs. Indeed, programmers manipulate the branches of the graph thus it will be more convenient for them if the representation allows to visualize them easily. We will first study the different types of graph drawing algorithms used in other clients. Then, we will describe how to place the nodes so that the commit graph is nicely drawable. Finally, we will cover some optimizations done in gitamine to draw and browse the graph in real time.","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://pvigier.github.io/2019/05/06/commit-graph-drawing-algorithms.html"},"url":"https://pvigier.github.io/2019/05/06/commit-graph-drawing-algorithms.html","@context":"https://schema.org"}</script>
+{"author":{"@type":"Person","name":"pierre"},"description":"This article is one chapter of my master thesis entitled “Design and implementation of a graphical user interface for git”. It describes the algorithm I designed to draw the commit graph in my own prototype git client called gitamine. I have adapted the content so that it fits better with this blog. Drawing graphs is a very complex topic in general but here we want to draw a specific type of graphs: commit graphs. Commit graphs have several several pieces of information that simplify the problem. The most important ones are that the graph is directed and acyclic and that the commits have timestamps. Moreover, among the many ways we can draw a directed acyclic graph some are more appropriate for commit graphs. Indeed, programmers manipulate the branches of the graph thus it will be more convenient for them if the representation allows to visualize them easily. We will first study the different types of graph drawing algorithms used in other clients. Then, we will describe how to place the nodes so that the commit graph is nicely drawable. Finally, we will cover some optimizations done in gitamine to draw and browse the graph in real time.","@type":"BlogPosting","headline":"Commit Graph Drawing Algorithms","dateModified":"2019-05-06T00:00:00+02:00","datePublished":"2019-05-06T00:00:00+02:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://pvigier.github.io/2019/05/06/commit-graph-drawing-algorithms.html"},"url":"https://pvigier.github.io/2019/05/06/commit-graph-drawing-algorithms.html","@context":"https://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 
         <!-- Bootstrap -->
@@ -61,7 +61,7 @@
             <div class="row">
                 <div class="col-sm-8 blog-main">
                 <div class="blog-post">
-    <h2 class="blog-post-title">Commit graph drawing algorithms</h2>
+    <h2 class="blog-post-title">Commit Graph Drawing Algorithms</h2>
     <p class="blog-post-meta">06 May 2019 by <a href="/">pierre</a></p>
     <p><img src="/media/img/commit-graph/many_merges/gitamine.png" alt="A commit graph drawn by gitamine" width="300px" class="center-image modal-image" /></p>
 
@@ -75,7 +75,7 @@
 
 <!--more-->
 
-<h1 id="types-of-commit-graph-drawing-algorithms">Types of commit graph drawing algorithms</h1>
+<h1 id="types-of-commit-graph-drawing-algorithms">Types of Commit Graph Drawing Algorithms</h1>
 
 <p>To start the study of commit graph drawing, we will look at how it is done by the other git clients. The figure below shows the same portion of a <a href="https://github.com/electron/electron-api-demos">commit graph</a> displayed by different git clients. This part was chosen because there are a lot of merges and we can clearly observe the differences between the graph drawing algorithms used by all the clients.</p>
 
@@ -165,7 +165,7 @@
 
 <p>In gitamine, we will use an algorithm that draws only one commit by row to be able to show the commit graph and the commit history side-by-side as other git clients. Whether to draw straight or curved branches is a matter of taste. Personally, I found straight branches much more readable. Unfortunately, the only git clients that draw straight or almost straight branches, GitKraken and SourceTree, are not open-source, thus we will have to design our own algorithm.</p>
 
-<h1 id="sorting-commits">Sorting commits</h1>
+<h1 id="sorting-commits">Sorting Commits</h1>
 
 <p>In the two next sections, we will describe how to choose the position of the nodes so that the commit graph is drawable and readable. To simplify the problem, we will place the node on a 2D grid. We do not lose much in doing so because it is more pleasant to the human eye if the nodes are aligned.</p>
 
@@ -186,7 +186,7 @@
 
 <p>An order of commits that fulfills this condition is said to be topological.</p>
 
-<h2 id="sorting-by-date">Sorting by date</h2>
+<h2 id="sorting-by-date">Sorting by Date</h2>
 
 <p>The snippet below shows the content of a commit. We can observe that it contains two different timestamps respectively <code class="language-plaintext highlighter-rouge">1543445903 +0100</code> and <code class="language-plaintext highlighter-rouge">1543522724 +0100</code>. The first one is the author date i.e. the date when the commit was created. The second is the committer date, it corresponds to the date when the commit was last modified.</p>
 
@@ -221,7 +221,7 @@ Rewrite Event, Arc and VoronoiDiagram
   </tbody>
 </table>
 
-<h2 id="topological-sorting">Topological sorting</h2>
+<h2 id="topological-sorting">Topological Sorting</h2>
 
 <p>The standard way to obtain an ordering of nodes of a directed acyclic graph that respects the condition given above is to do a <a href="https://en.wikipedia.org/wiki/Topological_sorting">topological sort</a>.</p>
 
@@ -247,7 +247,7 @@ Rewrite Event, Arc and VoronoiDiagram
 
 <p>Moreover, there may be many valid topological orders for a commit graph and the algorithm above will output one. But as there is no assumption on the order on which the commits in \(\mathcal{C}\) will be traversed there is no guarantee that the algorithm will always output the same topological order.</p>
 
-<h2 id="temporal-topological-sorting">Temporal topological sorting</h2>
+<h2 id="temporal-topological-sorting">Temporal Topological Sorting</h2>
 
 <p>To solve the issues raised in the previous section, I slightly modified the algorithm so that the commits of \(\mathcal{C}\) are traversed according to their committer dates from newest to oldest:</p>
 
@@ -276,7 +276,7 @@ Rewrite Event, Arc and VoronoiDiagram
   <li>It is blazing fast: its time complexity is \(O(n\log(n) + m)\) where \(n\) is the number of commits and \(m\) the number of edges.</li>
 </ul>
 
-<h1 id="placing-commits">Placing commits</h1>
+<h1 id="placing-commits">Placing Commits</h1>
 
 <p>In the previous section, we have seen how to determine the \(i\)-coordinate of a commit. In other words, we have shown how to compute an order of the commits so that the edges can be drawn upward. In this section, we will see strategies to determine the \(j\)-coordinate of a commit.</p>
 
@@ -292,7 +292,7 @@ Rewrite Event, Arc and VoronoiDiagram
 <p>For all \(c \in \mathcal{C}\), merge children of \(c\) are defined by:
 \(c.mergeChildren = \{d \in c.children\text{ s.t. }d.parents[0] \neq c\}\)</p>
 
-<h2 id="curved-branches">Curved branches</h2>
+<h2 id="curved-branches">Curved Branches</h2>
 
 <p>The first algorithm we will describe is a simplistic method that works well for graph drawn with curved branches.</p>
 
@@ -327,11 +327,11 @@ Rewrite Event, Arc and VoronoiDiagram
 
 <p>We do not give more details for this version as we will do for the one with straight branches.</p>
 
-<h2 id="straight-branches">Straight branches</h2>
+<h2 id="straight-branches">Straight Branches</h2>
 
 <p>In this section, we will describe an algorithm to draw the commit graph with straight branches i.e. with all the commits of a same branch on the same column. The advantage of this design is that it is easier to visualize branches which are a core concept of git.</p>
 
-<h3 id="types-of-edges">Types of edges</h3>
+<h3 id="types-of-edges">Types of Edges</h3>
 
 <p>Firstly, let us make a distinction between two types of edges that will be represented differently as depicted in the figure below:</p>
 
@@ -383,7 +383,7 @@ Rewrite Event, Arc and VoronoiDiagram
 
 <p>Previously, in algorithm <code class="language-plaintext highlighter-rouge">curved_branches</code>, we could remove a branch from the list of active branches or insert one in the middle of it which would shift branches respectively to the left or to the right all the branches to the left of the removed branch. Now, we remove a branch by setting its index to <code class="language-plaintext highlighter-rouge">nil</code> and we can only append branches. These operations cause no shift of other branches and that is the reason why the branches are straight.</p>
 
-<h3 id="forbidden-indices">Forbidden indices</h3>
+<h3 id="forbidden-indices">Forbidden Indices</h3>
 
 <p>We will now see how to determine and compute the set of forbidden indices \(J(c)\) for a commit \(c\). To do that, we will take a look at the example below.</p>
 
@@ -583,7 +583,7 @@ s.setAttribute('data-timestamp', +new Date());
 <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
                 </div>
                 <div class="col-sm-3 col-sm-offset-1 blog-sidebar">
-    <p><strong><a href="https://www.vagabondgame.com">Get Vagabond</a></strong></p>
+    <p><strong><a href="https://www.vagabondgame.com">Try the free demo of Vagabond!</a></strong></p>
 	<div class="sidebar-module">
         <h4>Tags</h4>
         <ol class="list-unstyled">
@@ -594,7 +594,7 @@ s.setAttribute('data-timestamp', +new Date());
 		
 			<li><a href="/tag/cpp">cpp (8)</a></li>
 		
-			<li><a href="/tag/pcg">pcg (14)</a></li>
+			<li><a href="/tag/pcg">pcg (15)</a></li>
 		
 			<li><a href="/tag/simulopolis">simulopolis (5)</a></li>
 		
@@ -606,7 +606,7 @@ s.setAttribute('data-timestamp', +new Date());
 		
 			<li><a href="/tag/git">git (1)</a></li>
 		
-			<li><a href="/tag/vagabond">vagabond (25)</a></li>
+			<li><a href="/tag/vagabond">vagabond (26)</a></li>
 		
 			<li><a href="/tag/ecs">ecs (2)</a></li>
 		
@@ -618,6 +618,14 @@ s.setAttribute('data-timestamp', +new Date());
         <h4>Archives</h4>
         <ol class="list-unstyled">
 		
+        
+            
+            
+            
+            
+			<li id="yMarch 2021"><a href="/2021/03">March 2021 (1)</a></li>
+				
+            
         
             
             

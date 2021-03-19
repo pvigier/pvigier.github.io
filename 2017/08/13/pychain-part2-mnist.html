@@ -23,7 +23,7 @@
 <meta name="twitter:card" content="summary" />
 <meta property="twitter:title" content="Pychain Part 2 - Application: MNIST" />
 <script type="application/ld+json">
-{"author":{"@type":"Person","name":"pierre"},"headline":"Pychain Part 2 - Application: MNIST","dateModified":"2017-08-13T00:00:00+02:00","datePublished":"2017-08-13T00:00:00+02:00","description":"In part 1, we have created a fully functional library which is able to create and train neural networks using computational graphs. We used them on very simple examples. Today, we are going to try it on a more serious problem: character recognition. We are going to use a well-known database in the machine learning and deep learning world named MNIST. The database is available on Yann LeCun’s website. If you have read a bit about neural networks before you should have already seen his name. He is a French scientist who is one of the pioneers of neural networks and inventors of convolutional neural networks and he is now the director of AI at Facebook. Character recognition is an emblematic problem for two reasons. Firstly, it is one of the first successes and industrial applications of neural networks. It was used since the 90’s to read checks. Secondly, computer vision has always been a leading application domain for neural networks. In this part, we are going to briefly discover the MNIST database. Then, we are going to train some networks on it and finally, we are going to explore a bit how a neural network works.","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://pvigier.github.io/2017/08/13/pychain-part2-mnist.html"},"url":"https://pvigier.github.io/2017/08/13/pychain-part2-mnist.html","@context":"https://schema.org"}</script>
+{"author":{"@type":"Person","name":"pierre"},"description":"In part 1, we have created a fully functional library which is able to create and train neural networks using computational graphs. We used them on very simple examples. Today, we are going to try it on a more serious problem: character recognition. We are going to use a well-known database in the machine learning and deep learning world named MNIST. The database is available on Yann LeCun’s website. If you have read a bit about neural networks before you should have already seen his name. He is a French scientist who is one of the pioneers of neural networks and inventors of convolutional neural networks and he is now the director of AI at Facebook. Character recognition is an emblematic problem for two reasons. Firstly, it is one of the first successes and industrial applications of neural networks. It was used since the 90’s to read checks. Secondly, computer vision has always been a leading application domain for neural networks. In this part, we are going to briefly discover the MNIST database. Then, we are going to train some networks on it and finally, we are going to explore a bit how a neural network works.","@type":"BlogPosting","headline":"Pychain Part 2 - Application: MNIST","dateModified":"2017-08-13T00:00:00+02:00","datePublished":"2017-08-13T00:00:00+02:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://pvigier.github.io/2017/08/13/pychain-part2-mnist.html"},"url":"https://pvigier.github.io/2017/08/13/pychain-part2-mnist.html","@context":"https://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 
         <!-- Bootstrap -->
@@ -73,9 +73,9 @@
 
 <!--more-->
 
-<h1 id="mnist-database">MNIST database</h1>
+<h1 id="mnist-database">MNIST Database</h1>
 
-<h2 id="get-the-dataset">Get the dataset</h2>
+<h2 id="get-the-dataset">Get the Dataset</h2>
 
 <p>Firstly, you should download the four files named “train-images-idx3-ubyte.gz”, “train-labels-idx1-ubyte.gz”, “t10k-images-idx3-ubyte.gz”, “t10k-labels-idx1-ubyte.gz”. Then create a folder examples/mnist/mnist and uncompress them in the latter. If you have not already a file archiver, I can advise you to use <a href="http://www.7-zip.org/">7-zip</a> for Windows and <a href="https://itunes.apple.com/fr/app/the-unarchiver/id425424353?mt=12">The Unarchiver</a> for MacOS. As for Linux users, you should already have one.</p>
 
@@ -241,7 +241,7 @@
 
 <p>The next layers will then combine these <em>basic features</em> to create more complex ones. And finally, the last layer will take these <em>deep features</em> created by the first layers as input to take the final decision.</p>
 
-<h2 id="deep-features">Deep features</h2>
+<h2 id="deep-features">Deep Features</h2>
 
 <p>Let’s look a bit more at these deep features.</p>
 
@@ -251,7 +251,7 @@
 
 <p>The linear classifiers are really simple to analyze and understand. We will consequently study them in order to understand a bit more the deep features.</p>
 
-<h3 id="linear-classifiers">Linear classifiers</h3>
+<h3 id="linear-classifiers">Linear Classifiers</h3>
 
 <p>We will describe two types of linear classifier: the binary linear classifier and the multiclass linear classifier.</p>
 
@@ -302,7 +302,7 @@
 
 <p>In the next parts, we will show several examples where neural networks are indeed able to create deep features that make classes linearly separable or almost.</p>
 
-<h3 id="deep-features-in-xor-and-the-disk">Deep features in XOR and the disk</h3>
+<h3 id="deep-features-in-xor-and-the-disk">Deep Features in XOR and the Disk</h3>
 
 <p>Do you remember the two examples of the previous part? They were very simple problems where the frontiers were non-linear. Hence, they are perfect candidates to see if the deep features are linearly separable.</p>
 
@@ -346,7 +346,7 @@
 
 <p>On these simple problems, neural networks successfully transform the inputs to deep features where classes are linearly separable.</p>
 
-<h3 id="deep-features-in-mnist">Deep features in MNIST</h3>
+<h3 id="deep-features-in-mnist">Deep Features in MNIST</h3>
 
 <p>Let’s do the same experiment on MNIST. I use the network [128, 64, 10] which gives very good accuracy and I obtain this result:</p>
 
@@ -376,7 +376,7 @@
   <li>During training, a neural network looks for a good transformation which makes the deep features of the dataset linearly separable.</li>
 </ul>
 
-<h1 id="to-go-further">To go further</h1>
+<h1 id="to-go-further">To Go Further</h1>
 
 <p>Some problems to have fun:</p>
 <ul>
@@ -418,7 +418,7 @@ $$
 
 <p>For a binary linear classifier, we have \(f(x)=\sigma(w^Tx)\) and \(A_1 = \{x \in \mathcal{X}, f(x) \geq 0.5\}\) but \(\sigma(w^Tx) \geq 0.5\) is equivalent to \(w^Tx \geq 0.5\). \(w^Tx = 0.5\) is the equation of a hyperplane so \(A_1 = \{x \in \mathcal{X}, w^Tx \geq 0.5\}\) contains all the points which are on one side of the hyperlane. \(A_0\) contains the other half-space.</p>
 
-<p>For a multiclass linear classifier, we have \(f(x)_k=softmax(x)_k=\frac{\exp(w_k^Tx)}{\sum_{j}{\exp(w_j^Tx)}}\) and \(A_k = \{x \in \mathcal{X}, k = argmax_j(f(x)_j)\}\). The denominator of softmax is the same for all \(j\) so it does not matter for determining the maximum. Thus \(argmax_j(f(x)_j) = argmax_j(\exp(w_j^Tx)) = argmax_j(w_j^Tx)\) because \(\exp\) is increasing. 
+<p>For a multiclass linear classifier, we have \(f(x)_k=softmax(x)_k=\frac{\exp(w_k^Tx)}{\sum_{j}{\exp(w_j^Tx)}}\) and \(A_k = \{x \in \mathcal{X}, k = argmax_j(f(x)_j)\}\). The denominator of softmax is the same for all \(j\) so it does not matter for determining the maximum. Thus \(argmax_j(f(x)_j) = argmax_j(\exp(w_j^Tx)) = argmax_j(w_j^Tx)\) because \(\exp\) is increasing.
 
 Now, let's work a bit with the definition of argmax and inequalities to get the result:</p>
 
@@ -485,7 +485,7 @@ s.setAttribute('data-timestamp', +new Date());
 <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
                 </div>
                 <div class="col-sm-3 col-sm-offset-1 blog-sidebar">
-    <p><strong><a href="https://www.vagabondgame.com">Get Vagabond</a></strong></p>
+    <p><strong><a href="https://www.vagabondgame.com">Try the free demo of Vagabond!</a></strong></p>
 	<div class="sidebar-module">
         <h4>Tags</h4>
         <ol class="list-unstyled">
@@ -496,7 +496,7 @@ s.setAttribute('data-timestamp', +new Date());
 		
 			<li><a href="/tag/cpp">cpp (8)</a></li>
 		
-			<li><a href="/tag/pcg">pcg (14)</a></li>
+			<li><a href="/tag/pcg">pcg (15)</a></li>
 		
 			<li><a href="/tag/simulopolis">simulopolis (5)</a></li>
 		
@@ -508,7 +508,7 @@ s.setAttribute('data-timestamp', +new Date());
 		
 			<li><a href="/tag/git">git (1)</a></li>
 		
-			<li><a href="/tag/vagabond">vagabond (25)</a></li>
+			<li><a href="/tag/vagabond">vagabond (26)</a></li>
 		
 			<li><a href="/tag/ecs">ecs (2)</a></li>
 		
@@ -520,6 +520,14 @@ s.setAttribute('data-timestamp', +new Date());
         <h4>Archives</h4>
         <ol class="list-unstyled">
 		
+        
+            
+            
+            
+            
+			<li id="yMarch 2021"><a href="/2021/03">March 2021 (1)</a></li>
+				
+            
         
             
             

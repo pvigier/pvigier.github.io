@@ -23,7 +23,7 @@
 <meta name="twitter:card" content="summary" />
 <meta property="twitter:title" content="Beginner’s Guide to Game Networking" />
 <script type="application/ld+json">
-{"author":{"@type":"Person","name":"pierre"},"headline":"Beginner’s Guide to Game Networking","dateModified":"2019-09-08T00:00:00+02:00","datePublished":"2019-09-08T00:00:00+02:00","description":"During the last two weeks, I was working on the network engine of my game. And before that, I knew nothing about game networking. Thus, I read a lot of articles and did a lot of experiments to understand all the concepts and be able to code my own network engine. In this guide, I want to share with you the different concepts you must learn before to write your own game engine and the best resources and articles to learn them. There are mainly two possible network architectures: peer-to-peer and client-server. In the peer-to-peer architecture, data is exchanged between any pair of connected players while in the client-server architecture, data is only exchanged between players and the server. While the peer-to-peer architecture is still used in some games, client-server is the standard as it is easier to implement, it requires less bandwidth and it is easier to prevent cheating. Thus, in this guide, we will focus on client-server architecture. More precisely, we will be interested in authoritative servers, it means that the server is always right. For instance, if a player thinks it is at coordinates (10, 5) but the server tells him that it is at (5, 3), then the client should update its position to the server’s one, and not the opposite. Using an authoritative server enables us to detect cheating more easily. There are mainly three components in game networking: Transport protocol: how to transport the data between clients and the server? Application protocol: what to send from clients to the server and from the server to clients and in which format? Application logic: how to use the exchanged data to update clients and the server? It is really important to understand the role of each part and its challenges.","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://pvigier.github.io/2019/09/08/beginner-guide-game-networking.html"},"url":"https://pvigier.github.io/2019/09/08/beginner-guide-game-networking.html","@context":"https://schema.org"}</script>
+{"author":{"@type":"Person","name":"pierre"},"description":"During the last two weeks, I was working on the network engine of my game. And before that, I knew nothing about game networking. Thus, I read a lot of articles and did a lot of experiments to understand all the concepts and be able to code my own network engine. In this guide, I want to share with you the different concepts you must learn before to write your own game engine and the best resources and articles to learn them. There are mainly two possible network architectures: peer-to-peer and client-server. In the peer-to-peer architecture, data is exchanged between any pair of connected players while in the client-server architecture, data is only exchanged between players and the server. While the peer-to-peer architecture is still used in some games, client-server is the standard as it is easier to implement, it requires less bandwidth and it is easier to prevent cheating. Thus, in this guide, we will focus on client-server architecture. More precisely, we will be interested in authoritative servers, it means that the server is always right. For instance, if a player thinks it is at coordinates (10, 5) but the server tells him that it is at (5, 3), then the client should update its position to the server’s one, and not the opposite. Using an authoritative server enables us to detect cheating more easily. There are mainly three components in game networking: Transport protocol: how to transport the data between clients and the server? Application protocol: what to send from clients to the server and from the server to clients and in which format? Application logic: how to use the exchanged data to update clients and the server? It is really important to understand the role of each part and its challenges.","@type":"BlogPosting","headline":"Beginner’s Guide to Game Networking","dateModified":"2019-09-08T00:00:00+02:00","datePublished":"2019-09-08T00:00:00+02:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://pvigier.github.io/2019/09/08/beginner-guide-game-networking.html"},"url":"https://pvigier.github.io/2019/09/08/beginner-guide-game-networking.html","@context":"https://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 
         <!-- Bootstrap -->
@@ -85,7 +85,7 @@
 
 <!--more-->
 
-<h1 id="transport-protocol">Transport protocol</h1>
+<h1 id="transport-protocol">Transport Protocol</h1>
 
 <p>The first part is choosing a protocol to transport the data between the server and the clients. There are two Internet protocols available for that: <a href="https://en.wikipedia.org/wiki/Transmission_Control_Protocol">TCP</a> and <a href="https://en.wikipedia.org/wiki/User_Datagram_Protocol">UDP</a>. But you can also make your own custom transport protocol based on one of them or use a library that uses them.</p>
 
@@ -111,7 +111,7 @@
 
 <p>To know more about the differences between UDP and TCP in a multiplayer game context, you can read the article <a href="https://web.archive.org/web/20180823015049/https://gafferongames.com/post/udp_vs_tcp/"><em>UDP vs. TCP</em></a> by Glenn Fiedler.</p>
 
-<h2 id="custom-protocol">Custom protocol</h2>
+<h2 id="custom-protocol">Custom Protocol</h2>
 
 <p>So you want to create your own transport protocol but you are not sure where to start? You are lucky because Glenn Fielder wrote two great series of articles explaining a way to do that. You will find plenty of smart ideas there.</p>
 
@@ -121,7 +121,7 @@
 
 <p>But if you are new to networking, please do yourself a favor and use TCP or a library. You have surely many things to learn before being able to implement successfully a custom transport protocol.</p>
 
-<h2 id="network-libraries">Network libraries</h2>
+<h2 id="network-libraries">Network Libraries</h2>
 
 <p>If you need something more efficient than TCP but do not want to bother implementing a custom protocol and dive into many issues, you can use a networking library. There are plenty available:</p>
 
@@ -134,7 +134,7 @@
 
 <p>I have not tried them all but my preference goes to ENet as it is simple to use and robust. Moreover, it has clear documentation and a tutorial to get started.</p>
 
-<h2 id="transport-protocol--conclusion">Transport protocol – Conclusion</h2>
+<h2 id="transport-protocol--conclusion">Transport Protocol – Conclusion</h2>
 
 <p>To sum up, there exists two base transport protocols: TCP and UDP. TCP has a lot of useful features: reliability, preserving packet order, error detection, while UDP does not but due to its design TCP has higher latency which may be inadequate for certain games. Thus, to have lower latency, it is possible to create a custom transport protocol using UDP or to use a library that provides a transport protocol based on UDP adapted for multiplayer video games.</p>
 
@@ -149,7 +149,7 @@
 
 <p>To finish, this part, I advise you to read <a href="https://web.archive.org/web/20190519135537/http://trac.bookofhook.com/bookofhook/trac.cgi/wiki/IntroductionToMultiplayerGameProgramming"><em>Introduction to Multiplayer Game Programming</em></a> by Brian Hook which covers a lot of topics we have discussed here.</p>
 
-<h1 id="application-protocol">Application protocol</h1>
+<h1 id="application-protocol">Application Protocol</h1>
 
 <p>Now that you have a way to exchange data between clients and the server you must decide what data to exchange and with which format.</p>
 
@@ -201,7 +201,7 @@
 
 <p>Shawn Hargreaves also has some interesting articles on compression including quantization, you can find them all <a href="http://www.shawnhargreaves.com/blogindex.html#networking">here</a>.</p>
 
-<h3 id="compression-algorithms">Compression algorithms</h3>
+<h3 id="compression-algorithms">Compression Algorithms</h3>
 
 <p>The next technique is using lossless compression algorithms.</p>
 
@@ -214,7 +214,7 @@
 
 <p>There is also a paid library by Rad Game Tools called <a href="http://www.radgametools.com/oodlenetwork.htm">Oodle Network Compression</a>. On the page, they show an interesting graph where they compared the compression ratio of Huffman coding, zlib and their solution, very instructive.</p>
 
-<h3 id="delta-compression">Delta compression</h3>
+<h3 id="delta-compression">Delta Compression</h3>
 
 <p>The last compression technique is delta compression. It consists in sending only the differences between the current game state and the last state received by a client.</p>
 
@@ -238,11 +238,11 @@
 
 <p>I strongly advise you to use a library to help you. I suggest <a href="https://download.libsodium.org/doc/">libsodium</a> as it is particularly simple to use and it provides great tutorials. You will be in particular interested by the <a href="https://download.libsodium.org/doc/key_exchange">key exchange</a> tutorial to generate new keys for each new connection.</p>
 
-<h2 id="application-protocol--conclusion">Application protocol – Conclusion</h2>
+<h2 id="application-protocol--conclusion">Application Protocol – Conclusion</h2>
 
 <p>That is all for this part. I think that compression is totally optional and it depends on your game and how much bandwidth is needed. Encryption is, in my opinion, not optional but it may be skipped in a first prototype.</p>
 
-<h1 id="application-logic">Application logic</h1>
+<h1 id="application-logic">Application Logic</h1>
 
 <p>You are now able to update the state in the client but you may experience latency issues. Indeed, you have to wait for a game state update from the server after having triggered an input to see its effect in the world.</p>
 
@@ -250,7 +250,7 @@
 
 <p>There are several techniques to mitigate these issues that I will present in the next section.</p>
 
-<h2 id="latency-mitigation-techniques">Latency mitigation techniques</h2>
+<h2 id="latency-mitigation-techniques">Latency Mitigation Techniques</h2>
 
 <p>All the techniques presented in this section are presented in-depth in <a href="https://www.gabrielgambetta.com/client-server-game-architecture.html"><em>Fast-Paced Multiplayer</em></a> by Gabriel Gambetta. I strongly advise you to read this series of articles which is great. There is also a live demo to see how these techniques work in practice.</p>
 
@@ -264,7 +264,7 @@
 
 <p>There are also two articles on Valve’s wiki, <a href="https://developer.valvesoftware.com/wiki/Source_Multiplayer_Networking"><em>Source Multiplayer Networking</em></a> and <a href="https://developer.valvesoftware.com/wiki/Latency_Compensating_Methods_in_Client/Server_In-game_Protocol_Design_and_Optimization"><em>Latency Compensating Methods in Client/Server In-game Protocol Design and Optimization</em></a>, which deal with latency compensation.</p>
 
-<h2 id="cheating-prevention">Cheating prevention</h2>
+<h2 id="cheating-prevention">Cheating Prevention</h2>
 
 <p>There are mainly two ways to cheat in a mutliplayer game: by sending malicious packets to the server or by reading data coming from the server that give an unfair advantage to the cheater.</p>
 
@@ -276,11 +276,11 @@
 
 <p>If you want to know more about cheating you can read the article <a href="https://en.wikipedia.org/wiki/Cheating_in_online_games">Cheating in online games</a> on Wikipedia which contains a list of possible ways of cheating and solutions to detect and prevent them.</p>
 
-<h2 id="application-logic--conclusion">Application logic – Conclusion</h2>
+<h2 id="application-logic--conclusion">Application Logic – Conclusion</h2>
 
 <p>I advise you to implement a way to simulate high latency and low refresh rates in your game to be able to test your game in bad conditions even if both the client and the server are running on your computer. It will simplify greatly the implementation of latency mitigation techniques.</p>
 
-<h1 id="other-useful-resources">Other useful resources</h1>
+<h1 id="other-useful-resources">Other Useful Resources</h1>
 
 <p>If you are looking for more networking resources, you can find them there:</p>
 <ul>
@@ -347,7 +347,7 @@ s.setAttribute('data-timestamp', +new Date());
 <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
                 </div>
                 <div class="col-sm-3 col-sm-offset-1 blog-sidebar">
-    <p><strong><a href="https://www.vagabondgame.com">Get Vagabond</a></strong></p>
+    <p><strong><a href="https://www.vagabondgame.com">Try the free demo of Vagabond!</a></strong></p>
 	<div class="sidebar-module">
         <h4>Tags</h4>
         <ol class="list-unstyled">
@@ -358,7 +358,7 @@ s.setAttribute('data-timestamp', +new Date());
 		
 			<li><a href="/tag/cpp">cpp (8)</a></li>
 		
-			<li><a href="/tag/pcg">pcg (14)</a></li>
+			<li><a href="/tag/pcg">pcg (15)</a></li>
 		
 			<li><a href="/tag/simulopolis">simulopolis (5)</a></li>
 		
@@ -370,7 +370,7 @@ s.setAttribute('data-timestamp', +new Date());
 		
 			<li><a href="/tag/git">git (1)</a></li>
 		
-			<li><a href="/tag/vagabond">vagabond (25)</a></li>
+			<li><a href="/tag/vagabond">vagabond (26)</a></li>
 		
 			<li><a href="/tag/ecs">ecs (2)</a></li>
 		
@@ -382,6 +382,14 @@ s.setAttribute('data-timestamp', +new Date());
         <h4>Archives</h4>
         <ol class="list-unstyled">
 		
+        
+            
+            
+            
+            
+			<li id="yMarch 2021"><a href="/2021/03">March 2021 (1)</a></li>
+				
+            
         
             
             

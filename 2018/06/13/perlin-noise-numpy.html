@@ -8,22 +8,22 @@
         <link rel="shortcut icon" href="/media/img/favicon.png">
         <!-- SEO -->
         <!-- Begin Jekyll SEO tag v2.7.1 -->
-<title>Perlin noise with numpy | pvigier’s blog</title>
+<title>Perlin Noise With Numpy | pvigier’s blog</title>
 <meta name="generator" content="Jekyll v4.1.1" />
-<meta property="og:title" content="Perlin noise with numpy" />
+<meta property="og:title" content="Perlin Noise With Numpy" />
 <meta name="author" content="pierre" />
 <meta property="og:locale" content="en_US" />
-<meta name="description" content="Hi everyone, I have written an implementation of Perlin noise with numpy that is pretty fast, and I want to share it with you. The code is available here. Perlin noise My code looks like the original implementation. The only difference is that I tried to use the vectorized operations of numpy as much as possible instead of for loops. Because as you may know, loops are really slow in Python. Here is the code: def generate_perlin_noise_2d(shape, res): def f(t): return 6*t**5 - 15*t**4 + 10*t**3 delta = (res[0] / shape[0], res[1] / shape[1]) d = (shape[0] // res[0], shape[1] // res[1]) grid = np.mgrid[0:res[0]:delta[0],0:res[1]:delta[1]].transpose(1, 2, 0) % 1 # Gradients angles = 2*np.pi*np.random.rand(res[0]+1, res[1]+1) gradients = np.dstack((np.cos(angles), np.sin(angles))) g00 = gradients[0:-1,0:-1].repeat(d[0], 0).repeat(d[1], 1) g10 = gradients[1:,0:-1].repeat(d[0], 0).repeat(d[1], 1) g01 = gradients[0:-1,1:].repeat(d[0], 0).repeat(d[1], 1) g11 = gradients[1:,1:].repeat(d[0], 0).repeat(d[1], 1) # Ramps n00 = np.sum(grid * g00, 2) n10 = np.sum(np.dstack((grid[:,:,0]-1, grid[:,:,1])) * g10, 2) n01 = np.sum(np.dstack((grid[:,:,0], grid[:,:,1]-1)) * g01, 2) n11 = np.sum(np.dstack((grid[:,:,0]-1, grid[:,:,1]-1)) * g11, 2) # Interpolation t = f(grid) n0 = n00*(1-t[:,:,0]) + t[:,:,0]*n10 n1 = n01*(1-t[:,:,0]) + t[:,:,0]*n11 return np.sqrt(2)*((1-t[:,:,1])*n0 + t[:,:,1]*n1) If you are familiar with Perlin noise, nothing should surprise you. Otherwise, I can suggest you to read the first pages of this article which explains Perlin noise very well in my opinion. An example of what the function generates: I normalized the gradients so that the noise is always between -1 and 1." />
-<meta property="og:description" content="Hi everyone, I have written an implementation of Perlin noise with numpy that is pretty fast, and I want to share it with you. The code is available here. Perlin noise My code looks like the original implementation. The only difference is that I tried to use the vectorized operations of numpy as much as possible instead of for loops. Because as you may know, loops are really slow in Python. Here is the code: def generate_perlin_noise_2d(shape, res): def f(t): return 6*t**5 - 15*t**4 + 10*t**3 delta = (res[0] / shape[0], res[1] / shape[1]) d = (shape[0] // res[0], shape[1] // res[1]) grid = np.mgrid[0:res[0]:delta[0],0:res[1]:delta[1]].transpose(1, 2, 0) % 1 # Gradients angles = 2*np.pi*np.random.rand(res[0]+1, res[1]+1) gradients = np.dstack((np.cos(angles), np.sin(angles))) g00 = gradients[0:-1,0:-1].repeat(d[0], 0).repeat(d[1], 1) g10 = gradients[1:,0:-1].repeat(d[0], 0).repeat(d[1], 1) g01 = gradients[0:-1,1:].repeat(d[0], 0).repeat(d[1], 1) g11 = gradients[1:,1:].repeat(d[0], 0).repeat(d[1], 1) # Ramps n00 = np.sum(grid * g00, 2) n10 = np.sum(np.dstack((grid[:,:,0]-1, grid[:,:,1])) * g10, 2) n01 = np.sum(np.dstack((grid[:,:,0], grid[:,:,1]-1)) * g01, 2) n11 = np.sum(np.dstack((grid[:,:,0]-1, grid[:,:,1]-1)) * g11, 2) # Interpolation t = f(grid) n0 = n00*(1-t[:,:,0]) + t[:,:,0]*n10 n1 = n01*(1-t[:,:,0]) + t[:,:,0]*n11 return np.sqrt(2)*((1-t[:,:,1])*n0 + t[:,:,1]*n1) If you are familiar with Perlin noise, nothing should surprise you. Otherwise, I can suggest you to read the first pages of this article which explains Perlin noise very well in my opinion. An example of what the function generates: I normalized the gradients so that the noise is always between -1 and 1." />
+<meta name="description" content="Hi everyone, I have written an implementation of Perlin noise with numpy that is pretty fast, and I want to share it with you. The code is available here. Perlin Noise My code looks like the original implementation. The only difference is that I tried to use the vectorized operations of numpy as much as possible instead of for loops. Because as you may know, loops are really slow in Python. Here is the code: def generate_perlin_noise_2d(shape, res): def f(t): return 6*t**5 - 15*t**4 + 10*t**3 delta = (res[0] / shape[0], res[1] / shape[1]) d = (shape[0] // res[0], shape[1] // res[1]) grid = np.mgrid[0:res[0]:delta[0],0:res[1]:delta[1]].transpose(1, 2, 0) % 1 # Gradients angles = 2*np.pi*np.random.rand(res[0]+1, res[1]+1) gradients = np.dstack((np.cos(angles), np.sin(angles))) g00 = gradients[0:-1,0:-1].repeat(d[0], 0).repeat(d[1], 1) g10 = gradients[1:,0:-1].repeat(d[0], 0).repeat(d[1], 1) g01 = gradients[0:-1,1:].repeat(d[0], 0).repeat(d[1], 1) g11 = gradients[1:,1:].repeat(d[0], 0).repeat(d[1], 1) # Ramps n00 = np.sum(grid * g00, 2) n10 = np.sum(np.dstack((grid[:,:,0]-1, grid[:,:,1])) * g10, 2) n01 = np.sum(np.dstack((grid[:,:,0], grid[:,:,1]-1)) * g01, 2) n11 = np.sum(np.dstack((grid[:,:,0]-1, grid[:,:,1]-1)) * g11, 2) # Interpolation t = f(grid) n0 = n00*(1-t[:,:,0]) + t[:,:,0]*n10 n1 = n01*(1-t[:,:,0]) + t[:,:,0]*n11 return np.sqrt(2)*((1-t[:,:,1])*n0 + t[:,:,1]*n1) If you are familiar with Perlin noise, nothing should surprise you. Otherwise, I can suggest you to read the first pages of this article which explains Perlin noise very well in my opinion. An example of what the function generates: I normalized the gradients so that the noise is always between -1 and 1." />
+<meta property="og:description" content="Hi everyone, I have written an implementation of Perlin noise with numpy that is pretty fast, and I want to share it with you. The code is available here. Perlin Noise My code looks like the original implementation. The only difference is that I tried to use the vectorized operations of numpy as much as possible instead of for loops. Because as you may know, loops are really slow in Python. Here is the code: def generate_perlin_noise_2d(shape, res): def f(t): return 6*t**5 - 15*t**4 + 10*t**3 delta = (res[0] / shape[0], res[1] / shape[1]) d = (shape[0] // res[0], shape[1] // res[1]) grid = np.mgrid[0:res[0]:delta[0],0:res[1]:delta[1]].transpose(1, 2, 0) % 1 # Gradients angles = 2*np.pi*np.random.rand(res[0]+1, res[1]+1) gradients = np.dstack((np.cos(angles), np.sin(angles))) g00 = gradients[0:-1,0:-1].repeat(d[0], 0).repeat(d[1], 1) g10 = gradients[1:,0:-1].repeat(d[0], 0).repeat(d[1], 1) g01 = gradients[0:-1,1:].repeat(d[0], 0).repeat(d[1], 1) g11 = gradients[1:,1:].repeat(d[0], 0).repeat(d[1], 1) # Ramps n00 = np.sum(grid * g00, 2) n10 = np.sum(np.dstack((grid[:,:,0]-1, grid[:,:,1])) * g10, 2) n01 = np.sum(np.dstack((grid[:,:,0], grid[:,:,1]-1)) * g01, 2) n11 = np.sum(np.dstack((grid[:,:,0]-1, grid[:,:,1]-1)) * g11, 2) # Interpolation t = f(grid) n0 = n00*(1-t[:,:,0]) + t[:,:,0]*n10 n1 = n01*(1-t[:,:,0]) + t[:,:,0]*n11 return np.sqrt(2)*((1-t[:,:,1])*n0 + t[:,:,1]*n1) If you are familiar with Perlin noise, nothing should surprise you. Otherwise, I can suggest you to read the first pages of this article which explains Perlin noise very well in my opinion. An example of what the function generates: I normalized the gradients so that the noise is always between -1 and 1." />
 <link rel="canonical" href="https://pvigier.github.io/2018/06/13/perlin-noise-numpy.html" />
 <meta property="og:url" content="https://pvigier.github.io/2018/06/13/perlin-noise-numpy.html" />
 <meta property="og:site_name" content="pvigier’s blog" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2018-06-13T00:00:00+02:00" />
 <meta name="twitter:card" content="summary" />
-<meta property="twitter:title" content="Perlin noise with numpy" />
+<meta property="twitter:title" content="Perlin Noise With Numpy" />
 <script type="application/ld+json">
-{"author":{"@type":"Person","name":"pierre"},"headline":"Perlin noise with numpy","dateModified":"2018-06-13T00:00:00+02:00","datePublished":"2018-06-13T00:00:00+02:00","description":"Hi everyone, I have written an implementation of Perlin noise with numpy that is pretty fast, and I want to share it with you. The code is available here. Perlin noise My code looks like the original implementation. The only difference is that I tried to use the vectorized operations of numpy as much as possible instead of for loops. Because as you may know, loops are really slow in Python. Here is the code: def generate_perlin_noise_2d(shape, res): def f(t): return 6*t**5 - 15*t**4 + 10*t**3 delta = (res[0] / shape[0], res[1] / shape[1]) d = (shape[0] // res[0], shape[1] // res[1]) grid = np.mgrid[0:res[0]:delta[0],0:res[1]:delta[1]].transpose(1, 2, 0) % 1 # Gradients angles = 2*np.pi*np.random.rand(res[0]+1, res[1]+1) gradients = np.dstack((np.cos(angles), np.sin(angles))) g00 = gradients[0:-1,0:-1].repeat(d[0], 0).repeat(d[1], 1) g10 = gradients[1:,0:-1].repeat(d[0], 0).repeat(d[1], 1) g01 = gradients[0:-1,1:].repeat(d[0], 0).repeat(d[1], 1) g11 = gradients[1:,1:].repeat(d[0], 0).repeat(d[1], 1) # Ramps n00 = np.sum(grid * g00, 2) n10 = np.sum(np.dstack((grid[:,:,0]-1, grid[:,:,1])) * g10, 2) n01 = np.sum(np.dstack((grid[:,:,0], grid[:,:,1]-1)) * g01, 2) n11 = np.sum(np.dstack((grid[:,:,0]-1, grid[:,:,1]-1)) * g11, 2) # Interpolation t = f(grid) n0 = n00*(1-t[:,:,0]) + t[:,:,0]*n10 n1 = n01*(1-t[:,:,0]) + t[:,:,0]*n11 return np.sqrt(2)*((1-t[:,:,1])*n0 + t[:,:,1]*n1) If you are familiar with Perlin noise, nothing should surprise you. Otherwise, I can suggest you to read the first pages of this article which explains Perlin noise very well in my opinion. An example of what the function generates: I normalized the gradients so that the noise is always between -1 and 1.","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://pvigier.github.io/2018/06/13/perlin-noise-numpy.html"},"url":"https://pvigier.github.io/2018/06/13/perlin-noise-numpy.html","@context":"https://schema.org"}</script>
+{"author":{"@type":"Person","name":"pierre"},"description":"Hi everyone, I have written an implementation of Perlin noise with numpy that is pretty fast, and I want to share it with you. The code is available here. Perlin Noise My code looks like the original implementation. The only difference is that I tried to use the vectorized operations of numpy as much as possible instead of for loops. Because as you may know, loops are really slow in Python. Here is the code: def generate_perlin_noise_2d(shape, res): def f(t): return 6*t**5 - 15*t**4 + 10*t**3 delta = (res[0] / shape[0], res[1] / shape[1]) d = (shape[0] // res[0], shape[1] // res[1]) grid = np.mgrid[0:res[0]:delta[0],0:res[1]:delta[1]].transpose(1, 2, 0) % 1 # Gradients angles = 2*np.pi*np.random.rand(res[0]+1, res[1]+1) gradients = np.dstack((np.cos(angles), np.sin(angles))) g00 = gradients[0:-1,0:-1].repeat(d[0], 0).repeat(d[1], 1) g10 = gradients[1:,0:-1].repeat(d[0], 0).repeat(d[1], 1) g01 = gradients[0:-1,1:].repeat(d[0], 0).repeat(d[1], 1) g11 = gradients[1:,1:].repeat(d[0], 0).repeat(d[1], 1) # Ramps n00 = np.sum(grid * g00, 2) n10 = np.sum(np.dstack((grid[:,:,0]-1, grid[:,:,1])) * g10, 2) n01 = np.sum(np.dstack((grid[:,:,0], grid[:,:,1]-1)) * g01, 2) n11 = np.sum(np.dstack((grid[:,:,0]-1, grid[:,:,1]-1)) * g11, 2) # Interpolation t = f(grid) n0 = n00*(1-t[:,:,0]) + t[:,:,0]*n10 n1 = n01*(1-t[:,:,0]) + t[:,:,0]*n11 return np.sqrt(2)*((1-t[:,:,1])*n0 + t[:,:,1]*n1) If you are familiar with Perlin noise, nothing should surprise you. Otherwise, I can suggest you to read the first pages of this article which explains Perlin noise very well in my opinion. An example of what the function generates: I normalized the gradients so that the noise is always between -1 and 1.","@type":"BlogPosting","headline":"Perlin Noise With Numpy","dateModified":"2018-06-13T00:00:00+02:00","datePublished":"2018-06-13T00:00:00+02:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://pvigier.github.io/2018/06/13/perlin-noise-numpy.html"},"url":"https://pvigier.github.io/2018/06/13/perlin-noise-numpy.html","@context":"https://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 
         <!-- Bootstrap -->
@@ -61,11 +61,11 @@
             <div class="row">
                 <div class="col-sm-8 blog-main">
                 <div class="blog-post">
-    <h2 class="blog-post-title">Perlin noise with numpy</h2>
+    <h2 class="blog-post-title">Perlin Noise With Numpy</h2>
     <p class="blog-post-meta">13 Jun 2018 by <a href="/">pierre</a></p>
     <p>Hi everyone, I have written an implementation of Perlin noise with numpy that is pretty fast, and I want to share it with you. The code is available <a href="https://github.com/pvigier/perlin-numpy">here</a>.</p>
 
-<h1 id="perlin-noise">Perlin noise</h1>
+<h1 id="perlin-noise">Perlin Noise</h1>
 
 <p>My code looks like the original implementation. The only difference is that I tried to use the vectorized operations of numpy as much as possible instead of <code class="language-plaintext highlighter-rouge">for</code> loops. Because as you may know, loops are really slow in Python.</p>
 
@@ -74,7 +74,7 @@
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">generate_perlin_noise_2d</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">res</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
         <span class="k">return</span> <span class="mi">6</span><span class="o">*</span><span class="n">t</span><span class="o">**</span><span class="mi">5</span> <span class="o">-</span> <span class="mi">15</span><span class="o">*</span><span class="n">t</span><span class="o">**</span><span class="mi">4</span> <span class="o">+</span> <span class="mi">10</span><span class="o">*</span><span class="n">t</span><span class="o">**</span><span class="mi">3</span>
-    
+
     <span class="n">delta</span> <span class="o">=</span> <span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">res</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
     <span class="n">d</span> <span class="o">=</span> <span class="p">(</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">//</span> <span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">//</span> <span class="n">res</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
     <span class="n">grid</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">mgrid</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span><span class="n">delta</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="mi">0</span><span class="p">:</span><span class="n">res</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span><span class="n">delta</span><span class="p">[</span><span class="mi">1</span><span class="p">]].</span><span class="n">transpose</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">%</span> <span class="mi">1</span>
@@ -107,7 +107,7 @@
 
 <!--more-->
 
-<h1 id="fractal-noise">Fractal noise</h1>
+<h1 id="fractal-noise">Fractal Noise</h1>
 
 <p>Using the previous function, I wrote another that combines several octaves of Perlin noise to generate fractal noise:</p>
 
@@ -180,7 +180,7 @@ s.setAttribute('data-timestamp', +new Date());
 <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
                 </div>
                 <div class="col-sm-3 col-sm-offset-1 blog-sidebar">
-    <p><strong><a href="https://www.vagabondgame.com">Get Vagabond</a></strong></p>
+    <p><strong><a href="https://www.vagabondgame.com">Try the free demo of Vagabond!</a></strong></p>
 	<div class="sidebar-module">
         <h4>Tags</h4>
         <ol class="list-unstyled">
@@ -191,7 +191,7 @@ s.setAttribute('data-timestamp', +new Date());
 		
 			<li><a href="/tag/cpp">cpp (8)</a></li>
 		
-			<li><a href="/tag/pcg">pcg (14)</a></li>
+			<li><a href="/tag/pcg">pcg (15)</a></li>
 		
 			<li><a href="/tag/simulopolis">simulopolis (5)</a></li>
 		
@@ -203,7 +203,7 @@ s.setAttribute('data-timestamp', +new Date());
 		
 			<li><a href="/tag/git">git (1)</a></li>
 		
-			<li><a href="/tag/vagabond">vagabond (25)</a></li>
+			<li><a href="/tag/vagabond">vagabond (26)</a></li>
 		
 			<li><a href="/tag/ecs">ecs (2)</a></li>
 		
@@ -215,6 +215,14 @@ s.setAttribute('data-timestamp', +new Date());
         <h4>Archives</h4>
         <ol class="list-unstyled">
 		
+        
+            
+            
+            
+            
+			<li id="yMarch 2021"><a href="/2021/03">March 2021 (1)</a></li>
+				
+            
         
             
             

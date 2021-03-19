@@ -8,22 +8,22 @@
         <link rel="shortcut icon" href="/media/img/favicon.png">
         <!-- SEO -->
         <!-- Begin Jekyll SEO tag v2.7.1 -->
-<title>Non empty destructors in C++ | pvigier’s blog</title>
+<title>Non Empty Destructors in C++ | pvigier’s blog</title>
 <meta name="generator" content="Jekyll v4.1.1" />
-<meta property="og:title" content="Non empty destructors in C++" />
+<meta property="og:title" content="Non Empty Destructors in C++" />
 <meta name="author" content="pierre" />
 <meta property="og:locale" content="en_US" />
-<meta name="description" content="Have you already faced problems with nontrivial destructors? I face one recently which was really annoying. In this article, I want to share with you my knowledge of this problem and the solutions I use to address it. The problem The problem is not really that the destructor is nonempty but that the destructor is nontrivial: there is a release of memory or some states are changed in another part of the app. Let us take a very simple example with a class that does dynamic allocation to explain the problem: class A { public: A() : mPointer(new int(0)) { } ~A() { delete mPointer; } private: int* mPointer; } As we allocate an integer in the constructor, the natural solution for memory management is to free it in the destructor. However, this will have terrible consequences. For instance, if we do this: int main() { A a; A anotherA(a); return 0; } A segmentation fault will occur. Why? Because when the main function ends, the destructor of A is called to delete a and anotherA. When a is destroyed the memory cell to which a’s mPointer points to is freed. Then, when anotherA is destroyed, we try to free the memory to which anotherA’s mPointer points to. But as anotherA is a copy of a, its mPointer points to the same memory cell as a’s mPointer. Thus, we try to free twice the same memory cell which causes the Segmentation fault. So, the problem is that because of the copy the destructor is called twice on the same attributes. Note that the copy or move constructors are often called when we use containers. For instance, there is a copy or a move when the std::vector’s push_back is called." />
-<meta property="og:description" content="Have you already faced problems with nontrivial destructors? I face one recently which was really annoying. In this article, I want to share with you my knowledge of this problem and the solutions I use to address it. The problem The problem is not really that the destructor is nonempty but that the destructor is nontrivial: there is a release of memory or some states are changed in another part of the app. Let us take a very simple example with a class that does dynamic allocation to explain the problem: class A { public: A() : mPointer(new int(0)) { } ~A() { delete mPointer; } private: int* mPointer; } As we allocate an integer in the constructor, the natural solution for memory management is to free it in the destructor. However, this will have terrible consequences. For instance, if we do this: int main() { A a; A anotherA(a); return 0; } A segmentation fault will occur. Why? Because when the main function ends, the destructor of A is called to delete a and anotherA. When a is destroyed the memory cell to which a’s mPointer points to is freed. Then, when anotherA is destroyed, we try to free the memory to which anotherA’s mPointer points to. But as anotherA is a copy of a, its mPointer points to the same memory cell as a’s mPointer. Thus, we try to free twice the same memory cell which causes the Segmentation fault. So, the problem is that because of the copy the destructor is called twice on the same attributes. Note that the copy or move constructors are often called when we use containers. For instance, there is a copy or a move when the std::vector’s push_back is called." />
+<meta name="description" content="Have you already faced problems with nontrivial destructors? I face one recently which was really annoying. In this article, I want to share with you my knowledge of this problem and the solutions I use to address it. The Problem The problem is not really that the destructor is non empty but that the destructor is nontrivial: there is a release of memory or some states are changed in another part of the app. Let us take a very simple example with a class that does dynamic allocation to explain the problem: class A { public: A() : mPointer(new int(0)) { } ~A() { delete mPointer; } private: int* mPointer; } As we allocate an integer in the constructor, the natural solution for memory management is to free it in the destructor. However, this will have terrible consequences. For instance, if we do this: int main() { A a; A anotherA(a); return 0; } A segmentation fault will occur. Why? Because when the main function ends, the destructor of A is called to delete a and anotherA. When a is destroyed the memory cell to which a’s mPointer points to is freed. Then, when anotherA is destroyed, we try to free the memory to which anotherA’s mPointer points to. But as anotherA is a copy of a, its mPointer points to the same memory cell as a’s mPointer. Thus, we try to free twice the same memory cell which causes the Segmentation fault. So, the problem is that because of the copy the destructor is called twice on the same attributes. Note that the copy or move constructors are often called when we use containers. For instance, there is a copy or a move when the std::vector’s push_back is called." />
+<meta property="og:description" content="Have you already faced problems with nontrivial destructors? I face one recently which was really annoying. In this article, I want to share with you my knowledge of this problem and the solutions I use to address it. The Problem The problem is not really that the destructor is non empty but that the destructor is nontrivial: there is a release of memory or some states are changed in another part of the app. Let us take a very simple example with a class that does dynamic allocation to explain the problem: class A { public: A() : mPointer(new int(0)) { } ~A() { delete mPointer; } private: int* mPointer; } As we allocate an integer in the constructor, the natural solution for memory management is to free it in the destructor. However, this will have terrible consequences. For instance, if we do this: int main() { A a; A anotherA(a); return 0; } A segmentation fault will occur. Why? Because when the main function ends, the destructor of A is called to delete a and anotherA. When a is destroyed the memory cell to which a’s mPointer points to is freed. Then, when anotherA is destroyed, we try to free the memory to which anotherA’s mPointer points to. But as anotherA is a copy of a, its mPointer points to the same memory cell as a’s mPointer. Thus, we try to free twice the same memory cell which causes the Segmentation fault. So, the problem is that because of the copy the destructor is called twice on the same attributes. Note that the copy or move constructors are often called when we use containers. For instance, there is a copy or a move when the std::vector’s push_back is called." />
 <link rel="canonical" href="https://pvigier.github.io/2018/02/15/non-empty-destructors.html" />
 <meta property="og:url" content="https://pvigier.github.io/2018/02/15/non-empty-destructors.html" />
 <meta property="og:site_name" content="pvigier’s blog" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2018-02-15T00:00:00+01:00" />
 <meta name="twitter:card" content="summary" />
-<meta property="twitter:title" content="Non empty destructors in C++" />
+<meta property="twitter:title" content="Non Empty Destructors in C++" />
 <script type="application/ld+json">
-{"author":{"@type":"Person","name":"pierre"},"headline":"Non empty destructors in C++","dateModified":"2018-02-15T00:00:00+01:00","datePublished":"2018-02-15T00:00:00+01:00","description":"Have you already faced problems with nontrivial destructors? I face one recently which was really annoying. In this article, I want to share with you my knowledge of this problem and the solutions I use to address it. The problem The problem is not really that the destructor is nonempty but that the destructor is nontrivial: there is a release of memory or some states are changed in another part of the app. Let us take a very simple example with a class that does dynamic allocation to explain the problem: class A { public: A() : mPointer(new int(0)) { } ~A() { delete mPointer; } private: int* mPointer; } As we allocate an integer in the constructor, the natural solution for memory management is to free it in the destructor. However, this will have terrible consequences. For instance, if we do this: int main() { A a; A anotherA(a); return 0; } A segmentation fault will occur. Why? Because when the main function ends, the destructor of A is called to delete a and anotherA. When a is destroyed the memory cell to which a’s mPointer points to is freed. Then, when anotherA is destroyed, we try to free the memory to which anotherA’s mPointer points to. But as anotherA is a copy of a, its mPointer points to the same memory cell as a’s mPointer. Thus, we try to free twice the same memory cell which causes the Segmentation fault. So, the problem is that because of the copy the destructor is called twice on the same attributes. Note that the copy or move constructors are often called when we use containers. For instance, there is a copy or a move when the std::vector’s push_back is called.","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://pvigier.github.io/2018/02/15/non-empty-destructors.html"},"url":"https://pvigier.github.io/2018/02/15/non-empty-destructors.html","@context":"https://schema.org"}</script>
+{"author":{"@type":"Person","name":"pierre"},"description":"Have you already faced problems with nontrivial destructors? I face one recently which was really annoying. In this article, I want to share with you my knowledge of this problem and the solutions I use to address it. The Problem The problem is not really that the destructor is non empty but that the destructor is nontrivial: there is a release of memory or some states are changed in another part of the app. Let us take a very simple example with a class that does dynamic allocation to explain the problem: class A { public: A() : mPointer(new int(0)) { } ~A() { delete mPointer; } private: int* mPointer; } As we allocate an integer in the constructor, the natural solution for memory management is to free it in the destructor. However, this will have terrible consequences. For instance, if we do this: int main() { A a; A anotherA(a); return 0; } A segmentation fault will occur. Why? Because when the main function ends, the destructor of A is called to delete a and anotherA. When a is destroyed the memory cell to which a’s mPointer points to is freed. Then, when anotherA is destroyed, we try to free the memory to which anotherA’s mPointer points to. But as anotherA is a copy of a, its mPointer points to the same memory cell as a’s mPointer. Thus, we try to free twice the same memory cell which causes the Segmentation fault. So, the problem is that because of the copy the destructor is called twice on the same attributes. Note that the copy or move constructors are often called when we use containers. For instance, there is a copy or a move when the std::vector’s push_back is called.","@type":"BlogPosting","headline":"Non Empty Destructors in C++","dateModified":"2018-02-15T00:00:00+01:00","datePublished":"2018-02-15T00:00:00+01:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://pvigier.github.io/2018/02/15/non-empty-destructors.html"},"url":"https://pvigier.github.io/2018/02/15/non-empty-destructors.html","@context":"https://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 
         <!-- Bootstrap -->
@@ -61,15 +61,15 @@
             <div class="row">
                 <div class="col-sm-8 blog-main">
                 <div class="blog-post">
-    <h2 class="blog-post-title">Non empty destructors in C++</h2>
+    <h2 class="blog-post-title">Non Empty Destructors in C++</h2>
     <p class="blog-post-meta">15 Feb 2018 by <a href="/">pierre</a></p>
     <p>Have you already faced problems with nontrivial destructors?</p>
 
 <p>I face one recently which was really annoying. In this article, I want to share with you my knowledge of this problem and the solutions I use to address it.</p>
 
-<h1 id="the-problem">The problem</h1>
+<h1 id="the-problem">The Problem</h1>
 
-<p>The problem is not really that the destructor is nonempty but that the destructor is nontrivial: there is a release of memory or some states are changed in another part of the app.</p>
+<p>The problem is not really that the destructor is non empty but that the destructor is nontrivial: there is a release of memory or some states are changed in another part of the app.</p>
 
 <p>Let us take a very simple example with a class that does dynamic allocation to explain the problem:</p>
 
@@ -116,7 +116,7 @@
 
 <!--more-->
 
-<h1 id="first-solution-rule-of-three">First solution: rule of three</h1>
+<h1 id="first-solution-rule-of-three">First Solution: Rule of Three</h1>
 
 <p>Firstly, this rule has nothing to do with Star Wars’ <a href="http://starwars.wikia.com/wiki/Rule_of_Two">Rule of two</a>.</p>
 
@@ -128,7 +128,7 @@
   <li>copy assignment operator</li>
 </ul>
 
-<p>In particular, if the destructor is nonempty then we should define the copy constructor and the copy assignment operator.</p>
+<p>In particular, if the destructor is non empty then we should define the copy constructor and the copy assignment operator.</p>
 
 <p>So for our previous class <code class="language-plaintext highlighter-rouge">A</code>, we would do the following:</p>
 
@@ -170,7 +170,7 @@
 
 <p>The main disadvantage of this method is that we have to write a lot of code to obtain the correct behavior. But this is the idiomatic way to encapsulate a low-level resource and follow <a href="https://en.wikipedia.org/wiki/Resource_acquisition_is_initialization">RAII</a>.</p>
 
-<h1 id="second-solution-raii">Second solution: RAII</h1>
+<h1 id="second-solution-raii">Second Solution: RAII</h1>
 
 <p>Another solution is to ensure the destructor is empty by, for instance, using only attributes that follows RAII (standard containers, <code class="language-plaintext highlighter-rouge">std::string</code>s, smart pointers, a file stream, etc.).</p>
 
@@ -195,7 +195,7 @@
 
 <p>If adequate, this is the solution that should be chosen.</p>
 
-<h1 id="third-solution-forbid-copy-and-move">Third solution: forbid copy and move</h1>
+<h1 id="third-solution-forbid-copy-and-move">Third Solution: Forbid Copy and Move</h1>
 
 <p>The third solution is a bit radical: it is to forbid copy and move.</p>
 
@@ -243,7 +243,7 @@
 
 <p>This solution has the benefit of being very fast to implement.</p>
 
-<h1 id="fourth-solution-set-up-and-tear-down">Fourth solution: set up and tear down</h1>
+<h1 id="fourth-solution-set-up-and-tear-down">Fourth Solution: Set Up and Tear Down</h1>
 
 <p>The last solution is to manage the initialization and the finalization outside of the constructor and the destructor.</p>
 
@@ -345,7 +345,7 @@ s.setAttribute('data-timestamp', +new Date());
 <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
                 </div>
                 <div class="col-sm-3 col-sm-offset-1 blog-sidebar">
-    <p><strong><a href="https://www.vagabondgame.com">Get Vagabond</a></strong></p>
+    <p><strong><a href="https://www.vagabondgame.com">Try the free demo of Vagabond!</a></strong></p>
 	<div class="sidebar-module">
         <h4>Tags</h4>
         <ol class="list-unstyled">
@@ -356,7 +356,7 @@ s.setAttribute('data-timestamp', +new Date());
 		
 			<li><a href="/tag/cpp">cpp (8)</a></li>
 		
-			<li><a href="/tag/pcg">pcg (14)</a></li>
+			<li><a href="/tag/pcg">pcg (15)</a></li>
 		
 			<li><a href="/tag/simulopolis">simulopolis (5)</a></li>
 		
@@ -368,7 +368,7 @@ s.setAttribute('data-timestamp', +new Date());
 		
 			<li><a href="/tag/git">git (1)</a></li>
 		
-			<li><a href="/tag/vagabond">vagabond (25)</a></li>
+			<li><a href="/tag/vagabond">vagabond (26)</a></li>
 		
 			<li><a href="/tag/ecs">ecs (2)</a></li>
 		
@@ -380,6 +380,14 @@ s.setAttribute('data-timestamp', +new Date());
         <h4>Archives</h4>
         <ol class="list-unstyled">
 		
+        
+            
+            
+            
+            
+			<li id="yMarch 2021"><a href="/2021/03">March 2021 (1)</a></li>
+				
+            
         
             
             

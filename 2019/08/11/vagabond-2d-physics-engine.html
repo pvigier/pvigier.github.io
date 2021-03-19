@@ -23,7 +23,7 @@
 <meta name="twitter:card" content="summary" />
 <meta property="twitter:title" content="Vagabond – 2D Physics Engine" />
 <script type="application/ld+json">
-{"author":{"@type":"Person","name":"pierre"},"headline":"Vagabond – 2D Physics Engine","dateModified":"2019-08-11T00:00:00+02:00","datePublished":"2019-08-11T00:00:00+02:00","description":"This week, I worked on the physics engine. It was the first time, I wrote a physics engine thus it took me a lot of time to design an algorithm that works well. In this article, I will try to share with you the issues I faced and then my current design of the physics engine. Sorry, your browser doesn&#39;t support embedded videos.","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://pvigier.github.io/2019/08/11/vagabond-2d-physics-engine.html"},"url":"https://pvigier.github.io/2019/08/11/vagabond-2d-physics-engine.html","@context":"https://schema.org"}</script>
+{"author":{"@type":"Person","name":"pierre"},"description":"This week, I worked on the physics engine. It was the first time, I wrote a physics engine thus it took me a lot of time to design an algorithm that works well. In this article, I will try to share with you the issues I faced and then my current design of the physics engine. Sorry, your browser doesn&#39;t support embedded videos.","@type":"BlogPosting","headline":"Vagabond – 2D Physics Engine","dateModified":"2019-08-11T00:00:00+02:00","datePublished":"2019-08-11T00:00:00+02:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://pvigier.github.io/2019/08/11/vagabond-2d-physics-engine.html"},"url":"https://pvigier.github.io/2019/08/11/vagabond-2d-physics-engine.html","@context":"https://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 
         <!-- Bootstrap -->
@@ -108,7 +108,7 @@
 
 <p>Finally, in most resources I found, they were simulating realistic physic laws. Thus, they resolved collision using <a href="https://en.wikipedia.org/wiki/Elastic_collision">elastic</a> or <a href="https://en.wikipedia.org/wiki/Inelastic_collision">inelastic collisions</a>. These behaviors are not well-suited for a top-down 2D RPG.</p>
 
-<h1 id="design-and-algorithm">Design and algorithm</h1>
+<h1 id="design-and-algorithm">Design and Algorithm</h1>
 
 <h2 id="design">Design</h2>
 
@@ -173,7 +173,7 @@ newBox = Box(newPosition, node.box.size)
 
 <p>Nothing fancy here.</p>
 
-<h3 id="dynamic-static-collisions">Dynamic-static collisions</h3>
+<h3 id="dynamic-static-collisions">Dynamic-Static Collisions</h3>
 
 <p>The next step is to find the collisions with static nodes, to do that I use a quadtree <code class="language-plaintext highlighter-rouge">staticNodeQuadtree</code> that contains all the static nodes. Then, I look for the first collision, move the dynamic node at the place where it collides. Finally, I reset its velocity in the direction of the normal so that it remains only the tangential component and it stops trying to enter in the static node:</p>
 
@@ -189,7 +189,7 @@ newBox = Box(newPosition, node.box.size)
 <span class="n">node</span><span class="p">.</span><span class="n">box</span><span class="p">.</span><span class="n">velocity</span> <span class="o">-=</span> <span class="n">node</span><span class="p">.</span><span class="n">box</span><span class="p">.</span><span class="n">velocity</span><span class="p">.</span><span class="n">dot</span><span class="p">(</span><span class="n">normal</span><span class="p">)</span> <span class="o">*</span> <span class="n">normal</span>
 </code></pre></div></div>
 
-<h3 id="dynamic-dynamic-collisions">Dynamic-dynamic collisions</h3>
+<h3 id="dynamic-dynamic-collisions">Dynamic-Dynamic Collisions</h3>
 
 <p>The last step is finding all the collisions between dynamic nodes. Again, we will use a quadtree to do all the hard work:</p>
 
@@ -203,19 +203,19 @@ newBox = Box(newPosition, node.box.size)
 
 <p>Contrary to the quadtree containing the static nodes that is kept between iterations, the quadtree for the dynamic nodes is created from scratch at each iteration as all the dynamic nodes may have moved and need an update.</p>
 
-<h1 id="possible-improvements">Possible improvements</h1>
+<h1 id="possible-improvements">Possible Improvements</h1>
 
 <p>Now that we have a basic physics engine that works we can try to add some improvements.</p>
 
 <h2 id="tunneling">Tunneling</h2>
 
-<p>In the previous algorithm, we do not tackle the problem of tunneling. Tunneling may not be an issue depending on the geometry present in the world and if the framerate is constantly high. However, there is a simple way to check that no tunneling takes place. To do that, we must modify the quadtree data structure a bit so that we can check the collision between nodes in the quadtree and a given parallelogram. It is easy simple to do so.</p>
+<p>In the previous algorithm, we do not tackle the problem of tunneling. Tunneling may not be an issue depending on the geometry present in the world and if the framerate is constantly high. However, there is a simple way to check that no tunneling takes place. To do that, we must modify the quadtree data structure a bit so that we can check the collision between nodes in the quadtree and a given parallelogram. It is easy to do so.</p>
 
 <p>Then, we have to remark that the swept area of the bounding box of a dynamic node between two iterations is a parallelogram. Thus, we can find all the static nodes it may collide with by querying the quadtree containing the static nodes with a parallelogram that represents the swept area.</p>
 
 <p><img src="/media/img/vagabond-2d-physics-engine/tunneling_parallelogram.svg" alt="" width="250" class="center-image" /></p>
 
-<h2 id="wall-sliding">Wall sliding</h2>
+<h2 id="wall-sliding">Wall Sliding</h2>
 
 <p>In a 2D top-down RPG, we may want the player to be able to slide along the walls even if a part of the velocity is toward the wall.</p>
 
@@ -261,7 +261,7 @@ newBox = Box(newPosition, node.box.size)
 
 <p>I would simply add a list of hitboxes in the definition of <code class="language-plaintext highlighter-rouge">DynamicNode</code> and when there is a collision between the bounding boxes of two dynamic nodes, I would test the collision between their respective hitboxes.</p>
 
-<h1 id="useful-resources">Useful resources</h1>
+<h1 id="useful-resources">Useful Resources</h1>
 
 <ul>
   <li><a href="http://realtimecollisiondetection.net/">Real-Time Collision Detection</a> by Christer Ericson</li>
@@ -327,7 +327,7 @@ s.setAttribute('data-timestamp', +new Date());
 <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
                 </div>
                 <div class="col-sm-3 col-sm-offset-1 blog-sidebar">
-    <p><strong><a href="https://www.vagabondgame.com">Get Vagabond</a></strong></p>
+    <p><strong><a href="https://www.vagabondgame.com">Try the free demo of Vagabond!</a></strong></p>
 	<div class="sidebar-module">
         <h4>Tags</h4>
         <ol class="list-unstyled">
@@ -338,7 +338,7 @@ s.setAttribute('data-timestamp', +new Date());
 		
 			<li><a href="/tag/cpp">cpp (8)</a></li>
 		
-			<li><a href="/tag/pcg">pcg (14)</a></li>
+			<li><a href="/tag/pcg">pcg (15)</a></li>
 		
 			<li><a href="/tag/simulopolis">simulopolis (5)</a></li>
 		
@@ -350,7 +350,7 @@ s.setAttribute('data-timestamp', +new Date());
 		
 			<li><a href="/tag/git">git (1)</a></li>
 		
-			<li><a href="/tag/vagabond">vagabond (25)</a></li>
+			<li><a href="/tag/vagabond">vagabond (26)</a></li>
 		
 			<li><a href="/tag/ecs">ecs (2)</a></li>
 		
@@ -362,6 +362,14 @@ s.setAttribute('data-timestamp', +new Date());
         <h4>Archives</h4>
         <ol class="list-unstyled">
 		
+        
+            
+            
+            
+            
+			<li id="yMarch 2021"><a href="/2021/03">March 2021 (1)</a></li>
+				
+            
         
             
             

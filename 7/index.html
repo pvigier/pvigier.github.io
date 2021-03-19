@@ -8,7 +8,7 @@
         <link rel="shortcut icon" href="/media/img/favicon.png">
         <!-- SEO -->
         <!-- Begin Jekyll SEO tag v2.7.1 -->
-<title>Page 7 of 8 for Blog | pvigier’s blog</title>
+<title>Page 7 of 9 for Blog | pvigier’s blog</title>
 <meta name="generator" content="Jekyll v4.1.1" />
 <meta property="og:title" content="Blog" />
 <meta name="author" content="Pierre Vigier" />
@@ -21,7 +21,7 @@
 <meta name="twitter:card" content="summary" />
 <meta property="twitter:title" content="Blog" />
 <script type="application/ld+json">
-{"author":{"@type":"Person","name":"Pierre Vigier"},"headline":"Blog","@type":"WebPage","url":"https://pvigier.github.io/7/","@context":"https://schema.org"}</script>
+{"author":{"@type":"Person","name":"Pierre Vigier"},"@type":"WebPage","headline":"Blog","url":"https://pvigier.github.io/7/","@context":"https://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 
         <!-- Bootstrap -->
@@ -60,7 +60,24 @@
                 <div class="col-sm-8 blog-main">
                 
     <div class="blog-post">
-        <h2 class="blog-post-title"><a href="/2018/10/08/terrain-generation-simulopolis.html">Terrain generation in Simulopolis</a></h2>
+        <h2 class="blog-post-title"><a href="/2018/11/02/3d-perlin-noise-numpy.html">3D Perlin Noise With Numpy</a></h2>
+        <p class="blog-post-meta">02 Nov 2018 by <a href="/">pierre</a></p>
+        <p>Few weeks ago, a professor from the university of Waterloo contacted me to ask if it was possible to adapt my code for <a href="/2018/06/13/perlin-noise-numpy.html">2D Perlin noise</a> to 3D Perlin noise.</p>
+
+<p>I was very happy that someone was interested by this piece of code. After some thoughts, I answer him that it was possible and I decided to do it.</p>
+
+<p>I move the old code which generates 2D Perlin noise in the file <code class="language-plaintext highlighter-rouge">perlin2d.py</code> and I place the code described below for 3D Perlin noise in the file <code class="language-plaintext highlighter-rouge">perlin3d.py</code>. You can find all the code in this <a href="https://github.com/pvigier/perlin-numpy">github repo</a>.</p>
+
+
+        <p><a href="/2018/11/02/3d-perlin-noise-numpy.html">Read more ...</a></p>
+        
+        <p>Tags: <span class="label label-primary"><a href="/tag/pcg">pcg</a></span> <span class="label label-primary"><a href="/tag/python">python</a></span> </p>
+        
+    </div>
+    <hr />
+
+    <div class="blog-post">
+        <h2 class="blog-post-title"><a href="/2018/10/08/terrain-generation-simulopolis.html">Terrain Generation in Simulopolis</a></h2>
         <p class="blog-post-meta">08 Oct 2018 by <a href="/">pierre</a></p>
         <p>Hi!</p>
 
@@ -85,7 +102,7 @@
     <hr />
 
     <div class="blog-post">
-        <h2 class="blog-post-title"><a href="/2018/10/07/distributing-c++-program-linux.html">Distributing a C++ program on Linux</a></h2>
+        <h2 class="blog-post-title"><a href="/2018/10/07/distributing-c++-program-linux.html">Distributing a C++ Program on Linux</a></h2>
         <p class="blog-post-meta">07 Oct 2018 by <a href="/">pierre</a></p>
         <p>Hi!</p>
 
@@ -113,7 +130,7 @@
     <hr />
 
     <div class="blog-post">
-        <h2 class="blog-post-title"><a href="/2018/10/06/simulopolis-alpha-1.html">Simulopolis alpha is released</a></h2>
+        <h2 class="blog-post-title"><a href="/2018/10/06/simulopolis-alpha-1.html">Simulopolis Alpha Is Released</a></h2>
         <p class="blog-post-meta">06 Oct 2018 by <a href="/">pierre</a></p>
         <p><img src="/media/img/simulopolis-alpha-1/cover.png" alt="Cover" class="center-image modal-image" /></p>
 
@@ -130,11 +147,11 @@
     <hr />
 
     <div class="blog-post">
-        <h2 class="blog-post-title"><a href="/2018/06/13/perlin-noise-numpy.html">Perlin noise with numpy</a></h2>
+        <h2 class="blog-post-title"><a href="/2018/06/13/perlin-noise-numpy.html">Perlin Noise With Numpy</a></h2>
         <p class="blog-post-meta">13 Jun 2018 by <a href="/">pierre</a></p>
         <p>Hi everyone, I have written an implementation of Perlin noise with numpy that is pretty fast, and I want to share it with you. The code is available <a href="https://github.com/pvigier/perlin-numpy">here</a>.</p>
 
-<h1 id="perlin-noise">Perlin noise</h1>
+<h1 id="perlin-noise">Perlin Noise</h1>
 
 <p>My code looks like the original implementation. The only difference is that I tried to use the vectorized operations of numpy as much as possible instead of <code class="language-plaintext highlighter-rouge">for</code> loops. Because as you may know, loops are really slow in Python.</p>
 
@@ -143,7 +160,7 @@
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">generate_perlin_noise_2d</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">res</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
         <span class="k">return</span> <span class="mi">6</span><span class="o">*</span><span class="n">t</span><span class="o">**</span><span class="mi">5</span> <span class="o">-</span> <span class="mi">15</span><span class="o">*</span><span class="n">t</span><span class="o">**</span><span class="mi">4</span> <span class="o">+</span> <span class="mi">10</span><span class="o">*</span><span class="n">t</span><span class="o">**</span><span class="mi">3</span>
-    
+
     <span class="n">delta</span> <span class="o">=</span> <span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">res</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
     <span class="n">d</span> <span class="o">=</span> <span class="p">(</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">//</span> <span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">//</span> <span class="n">res</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
     <span class="n">grid</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">mgrid</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span><span class="n">delta</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="mi">0</span><span class="p">:</span><span class="n">res</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span><span class="n">delta</span><span class="p">[</span><span class="mi">1</span><span class="p">]].</span><span class="n">transpose</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">%</span> <span class="mi">1</span>
@@ -182,21 +199,6 @@
     </div>
     <hr />
 
-    <div class="blog-post">
-        <h2 class="blog-post-title"><a href="/2018/05/14/fractal-image-compression.html">Fractal Image Compression</a></h2>
-        <p class="blog-post-meta">14 May 2018 by <a href="/">pierre</a></p>
-        <p>One year ago, I coded a very simple implementation of fractal image compression for a course and I made the code available on github <a href="https://github.com/pvigier/fractal-image-compression">there</a>.</p>
-
-<p>To my surprise, the repo is quite popular. So I decided to update the code and to write an article to explain the theory and the code.</p>
-
-
-        <p><a href="/2018/05/14/fractal-image-compression.html">Read more ...</a></p>
-        
-        <p>Tags: <span class="label label-primary"><a href="/tag/math">math</a></span> <span class="label label-primary"><a href="/tag/python">python</a></span> </p>
-        
-    </div>
-    <hr />
-
 <nav>
     <ul class="pager">
         
@@ -210,7 +212,7 @@
 
                 </div>
                 <div class="col-sm-3 col-sm-offset-1 blog-sidebar">
-    <p><strong><a href="https://www.vagabondgame.com">Get Vagabond</a></strong></p>
+    <p><strong><a href="https://www.vagabondgame.com">Try the free demo of Vagabond!</a></strong></p>
 	<div class="sidebar-module">
         <h4>Tags</h4>
         <ol class="list-unstyled">
@@ -221,7 +223,7 @@
 		
 			<li><a href="/tag/cpp">cpp (8)</a></li>
 		
-			<li><a href="/tag/pcg">pcg (14)</a></li>
+			<li><a href="/tag/pcg">pcg (15)</a></li>
 		
 			<li><a href="/tag/simulopolis">simulopolis (5)</a></li>
 		
@@ -233,7 +235,7 @@
 		
 			<li><a href="/tag/git">git (1)</a></li>
 		
-			<li><a href="/tag/vagabond">vagabond (25)</a></li>
+			<li><a href="/tag/vagabond">vagabond (26)</a></li>
 		
 			<li><a href="/tag/ecs">ecs (2)</a></li>
 		
@@ -245,6 +247,14 @@
         <h4>Archives</h4>
         <ol class="list-unstyled">
 		
+        
+            
+            
+            
+            
+			<li id="yMarch 2021"><a href="/2021/03">March 2021 (1)</a></li>
+				
+            
         
             
             
