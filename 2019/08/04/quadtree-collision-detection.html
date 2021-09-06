@@ -23,7 +23,7 @@
 <meta name="twitter:card" content="summary" />
 <meta property="twitter:title" content="Quadtree and Collision Detection" />
 <script type="application/ld+json">
-{"author":{"@type":"Person","name":"pierre"},"description":"This week was short as I was still working on the 2D light system on Monday and Tuesday. I spent the rest of my time working on a quadtree implementation. In this article, I will share with you my implementation and my thoughts while designing it. Firstly, I want to argue why I decided to implement a quadtree. A Quadtree is a space partitioning data structure. Its main advantage against other data structures is its versatility. It offers good performance for insertion, removal and lookup. Thus, we can use it in a dynamic context where the data often change. Moreover, it is quite easy to understand and implement. If you are totally new to space partitioning, I advise you to read this article by Robert Nystrom. If you want a gentler introduction to quadtrees, you can read this article or this one. In my game, there are several places where using a quadtree is an instant win: During collision detection, using a quadtree is way more efficient than the brute-force approach (testing all pairs). It is not the most efficient approach though, see this article if you want an overview of possible approaches and benchmarks. But, I will start using this in the first version of my physics engine. I may change later and use a more specialized algorithm if I need to. In the scene graph, to perform culling, I can use a quadtree to find all the nodes that are visible. In the light system, I can use a quadtree to find the walls that are intersecting the light visibility polygon. In an AI system, I can use a quadtree to find all the objects or enemies that are close to an entity. etc. As you can notice, quadtrees are very versatile. They are a nice tool to have in your toolbox. You can find all the code that I will show next on GitHub.","@type":"BlogPosting","headline":"Quadtree and Collision Detection","dateModified":"2019-08-04T00:00:00+02:00","datePublished":"2019-08-04T00:00:00+02:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://pvigier.github.io/2019/08/04/quadtree-collision-detection.html"},"url":"https://pvigier.github.io/2019/08/04/quadtree-collision-detection.html","@context":"https://schema.org"}</script>
+{"author":{"@type":"Person","name":"pierre"},"headline":"Quadtree and Collision Detection","dateModified":"2019-08-04T00:00:00+02:00","datePublished":"2019-08-04T00:00:00+02:00","description":"This week was short as I was still working on the 2D light system on Monday and Tuesday. I spent the rest of my time working on a quadtree implementation. In this article, I will share with you my implementation and my thoughts while designing it. Firstly, I want to argue why I decided to implement a quadtree. A Quadtree is a space partitioning data structure. Its main advantage against other data structures is its versatility. It offers good performance for insertion, removal and lookup. Thus, we can use it in a dynamic context where the data often change. Moreover, it is quite easy to understand and implement. If you are totally new to space partitioning, I advise you to read this article by Robert Nystrom. If you want a gentler introduction to quadtrees, you can read this article or this one. In my game, there are several places where using a quadtree is an instant win: During collision detection, using a quadtree is way more efficient than the brute-force approach (testing all pairs). It is not the most efficient approach though, see this article if you want an overview of possible approaches and benchmarks. But, I will start using this in the first version of my physics engine. I may change later and use a more specialized algorithm if I need to. In the scene graph, to perform culling, I can use a quadtree to find all the nodes that are visible. In the light system, I can use a quadtree to find the walls that are intersecting the light visibility polygon. In an AI system, I can use a quadtree to find all the objects or enemies that are close to an entity. etc. As you can notice, quadtrees are very versatile. They are a nice tool to have in your toolbox. You can find all the code that I will show next on GitHub.","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://pvigier.github.io/2019/08/04/quadtree-collision-detection.html"},"url":"https://pvigier.github.io/2019/08/04/quadtree-collision-detection.html","@context":"https://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 
         <!-- Bootstrap -->
@@ -449,13 +449,13 @@
 
 <div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="nf">remove</span><span class="p">(</span><span class="k">const</span> <span class="n">T</span><span class="o">&amp;</span> <span class="n">value</span><span class="p">)</span>
 <span class="p">{</span>
-    <span class="n">remove</span><span class="p">(</span><span class="n">mRoot</span><span class="p">.</span><span class="n">get</span><span class="p">(),</span> <span class="nb">nullptr</span><span class="p">,</span> <span class="n">mBox</span><span class="p">,</span> <span class="n">value</span><span class="p">);</span>
+    <span class="n">remove</span><span class="p">(</span><span class="n">mRoot</span><span class="p">.</span><span class="n">get</span><span class="p">(),</span> <span class="n">mBox</span><span class="p">,</span> <span class="n">value</span><span class="p">);</span>
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p>Here is the code of the auxiliary method, it is very analogous to insertion. :</p>
+<p>Here is the code of the auxiliary method, it is very analogous to insertion:</p>
 
-<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="nf">remove</span><span class="p">(</span><span class="n">Node</span><span class="o">*</span> <span class="n">node</span><span class="p">,</span> <span class="n">Node</span><span class="o">*</span> <span class="n">parent</span><span class="p">,</span> <span class="k">const</span> <span class="n">Box</span><span class="o">&lt;</span><span class="n">Float</span><span class="o">&gt;&amp;</span> <span class="n">box</span><span class="p">,</span> <span class="k">const</span> <span class="n">T</span><span class="o">&amp;</span> <span class="n">value</span><span class="p">)</span>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">bool</span> <span class="nf">remove</span><span class="p">(</span><span class="n">Node</span><span class="o">*</span> <span class="n">node</span><span class="p">,</span> <span class="k">const</span> <span class="n">Box</span><span class="o">&lt;</span><span class="n">Float</span><span class="o">&gt;&amp;</span> <span class="n">box</span><span class="p">,</span> <span class="k">const</span> <span class="n">T</span><span class="o">&amp;</span> <span class="n">value</span><span class="p">)</span>
 <span class="p">{</span>
     <span class="n">assert</span><span class="p">(</span><span class="n">node</span> <span class="o">!=</span> <span class="nb">nullptr</span><span class="p">);</span>
     <span class="n">assert</span><span class="p">(</span><span class="n">box</span><span class="p">.</span><span class="n">contains</span><span class="p">(</span><span class="n">mGetBox</span><span class="p">(</span><span class="n">value</span><span class="p">)));</span>
@@ -463,24 +463,26 @@
     <span class="p">{</span>
         <span class="c1">// Remove the value from node</span>
         <span class="n">removeValue</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">value</span><span class="p">);</span>
-        <span class="c1">// Try to merge the parent</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">parent</span> <span class="o">!=</span> <span class="nb">nullptr</span><span class="p">)</span>
-            <span class="n">tryMerge</span><span class="p">(</span><span class="n">parent</span><span class="p">);</span>
+        <span class="k">return</span> <span class="nb">true</span><span class="p">;</span>
     <span class="p">}</span>
     <span class="k">else</span>
     <span class="p">{</span>
         <span class="c1">// Remove the value in a child if the value is entirely contained in it</span>
         <span class="k">auto</span> <span class="n">i</span> <span class="o">=</span> <span class="n">getQuadrant</span><span class="p">(</span><span class="n">box</span><span class="p">,</span> <span class="n">mGetBox</span><span class="p">(</span><span class="n">value</span><span class="p">));</span>
         <span class="k">if</span> <span class="p">(</span><span class="n">i</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-            <span class="n">remove</span><span class="p">(</span><span class="n">node</span><span class="o">-&gt;</span><span class="n">children</span><span class="p">[</span><span class="k">static_cast</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="o">&gt;</span><span class="p">(</span><span class="n">i</span><span class="p">)].</span><span class="n">get</span><span class="p">(),</span> <span class="n">node</span><span class="p">,</span> <span class="n">computeBox</span><span class="p">(</span><span class="n">box</span><span class="p">,</span> <span class="n">i</span><span class="p">),</span> <span class="n">value</span><span class="p">);</span>
+        <span class="p">{</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">remove</span><span class="p">(</span><span class="n">node</span><span class="o">-&gt;</span><span class="n">children</span><span class="p">[</span><span class="k">static_cast</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="o">&gt;</span><span class="p">(</span><span class="n">i</span><span class="p">)].</span><span class="n">get</span><span class="p">(),</span> <span class="n">computeBox</span><span class="p">(</span><span class="n">box</span><span class="p">,</span> <span class="n">i</span><span class="p">),</span> <span class="n">value</span><span class="p">))</span>
+                <span class="k">return</span> <span class="n">tryMerge</span><span class="p">(</span><span class="n">node</span><span class="p">);</span>
+        <span class="p">}</span>
         <span class="c1">// Otherwise, we remove the value from the current node</span>
         <span class="k">else</span>
             <span class="n">removeValue</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">value</span><span class="p">);</span>
+        <span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
     <span class="p">}</span>
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p>If the current node is a leaf, we remove the value from the list of values of the current node and we try to merge this node with its siblings and its parent. Otherwise, we determine in which quadrant the value’s bounding box lies in. If it is entirely contained in a child, we do a recursive call. Otherwise, we remove from the values of the current node.</p>
+<p>If the current node is a leaf, we remove the value from the list of values of the current node and we return <code class="language-plaintext highlighter-rouge">true</code>. The return value will tell its parent that it should try to merge with its children. Otherwise, we determine in which quadrant the value’s bounding box lies in. If it is entirely contained in a child, we do a recursive call and we try to merge the node if we are told to. Otherwise, we remove from the values of the current node.</p>
 
 <p>As we do not care about the order of the values stored in a node, I use a small optimization to erase a value, I just swap the value to erase with the last one and pop back:</p>
 
@@ -506,7 +508,7 @@
     <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="n">child</span> <span class="o">:</span> <span class="n">node</span><span class="o">-&gt;</span><span class="n">children</span><span class="p">)</span>
     <span class="p">{</span>
         <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">isLeaf</span><span class="p">(</span><span class="n">child</span><span class="p">.</span><span class="n">get</span><span class="p">()))</span>
-            <span class="k">return</span><span class="p">;</span>
+            <span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
         <span class="n">nbValues</span> <span class="o">+=</span> <span class="n">child</span><span class="o">-&gt;</span><span class="n">values</span><span class="p">.</span><span class="n">size</span><span class="p">();</span>
     <span class="p">}</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">nbValues</span> <span class="o">&lt;=</span> <span class="n">Threshold</span><span class="p">)</span>
@@ -521,11 +523,14 @@
         <span class="c1">// Remove the children</span>
         <span class="k">for</span> <span class="p">(</span><span class="k">auto</span><span class="o">&amp;</span> <span class="n">child</span> <span class="o">:</span> <span class="n">node</span><span class="o">-&gt;</span><span class="n">children</span><span class="p">)</span>
             <span class="n">child</span><span class="p">.</span><span class="n">reset</span><span class="p">();</span>
+        <span class="k">return</span> <span class="nb">true</span><span class="p">;</span>
     <span class="p">}</span>
+    <span class="k">else</span>
+        <span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p><code class="language-plaintext highlighter-rouge">tryMerge</code> checks that all its children are leaves and that the total number of its values and its children’s values is lower than the threshold. If it is the case, we copy all the values in the children in the current node and we remove the children.</p>
+<p><code class="language-plaintext highlighter-rouge">tryMerge</code> checks that all its children are leaves and that the total number of its values and its children’s values is lower than the threshold. If it is the case, we copy all the values in the children in the current node and we remove the children. If the node is merged we return <code class="language-plaintext highlighter-rouge">true</code> so that its parent also tries to merge with its children.</p>
 
 <h1 id="finding-intersections">Finding Intersections</h1>
 
