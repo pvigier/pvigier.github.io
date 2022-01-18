@@ -9,7 +9,7 @@
         <!-- SEO -->
         <!-- Begin Jekyll SEO tag v2.7.1 -->
 <title>Fortune’s Algorithm: The Details | pvigier’s blog</title>
-<meta name="generator" content="Jekyll v4.1.1" />
+<meta name="generator" content="Jekyll v4.2.1" />
 <meta property="og:title" content="Fortune’s Algorithm: The Details" />
 <meta name="author" content="pierre" />
 <meta property="og:locale" content="en_US" />
@@ -23,7 +23,7 @@
 <meta name="twitter:card" content="summary" />
 <meta property="twitter:title" content="Fortune’s Algorithm: The Details" />
 <script type="application/ld+json">
-{"author":{"@type":"Person","name":"pierre"},"headline":"Fortune’s Algorithm: The Details","dateModified":"2018-11-18T00:00:00+01:00","datePublished":"2018-11-18T00:00:00+01:00","description":"The last few weeks, I worked on an implementation of the Fortune’s algorithm in C++. This algorithm takes a set of 2D points and construct the Voronoi diagram of these points. If you wonder what is a Voronoi diagram, it looks like this: For each input point, which is called a site, we want to find the set of points which are nearer to this site than to any other site. These sets of points form cells as you can see on the image above. What is remarkable about the Fortune’s algorithm is that it constructs such diagrams in \\(O(n\\log n)\\) time (which is optimal for an algorithm which uses comparisons) where \\(n\\) is the number of sites. I am writing this article because I find it very hard to implement this algorithm. Until now, it is surely the hardest algorithm I have ever implemented. Thus, I want to share with you the issues I faced and how I solved them. The code is, as usual, available on github and you will find all the references I used at the bottom of this article.","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://pvigier.github.io/2018/11/18/fortune-algorithm-details.html"},"url":"https://pvigier.github.io/2018/11/18/fortune-algorithm-details.html","@context":"https://schema.org"}</script>
+{"mainEntityOfPage":{"@type":"WebPage","@id":"https://pvigier.github.io/2018/11/18/fortune-algorithm-details.html"},"description":"The last few weeks, I worked on an implementation of the Fortune’s algorithm in C++. This algorithm takes a set of 2D points and construct the Voronoi diagram of these points. If you wonder what is a Voronoi diagram, it looks like this: For each input point, which is called a site, we want to find the set of points which are nearer to this site than to any other site. These sets of points form cells as you can see on the image above. What is remarkable about the Fortune’s algorithm is that it constructs such diagrams in \\(O(n\\log n)\\) time (which is optimal for an algorithm which uses comparisons) where \\(n\\) is the number of sites. I am writing this article because I find it very hard to implement this algorithm. Until now, it is surely the hardest algorithm I have ever implemented. Thus, I want to share with you the issues I faced and how I solved them. The code is, as usual, available on github and you will find all the references I used at the bottom of this article.","url":"https://pvigier.github.io/2018/11/18/fortune-algorithm-details.html","author":{"@type":"Person","name":"pierre"},"@type":"BlogPosting","headline":"Fortune’s Algorithm: The Details","dateModified":"2018-11-18T00:00:00+01:00","datePublished":"2018-11-18T00:00:00+01:00","@context":"https://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 
         <!-- Bootstrap -->
@@ -33,7 +33,7 @@
         <link href="/media/css/syntax.css" rel="stylesheet">
         <link href="/media/css/modal.css" rel="stylesheet">
         <!-- RSS -->
-        <link type="application/atom+xml" rel="alternate" href="https://pvigier.github.io/rss.xml" title="pvigier's blog" />
+        <link type="application/atom+xml" rel="alternate" href="https://pvigier.github.io/rss.xml" title="pvigier&apos;s blog" />
     </head>
     <body>
         <div class="blog-masthead">

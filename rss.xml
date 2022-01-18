@@ -1,801 +1,801 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="https://pvigier.github.io/rss.xml" rel="self" type="application/atom+xml" /><link href="https://pvigier.github.io/" rel="alternate" type="text/html" /><updated>2021-09-06T16:26:42+02:00</updated><id>https://pvigier.github.io/rss.xml</id><title type="html">pvigier’s blog</title><author><name>Pierre Vigier</name></author><entry><title type="html">Vagabond – Dungeon and Cave Generation – Part 3</title><link href="https://pvigier.github.io/2021/03/20/vagabond-dungeon-cave-generation-part3.html" rel="alternate" type="text/html" title="Vagabond – Dungeon and Cave Generation – Part 3" /><published>2021-03-20T00:00:00+01:00</published><updated>2021-03-20T00:00:00+01:00</updated><id>https://pvigier.github.io/2021/03/20/vagabond-dungeon-cave-generation-part3</id><content type="html" xml:base="https://pvigier.github.io/2021/03/20/vagabond-dungeon-cave-generation-part3.html">&lt;p&gt;&lt;img src=&quot;/media/img/vagabond-dungeon-cave-generation-part3/dungeon_generation.gif&quot; alt=&quot;&quot; width=&quot;400&quot; class=&quot;center-image modal-image&quot; /&gt;&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.1">Jekyll</generator><link href="https://pvigier.github.io/rss.xml" rel="self" type="application/atom+xml" /><link href="https://pvigier.github.io/" rel="alternate" type="text/html" /><updated>2022-01-18T11:16:59+01:00</updated><id>https://pvigier.github.io/rss.xml</id><title type="html">pvigier’s blog</title><author><name>Pierre Vigier</name></author><entry><title type="html">Vagabond – Dungeon and Cave Generation – Part 3</title><link href="https://pvigier.github.io/2021/03/20/vagabond-dungeon-cave-generation-part3.html" rel="alternate" type="text/html" title="Vagabond – Dungeon and Cave Generation – Part 3" /><published>2021-03-20T00:00:00+01:00</published><updated>2021-03-20T00:00:00+01:00</updated><id>https://pvigier.github.io/2021/03/20/vagabond-dungeon-cave-generation-part3</id><content type="html" xml:base="https://pvigier.github.io/2021/03/20/vagabond-dungeon-cave-generation-part3.html"><![CDATA[<p><img src="/media/img/vagabond-dungeon-cave-generation-part3/dungeon_generation.gif" alt="" width="400" class="center-image modal-image" /></p>
 
-&lt;p&gt;Few weeks ago, I released the &lt;a href=&quot;https://www.vagabondgame.com/2021/03/06/alpha-2-is-released.html&quot;&gt;version alpha 2 of Vagabond&lt;/a&gt;. One of the new features is the ability to mine ore veins in caves. This article is the follow-up of the two previous parts on dungeon generation (&lt;a href=&quot;/2019/06/23/vagabond-dungeon-cave-generation.html&quot;&gt;part 1&lt;/a&gt;, &lt;a href=&quot;/2019/06/30/vagabond-dungeon-cave-generation-part2.html&quot;&gt;part 2&lt;/a&gt;) where I explained how the structure of the caves were generated. However, the rooms were completely empty. In this article, I will explain how the rooms are filled with monsters, bosses, ore veins and treasures.&lt;/p&gt;
+<p>Few weeks ago, I released the <a href="https://www.vagabondgame.com/2021/03/06/alpha-2-is-released.html">version alpha 2 of Vagabond</a>. One of the new features is the ability to mine ore veins in caves. This article is the follow-up of the two previous parts on dungeon generation (<a href="/2019/06/23/vagabond-dungeon-cave-generation.html">part 1</a>, <a href="/2019/06/30/vagabond-dungeon-cave-generation-part2.html">part 2</a>) where I explained how the structure of the caves were generated. However, the rooms were completely empty. In this article, I will explain how the rooms are filled with monsters, bosses, ore veins and treasures.</p>
 
-&lt;p&gt;If you want to try the game and explore the procedurally generated caves presented here, you can play the free demo available on &lt;a href=&quot;https://pvigier.itch.io/vagabond&quot;&gt;itch.io&lt;/a&gt;. If you have any feedback, do not hesitate to send me a message, I would be delighted to read it. And if you like the project, it is still possible to support the game by buying the complete game with a special offer for early birds. ;)&lt;/p&gt;
+<p>If you want to try the game and explore the procedurally generated caves presented here, you can play the free demo available on <a href="https://pvigier.itch.io/vagabond-demo">itch.io</a>. If you have any feedback, do not hesitate to send me a message, I would be delighted to read it. And if you like the project, it is still possible to support the game by buying the complete game with a special offer for early birds. ;)</p>
 
-&lt;!--more--&gt;
+<!--more-->
 
-&lt;h1 id=&quot;current-state&quot;&gt;Current State&lt;/h1&gt;
+<h1 id="current-state">Current State</h1>
 
-&lt;p&gt;To quickly recap where I stopped my dungeon generation algorithm, I use a BSP algorithm to create rooms, then I select a subset of the room edges as corridors, and I run a constrained cellular automaton to create walls with an organic shape. Finally, I run several post-processing steps to clean the result. You can see all this steps in the animation above.&lt;/p&gt;
+<p>To quickly recap where I stopped my dungeon generation algorithm, I use a BSP algorithm to create rooms, then I select a subset of the room edges as corridors, and I run a constrained cellular automaton to create walls with an organic shape. Finally, I run several post-processing steps to clean the result. You can see all this steps in the animation above.</p>
 
-&lt;p&gt;So, as we can see on the image below, I have a clean abstract structure of the dungeon: clearly delimited rooms, a graph of rooms and a 2D array of booleans that represents the obstacles.&lt;/p&gt;
+<p>So, as we can see on the image below, I have a clean abstract structure of the dungeon: clearly delimited rooms, a graph of rooms and a 2D array of booleans that represents the obstacles.</p>
 
-&lt;p&gt;&lt;img src=&quot;/media/img/vagabond-dungeon-cave-generation-part3/previous_state.png&quot; alt=&quot;&quot; width=&quot;400&quot; class=&quot;center-image modal-image&quot; /&gt;&lt;/p&gt;
+<p><img src="/media/img/vagabond-dungeon-cave-generation-part3/previous_state.png" alt="" width="400" class="center-image modal-image" /></p>
 
-&lt;h1 id=&quot;assigning-room-types&quot;&gt;Assigning Room Types&lt;/h1&gt;
+<h1 id="assigning-room-types">Assigning Room Types</h1>
 
-&lt;p&gt;My first step is to assign a type to each room. The type will then determine what the room will look like. I do that just before the cellular automaton pass to be able to add specific constraints if necessary.&lt;/p&gt;
+<p>My first step is to assign a type to each room. The type will then determine what the room will look like. I do that just before the cellular automaton pass to be able to add specific constraints if necessary.</p>
 
-&lt;p&gt;Firstly, I choose the entrance room. There is a specific constraint: the door needs a wall on which it can be placed on as in the image below.&lt;/p&gt;
+<p>Firstly, I choose the entrance room. There is a specific constraint: the door needs a wall on which it can be placed on as in the image below.</p>
 
-&lt;p&gt;&lt;img src=&quot;/media/img/vagabond-dungeon-cave-generation-part3/door.png&quot; alt=&quot;&quot; width=&quot;400&quot; class=&quot;center-image modal-image&quot; /&gt;&lt;/p&gt;
+<p><img src="/media/img/vagabond-dungeon-cave-generation-part3/door.png" alt="" width="400" class="center-image modal-image" /></p>
 
-&lt;p&gt;To achieve this, I randomly choose a room with no corridor on its north edge and a constraint is added in the cellular automaton. You can see this constraint in the example below: it is the little black square in the north western room:&lt;/p&gt;
+<p>To achieve this, I randomly choose a room with no corridor on its north edge and a constraint is added in the cellular automaton. You can see this constraint in the example below: it is the little black square in the north western room:</p>
 
-&lt;p&gt;&lt;img src=&quot;/media/img/vagabond-dungeon-cave-generation-part3/cellular_automaton_initial_state.png&quot; alt=&quot;&quot; width=&quot;400&quot; class=&quot;center-image modal-image&quot; /&gt;&lt;/p&gt;
+<p><img src="/media/img/vagabond-dungeon-cave-generation-part3/cellular_automaton_initial_state.png" alt="" width="400" class="center-image modal-image" /></p>
 
-&lt;p&gt;Then, when tiles are generated a door is placed there:&lt;/p&gt;
+<p>Then, when tiles are generated a door is placed there:</p>
 
-&lt;p&gt;&lt;img src=&quot;/media/img/vagabond-dungeon-cave-generation-part3/door_result.png&quot; alt=&quot;&quot; width=&quot;400&quot; class=&quot;center-image modal-image&quot; /&gt;&lt;/p&gt;
+<p><img src="/media/img/vagabond-dungeon-cave-generation-part3/door_result.png" alt="" width="400" class="center-image modal-image" /></p>
 
-&lt;p&gt;Secondly, I randomly choose a room to be the boss room but I give more weight to the rooms far from the entrance so that the boss is rarely next to the entrance.&lt;/p&gt;
+<p>Secondly, I randomly choose a room to be the boss room but I give more weight to the rooms far from the entrance so that the boss is rarely next to the entrance.</p>
 
-&lt;p&gt;Finally, for the other rooms, a random type is chosen among the types for “normal” rooms.&lt;/p&gt;
+<p>Finally, for the other rooms, a random type is chosen among the types for “normal” rooms.</p>
 
-&lt;p&gt;Nothing fancy here, but if you have a large pool of room types and different types of dungeons with different subsets of room types, you can already have interesting results.&lt;/p&gt;
+<p>Nothing fancy here, but if you have a large pool of room types and different types of dungeons with different subsets of room types, you can already have interesting results.</p>
 
-&lt;p&gt;In the future, I may choose to use a more complex algorithm to choose room types. For instance, I can use the graph structure to place keys and locks.&lt;/p&gt;
+<p>In the future, I may choose to use a more complex algorithm to choose room types. For instance, I can use the graph structure to place keys and locks.</p>
 
-&lt;h1 id=&quot;decorating-the-rooms&quot;&gt;Decorating the Rooms&lt;/h1&gt;
+<h1 id="decorating-the-rooms">Decorating the Rooms</h1>
 
-&lt;p&gt;To decorate the rooms, I reuse the room generator I originally created for the &lt;a href=&quot;/2020/02/09/vagabond-building-generation.html&quot;&gt;building generator&lt;/a&gt;. It takes as input an abstract representation of the room as an array of booleans and a list of objects with their constraints, and it uses a &lt;a href=&quot;https://en.wikipedia.org/wiki/Constraint_satisfaction_problem&quot;&gt;CSP solver&lt;/a&gt; to place the objects in the room. If you want to read more there is an entire section about it in &lt;a href=&quot;/2020/02/09/vagabond-building-generation.html&quot;&gt;this article&lt;/a&gt;.&lt;/p&gt;
+<p>To decorate the rooms, I reuse the room generator I originally created for the <a href="/2020/02/09/vagabond-building-generation.html">building generator</a>. It takes as input an abstract representation of the room as an array of booleans and a list of objects with their constraints, and it uses a <a href="https://en.wikipedia.org/wiki/Constraint_satisfaction_problem">CSP solver</a> to place the objects in the room. If you want to read more there is an entire section about it in <a href="/2020/02/09/vagabond-building-generation.html">this article</a>.</p>
 
-&lt;p&gt;For now, as there is only caves in the world, the normal rooms are pretty simple: they are filled with monsters and ore veins. The entrance room only contains the door. The boss room contains a chest filled with a procedurally generated loot. But beware, it is protected by a boss which have boosted stats and a unique name procedurally generated by handcrafted grammars.&lt;/p&gt;
+<p>For now, as there is only caves in the world, the normal rooms are pretty simple: they are filled with monsters and ore veins. The entrance room only contains the door. The boss room contains a chest filled with a procedurally generated loot. But beware, it is protected by a boss which have boosted stats and a unique name procedurally generated by handcrafted grammars.</p>
 
-&lt;p&gt;The only subtlety was that the room generator can only place objects in rooms not monsters. So I created an object “monster spawner” whose only purpose is to spawn monster to circumvent the issue.&lt;/p&gt;
+<p>The only subtlety was that the room generator can only place objects in rooms not monsters. So I created an object “monster spawner” whose only purpose is to spawn monster to circumvent the issue.</p>
 
-&lt;p&gt;Here is the final result:&lt;/p&gt;
+<p>Here is the final result:</p>
 
-&lt;p&gt;&lt;img src=&quot;/media/img/vagabond-dungeon-cave-generation-part3/result.png&quot; alt=&quot;&quot; width=&quot;400&quot; class=&quot;center-image modal-image&quot; /&gt;&lt;/p&gt;
+<p><img src="/media/img/vagabond-dungeon-cave-generation-part3/result.png" alt="" width="400" class="center-image modal-image" /></p>
 
-&lt;h1 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h1&gt;
+<h1 id="conclusion">Conclusion</h1>
 
-&lt;p&gt;That’s all for this quick update on the dungeon generator. The dungeons are now fully playable!&lt;/p&gt;
+<p>That’s all for this quick update on the dungeon generator. The dungeons are now fully playable!</p>
 
-&lt;p&gt;In the future, I would like to make the dungeons more interesting, I have several avenues to explore in mind. On the one hand, I would like to work on the lore of dungeons: to generate stories and quests for each dungeons. On the other hand, I would like to make dungeons more interesting by theirself: maybe by adding keys, locks and puzzles, by having several stairs, and also by adding some special objects in corners and dead ends to encourage the players to explore.&lt;/p&gt;</content><author><name>pierre</name></author><category term="vagabond" /><category term="pcg" /><summary type="html">Few weeks ago, I released the version alpha 2 of Vagabond. One of the new features is the ability to mine ore veins in caves. This article is the follow-up of the two previous parts on dungeon generation (part 1, part 2) where I explained how the structure of the caves were generated. However, the rooms were completely empty. In this article, I will explain how the rooms are filled with monsters, bosses, ore veins and treasures. If you want to try the game and explore the procedurally generated caves presented here, you can play the free demo available on itch.io. If you have any feedback, do not hesitate to send me a message, I would be delighted to read it. And if you like the project, it is still possible to support the game by buying the complete game with a special offer for early birds. ;)</summary></entry><entry><title type="html">Procedural Death Animation With Falling Sand Automata</title><link href="https://pvigier.github.io/2020/12/12/procedural-death-animation-with-falling-sand-automata.html" rel="alternate" type="text/html" title="Procedural Death Animation With Falling Sand Automata" /><published>2020-12-12T00:00:00+01:00</published><updated>2020-12-12T00:00:00+01:00</updated><id>https://pvigier.github.io/2020/12/12/procedural-death-animation-with-falling-sand-automata</id><content type="html" xml:base="https://pvigier.github.io/2020/12/12/procedural-death-animation-with-falling-sand-automata.html">&lt;p&gt;Hi everyone!&lt;/p&gt;
+<p>In the future, I would like to make the dungeons more interesting, I have several avenues to explore in mind. On the one hand, I would like to work on the lore of dungeons: to generate stories and quests for each dungeons. On the other hand, I would like to make dungeons more interesting by theirself: maybe by adding keys, locks and puzzles, by having several stairs, and also by adding some special objects in corners and dead ends to encourage the players to explore.</p>]]></content><author><name>pierre</name></author><category term="vagabond" /><category term="pcg" /><summary type="html"><![CDATA[Few weeks ago, I released the version alpha 2 of Vagabond. One of the new features is the ability to mine ore veins in caves. This article is the follow-up of the two previous parts on dungeon generation (part 1, part 2) where I explained how the structure of the caves were generated. However, the rooms were completely empty. In this article, I will explain how the rooms are filled with monsters, bosses, ore veins and treasures. If you want to try the game and explore the procedurally generated caves presented here, you can play the free demo available on itch.io. If you have any feedback, do not hesitate to send me a message, I would be delighted to read it. And if you like the project, it is still possible to support the game by buying the complete game with a special offer for early birds. ;)]]></summary></entry><entry><title type="html">Procedural Death Animation With Falling Sand Automata</title><link href="https://pvigier.github.io/2020/12/12/procedural-death-animation-with-falling-sand-automata.html" rel="alternate" type="text/html" title="Procedural Death Animation With Falling Sand Automata" /><published>2020-12-12T00:00:00+01:00</published><updated>2020-12-12T00:00:00+01:00</updated><id>https://pvigier.github.io/2020/12/12/procedural-death-animation-with-falling-sand-automata</id><content type="html" xml:base="https://pvigier.github.io/2020/12/12/procedural-death-animation-with-falling-sand-automata.html"><![CDATA[<p>Hi everyone!</p>
 
-&lt;p&gt;In this post, I will show you how I used falling sand automata to generate death animations for monsters of my game &lt;a href=&quot;https://www.vagabondgame.com/&quot;&gt;Vagabond&lt;/a&gt;.&lt;/p&gt;
+<p>In this post, I will show you how I used falling sand automata to generate death animations for monsters of my game <a href="https://www.vagabondgame.com/">Vagabond</a>.</p>
 
-&lt;p&gt;&lt;img src=&quot;/media/img/procedural-death-animation-with-falling-sand-automata/death_animations.gif&quot; alt=&quot;&quot; class=&quot;center-image modal-image&quot; /&gt;&lt;/p&gt;
+<p><img src="/media/img/procedural-death-animation-with-falling-sand-automata/death_animations.gif" alt="" class="center-image modal-image" /></p>
 
-&lt;!--more--&gt;
+<!--more-->
 
-&lt;h1 id=&quot;falling-sand-automata&quot;&gt;Falling Sand Automata&lt;/h1&gt;
+<h1 id="falling-sand-automata">Falling Sand Automata</h1>
 
-&lt;p&gt;A falling sand automaton is a &lt;a href=&quot;https://en.wikipedia.org/wiki/Cellular_automaton&quot;&gt;cellular automaton&lt;/a&gt; that simulates how grains of sand move due to gravity and create piles.&lt;/p&gt;
+<p>A falling sand automaton is a <a href="https://en.wikipedia.org/wiki/Cellular_automaton">cellular automaton</a> that simulates how grains of sand move due to gravity and create piles.</p>
 
-&lt;p&gt;The rules are simple:&lt;/p&gt;
-&lt;ul&gt;
-  &lt;li&gt;If the cell below a sand grain is empty, the sand grain moves to the empty cell (see (a)).&lt;/li&gt;
-  &lt;li&gt;If the cell below a sand grain is full but the cell at bottom left or the cell at bottom right is free, the sand grain moves there (see (b)). If both are free, choose one randomly.&lt;/li&gt;
-  &lt;li&gt;In the other cases, the sand grain does not move.&lt;/li&gt;
-&lt;/ul&gt;
+<p>The rules are simple:</p>
+<ul>
+  <li>If the cell below a sand grain is empty, the sand grain moves to the empty cell (see (a)).</li>
+  <li>If the cell below a sand grain is full but the cell at bottom left or the cell at bottom right is free, the sand grain moves there (see (b)). If both are free, choose one randomly.</li>
+  <li>In the other cases, the sand grain does not move.</li>
+</ul>
 
-&lt;p&gt;&lt;img src=&quot;/media/img/procedural-death-animation-with-falling-sand-automata/automata_rules.png&quot; alt=&quot;&quot; class=&quot;center-image modal-image&quot; /&gt;&lt;/p&gt;
+<p><img src="/media/img/procedural-death-animation-with-falling-sand-automata/automata_rules.png" alt="" class="center-image modal-image" /></p>
 
-&lt;p&gt;If you want to know more about falling sand automata, you can look at this &lt;a href=&quot;https://w-shadow.com/blog/2009/09/29/falling-sand-style-water-simulation/&quot;&gt;article&lt;/a&gt;.&lt;/p&gt;
+<p>If you want to know more about falling sand automata, you can look at this <a href="https://w-shadow.com/blog/2009/09/29/falling-sand-style-water-simulation/">article</a>.</p>
 
-&lt;p&gt;With these simple rules you can obtain animations like this:&lt;/p&gt;
+<p>With these simple rules you can obtain animations like this:</p>
 
-&lt;p&gt;&lt;img src=&quot;/media/img/procedural-death-animation-with-falling-sand-automata/sand.gif&quot; alt=&quot;&quot; class=&quot;center-image modal-image&quot; /&gt;&lt;/p&gt;
+<p><img src="/media/img/procedural-death-animation-with-falling-sand-automata/sand.gif" alt="" class="center-image modal-image" /></p>
 
-&lt;h1 id=&quot;generating-death-animations&quot;&gt;Generating Death Animations&lt;/h1&gt;
+<h1 id="generating-death-animations">Generating Death Animations</h1>
 
-&lt;p&gt;Now let us see how to use the falling sand automata to create death animations for the monsters.&lt;/p&gt;
+<p>Now let us see how to use the falling sand automata to create death animations for the monsters.</p>
 
-&lt;p&gt;The idea is to consider the non transparent pixels of the image as the sand grains and to make them fall to create a pile from the corpse of the monster. The only difference with the rules previously mentionned is that each sand grain has now a color. Here is what we obtain:&lt;/p&gt;
+<p>The idea is to consider the non transparent pixels of the image as the sand grains and to make them fall to create a pile from the corpse of the monster. The only difference with the rules previously mentionned is that each sand grain has now a color. Here is what we obtain:</p>
 
-&lt;p&gt;&lt;img src=&quot;/media/img/procedural-death-animation-with-falling-sand-automata/death_animation.gif&quot; alt=&quot;&quot; class=&quot;center-image modal-image&quot; /&gt;&lt;/p&gt;
+<p><img src="/media/img/procedural-death-animation-with-falling-sand-automata/death_animation.gif" alt="" class="center-image modal-image" /></p>
 
-&lt;p&gt;In my opinion it is not very appealing for two reasons: the pile is very high and everything is falling at the same speed.&lt;/p&gt;
+<p>In my opinion it is not very appealing for two reasons: the pile is very high and everything is falling at the same speed.</p>
 
-&lt;p&gt;To fix the height issue, I use a 3D cellular automaton. I use several layers of the simple 2D cellular automaton. At the initial state, the image is in the middle layer, then the grain sands can not only move to bottom left and bottom right cells but also to the bottom cells of the previous and next layers:&lt;/p&gt;
+<p>To fix the height issue, I use a 3D cellular automaton. I use several layers of the simple 2D cellular automaton. At the initial state, the image is in the middle layer, then the grain sands can not only move to bottom left and bottom right cells but also to the bottom cells of the previous and next layers:</p>
 
-&lt;p&gt;&lt;img src=&quot;/media/img/procedural-death-animation-with-falling-sand-automata/3d_automata_rules.png&quot; alt=&quot;&quot; class=&quot;center-image modal-image&quot; /&gt;&lt;/p&gt;
+<p><img src="/media/img/procedural-death-animation-with-falling-sand-automata/3d_automata_rules.png" alt="" class="center-image modal-image" /></p>
 
-&lt;p&gt;To obtain an image from the 3D state of the cellular automaton, I project the state to 2D by taking, for each (i, j) coordinates, the first non transparent cell where k iterates the layers. Here is the result with three layers:&lt;/p&gt;
+<p>To obtain an image from the 3D state of the cellular automaton, I project the state to 2D by taking, for each (i, j) coordinates, the first non transparent cell where k iterates the layers. Here is the result with three layers:</p>
 
-&lt;p&gt;&lt;img src=&quot;/media/img/procedural-death-animation-with-falling-sand-automata/death_animation_3d.gif&quot; alt=&quot;&quot; class=&quot;center-image modal-image&quot; /&gt;&lt;/p&gt;
+<p><img src="/media/img/procedural-death-animation-with-falling-sand-automata/death_animation_3d.gif" alt="" class="center-image modal-image" /></p>
 
-&lt;p&gt;To improve the speed issue, I randomize the number of rows a grain fall in one step between 1 and \(n\). In practice, I use \(n = 2\) or \(n = 3\). Here is the result:&lt;/p&gt;
+<p>To improve the speed issue, I randomize the number of rows a grain fall in one step between 1 and \(n\). In practice, I use \(n = 2\) or \(n = 3\). Here is the result:</p>
 
-&lt;p&gt;&lt;img src=&quot;/media/img/procedural-death-animation-with-falling-sand-automata/death_animation_3d_speed.gif&quot; alt=&quot;&quot; class=&quot;center-image modal-image&quot; /&gt;&lt;/p&gt;
+<p><img src="/media/img/procedural-death-animation-with-falling-sand-automata/death_animation_3d_speed.gif" alt="" class="center-image modal-image" /></p>
 
-&lt;p&gt;It produces some holes during the fall as if the monster is disintegrating.&lt;/p&gt;
+<p>It produces some holes during the fall as if the monster is disintegrating.</p>
 
-&lt;p&gt;Finally, I skip some frames to have animations with exactly 6 frames. Here is the final result:&lt;/p&gt;
+<p>Finally, I skip some frames to have animations with exactly 6 frames. Here is the final result:</p>
 
-&lt;p&gt;&lt;img src=&quot;/media/img/procedural-death-animation-with-falling-sand-automata/death_animation_3d_speed_skip.gif&quot; alt=&quot;&quot; class=&quot;center-image modal-image&quot; /&gt;&lt;/p&gt;
+<p><img src="/media/img/procedural-death-animation-with-falling-sand-automata/death_animation_3d_speed_skip.gif" alt="" class="center-image modal-image" /></p>
 
-&lt;p&gt;The grains are falling, on average, at a constant pace, while the gravity should make them accelerate. If you want you can skip more frames at the end of the animation to simulate that.&lt;/p&gt;
+<p>The grains are falling, on average, at a constant pace, while the gravity should make them accelerate. If you want you can skip more frames at the end of the animation to simulate that.</p>
 
-&lt;p&gt;You can find the complete script on &lt;a href=&quot;https://github.com/pvigier/lpc-scripts/blob/main/death_animation.py&quot;&gt;GitHub&lt;/a&gt;.&lt;/p&gt;
+<p>You can find the complete script on <a href="https://github.com/pvigier/lpc-scripts/blob/main/death_animation.py">GitHub</a>.</p>
 
-&lt;p&gt;What’s nice is that if we are not happy with the result, we can rerun the script with a different seed to obtain a new animation. Here are several animations for the bat:&lt;/p&gt;
+<p>What’s nice is that if we are not happy with the result, we can rerun the script with a different seed to obtain a new animation. Here are several animations for the bat:</p>
 
-&lt;p&gt;&lt;img src=&quot;/media/img/procedural-death-animation-with-falling-sand-automata/death_animation_seeds.gif&quot; alt=&quot;&quot; class=&quot;center-image modal-image&quot; /&gt;&lt;/p&gt;
+<p><img src="/media/img/procedural-death-animation-with-falling-sand-automata/death_animation_seeds.gif" alt="" class="center-image modal-image" /></p>
 
-&lt;p&gt;See you next time for more!&lt;/p&gt;</content><author><name>pierre</name></author><category term="vagabond" /><category term="pcg" /><summary type="html">Hi everyone! In this post, I will show you how I used falling sand automata to generate death animations for monsters of my game Vagabond.</summary></entry><entry><title type="html">Vagabond Enters in Alpha!</title><link href="https://pvigier.github.io/2020/12/11/vagabond-enters-in-alpha.html" rel="alternate" type="text/html" title="Vagabond Enters in Alpha!" /><published>2020-12-11T00:00:00+01:00</published><updated>2020-12-11T00:00:00+01:00</updated><id>https://pvigier.github.io/2020/12/11/vagabond-enters-in-alpha</id><content type="html" xml:base="https://pvigier.github.io/2020/12/11/vagabond-enters-in-alpha.html">&lt;iframe width=&quot;100%&quot; height=&quot;400&quot; src=&quot;https://www.youtube.com/embed/N69NKycYRV4&quot; frameborder=&quot;0&quot; allow=&quot;accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture&quot; allowfullscreen=&quot;&quot;&gt;&lt;/iframe&gt;
+<p>See you next time for more!</p>]]></content><author><name>pierre</name></author><category term="vagabond" /><category term="pcg" /><summary type="html"><![CDATA[Hi everyone! In this post, I will show you how I used falling sand automata to generate death animations for monsters of my game Vagabond.]]></summary></entry><entry><title type="html">Vagabond Enters in Alpha!</title><link href="https://pvigier.github.io/2020/12/11/vagabond-enters-in-alpha.html" rel="alternate" type="text/html" title="Vagabond Enters in Alpha!" /><published>2020-12-11T00:00:00+01:00</published><updated>2020-12-11T00:00:00+01:00</updated><id>https://pvigier.github.io/2020/12/11/vagabond-enters-in-alpha</id><content type="html" xml:base="https://pvigier.github.io/2020/12/11/vagabond-enters-in-alpha.html"><![CDATA[<iframe width="100%" height="400" src="https://www.youtube.com/embed/N69NKycYRV4" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
 
-&lt;p&gt;Hi everyone!&lt;/p&gt;
+<p>Hi everyone!</p>
 
-&lt;p&gt;It has been a while since last time. I was working very hard on Vagabond to be able to announce you today that Vagabond is now in alpha!&lt;/p&gt;
+<p>It has been a while since last time. I was working very hard on Vagabond to be able to announce you today that Vagabond is now in alpha!</p>
 
-&lt;p&gt;The game is available on &lt;a href=&quot;https://pvigier.itch.io/vagabond&quot;&gt;itch.io&lt;/a&gt; and its official website is &lt;a href=&quot;https://www.vagabondgame.com/&quot;&gt;vagabondgame.com&lt;/a&gt;.&lt;/p&gt;
+<p>The game is available on <a href="https://pvigier.itch.io/vagabond-demo">itch.io</a> and its official website is <a href="https://www.vagabondgame.com/">vagabondgame.com</a>.</p>
 
-&lt;!--more--&gt;
+<!--more-->
 
-&lt;p&gt;I wrote an &lt;a href=&quot;https://www.vagabondgame.com/2020/12/09/alpha-1-is-released.html&quot;&gt;article&lt;/a&gt; on the game’s website about this first version if you want to know more. All the announcements about the game (releases, changelogs, news, etc.) will be there, while the devlogs will stay here, on my personal website.&lt;/p&gt;
+<p>I wrote an <a href="https://www.vagabondgame.com/2020/12/09/alpha-1-is-released.html">article</a> on the game’s website about this first version if you want to know more. All the announcements about the game (releases, changelogs, news, etc.) will be there, while the devlogs will stay here, on my personal website.</p>
 
-&lt;p&gt;During these nearly nine months without post, I did many things and therefore I have many things to write so expect several articles in the comings days and weeks! :)&lt;/p&gt;
+<p>During these nearly nine months without post, I did many things and therefore I have many things to write so expect several articles in the comings days and weeks! :)</p>
 
-&lt;p&gt;See you next time for more!&lt;/p&gt;</content><author><name>pierre</name></author><category term="vagabond" /><summary type="html">Hi everyone! It has been a while since last time. I was working very hard on Vagabond to be able to announce you today that Vagabond is now in alpha! The game is available on itch.io and its official website is vagabondgame.com.</summary></entry><entry><title type="html">Vagabond – City Generation</title><link href="https://pvigier.github.io/2020/03/15/vagabond-city-generation.html" rel="alternate" type="text/html" title="Vagabond – City Generation" /><published>2020-03-15T00:00:00+01:00</published><updated>2020-03-15T00:00:00+01:00</updated><id>https://pvigier.github.io/2020/03/15/vagabond-city-generation</id><content type="html" xml:base="https://pvigier.github.io/2020/03/15/vagabond-city-generation.html">&lt;p&gt;Hi everyone!&lt;/p&gt;
+<p>See you next time for more!</p>]]></content><author><name>pierre</name></author><category term="vagabond" /><summary type="html"><![CDATA[Hi everyone! It has been a while since last time. I was working very hard on Vagabond to be able to announce you today that Vagabond is now in alpha! The game is available on itch.io and its official website is vagabondgame.com.]]></summary></entry><entry><title type="html">Vagabond – City Generation</title><link href="https://pvigier.github.io/2020/03/15/vagabond-city-generation.html" rel="alternate" type="text/html" title="Vagabond – City Generation" /><published>2020-03-15T00:00:00+01:00</published><updated>2020-03-15T00:00:00+01:00</updated><id>https://pvigier.github.io/2020/03/15/vagabond-city-generation</id><content type="html" xml:base="https://pvigier.github.io/2020/03/15/vagabond-city-generation.html"><![CDATA[<p>Hi everyone!</p>
 
-&lt;p&gt;Last month, I had been working on city generation. The goal was to use buildings generated by my &lt;a href=&quot;/2020/02/09/vagabond-building-generation.html&quot;&gt;building generator&lt;/a&gt;, to place them on the map and to link them using roads.&lt;/p&gt;
+<p>Last month, I had been working on city generation. The goal was to use buildings generated by my <a href="/2020/02/09/vagabond-building-generation.html">building generator</a>, to place them on the map and to link them using roads.</p>
 
-&lt;p&gt;In this post, I will share with you the main ideas and techniques I used to achieve that.&lt;/p&gt;
+<p>In this post, I will share with you the main ideas and techniques I used to achieve that.</p>
 
-&lt;p&gt;Here is an animation showing the overall process:&lt;/p&gt;
+<p>Here is an animation showing the overall process:</p>
 
-&lt;p&gt;&lt;img src=&quot;/media/img/vagabond-city-generation/city_generation.gif&quot; alt=&quot;&quot; class=&quot;center-image modal-image&quot; /&gt;&lt;/p&gt;
+<p><img src="/media/img/vagabond-city-generation/city_generation.gif" alt="" class="center-image modal-image" /></p>
 
-&lt;!--more--&gt;
+<!--more-->
 
-&lt;h1 id=&quot;building-placement&quot;&gt;Building Placement&lt;/h1&gt;
+<h1 id="building-placement">Building Placement</h1>
 
-&lt;p&gt;To place the buildings I use an algorithm inspired by &lt;a href=&quot;https://www.cs.ubc.ca/~rbridson/docs/bridson-siggraph07-poissondisk.pdf&quot;&gt;Bridson’s algorithm for Poisson Disk Sampling&lt;/a&gt;. The idea is to place buildings one by one, and to place a new building next to an already placed building. The already placed building are tried from oldest to newest, this way, the cities have a concentric shape that is more organic.&lt;/p&gt;
+<p>To place the buildings I use an algorithm inspired by <a href="https://www.cs.ubc.ca/~rbridson/docs/bridson-siggraph07-poissondisk.pdf">Bridson’s algorithm for Poisson Disk Sampling</a>. The idea is to place buildings one by one, and to place a new building next to an already placed building. The already placed building are tried from oldest to newest, this way, the cities have a concentric shape that is more organic.</p>
 
-&lt;p&gt;Contrary to the original algorithm for Poisson Disk Sampling, I do not use a grid to check for collisions because the bounding box of each building is different, instead, I use a &lt;a href=&quot;/2019/08/04/quadtree-collision-detection.html&quot;&gt;quadtree&lt;/a&gt;.&lt;/p&gt;
+<p>Contrary to the original algorithm for Poisson Disk Sampling, I do not use a grid to check for collisions because the bounding box of each building is different, instead, I use a <a href="/2019/08/04/quadtree-collision-detection.html">quadtree</a>.</p>
 
-&lt;p&gt;&lt;img src=&quot;/media/img/vagabond-city-generation/buildings.gif&quot; alt=&quot;&quot; width=&quot;400&quot; class=&quot;center-image modal-image&quot; /&gt;&lt;/p&gt;
+<p><img src="/media/img/vagabond-city-generation/buildings.gif" alt="" width="400" class="center-image modal-image" /></p>
 
-&lt;h1 id=&quot;road-network-generation&quot;&gt;Road Network Generation&lt;/h1&gt;
+<h1 id="road-network-generation">Road Network Generation</h1>
 
-&lt;p&gt;For road generation, I decided to reuse the algorithm I have already developed for roads between cities described &lt;a href=&quot;/2019/05/19/vagabond-borders-rivers-cities-roads.html&quot;&gt;here&lt;/a&gt;: pathfind each door to each door using A* algorithm with a discount for already used road segments.&lt;/p&gt;
+<p>For road generation, I decided to reuse the algorithm I have already developed for roads between cities described <a href="/2019/05/19/vagabond-borders-rivers-cities-roads.html">here</a>: pathfind each door to each door using A* algorithm with a discount for already used road segments.</p>
 
-&lt;p&gt;The problem is that contrary to the problem with cities where I had a dozen cities, here I may have several dozens buildings and as the number of pathfinding runs is quadratic with the number of buildings, it makes a huge difference. Moreover, for roads between cities, the graph was small, but for roads between buildings, the graph is a grid, it has a lot more nodes and edges.&lt;/p&gt;
+<p>The problem is that contrary to the problem with cities where I had a dozen cities, here I may have several dozens buildings and as the number of pathfinding runs is quadratic with the number of buildings, it makes a huge difference. Moreover, for roads between cities, the graph was small, but for roads between buildings, the graph is a grid, it has a lot more nodes and edges.</p>
 
-&lt;p&gt;For a city with 40 buildings, it took 200ms to compute the roads. I thought it was too much.&lt;/p&gt;
+<p>For a city with 40 buildings, it took 200ms to compute the roads. I thought it was too much.</p>
 
-&lt;p&gt;My solution to reduce the time spent is to reduce the number of pathfinding runs done. The idea is to find paths only between a building and its direct neighbors. To find the neighbors of buildings, I compute the &lt;a href=&quot;https://en.wikipedia.org/wiki/Delaunay_triangulation&quot;&gt;Delaunay graph&lt;/a&gt; (I use &lt;a href=&quot;https://github.com/pvigier/MyGAL&quot;&gt;my library&lt;/a&gt; to compute it, you can read more about it &lt;a href=&quot;/2018/11/18/fortune-algorithm-details.html&quot;&gt;here&lt;/a&gt;). Here is the Delaunay graph of a set of buildings:&lt;/p&gt;
+<p>My solution to reduce the time spent is to reduce the number of pathfinding runs done. The idea is to find paths only between a building and its direct neighbors. To find the neighbors of buildings, I compute the <a href="https://en.wikipedia.org/wiki/Delaunay_triangulation">Delaunay graph</a> (I use <a href="https://github.com/pvigier/MyGAL">my library</a> to compute it, you can read more about it <a href="/2018/11/18/fortune-algorithm-details.html">here</a>). Here is the Delaunay graph of a set of buildings:</p>
 
-&lt;p&gt;&lt;img src=&quot;/media/img/vagabond-city-generation/delaunay_graph.png&quot; alt=&quot;&quot; width=&quot;400&quot; class=&quot;center-image modal-image&quot; /&gt;&lt;/p&gt;
+<p><img src="/media/img/vagabond-city-generation/delaunay_graph.png" alt="" width="400" class="center-image modal-image" /></p>
 
-&lt;p&gt;Now, I only have a linear number of pathfindings to perform. For a city with 40 buildings, it now took only 20ms, that is a big improvement!&lt;/p&gt;
+<p>Now, I only have a linear number of pathfindings to perform. For a city with 40 buildings, it now took only 20ms, that is a big improvement!</p>
 
-&lt;p&gt;&lt;img src=&quot;/media/img/vagabond-city-generation/road_network.png&quot; alt=&quot;&quot; width=&quot;400&quot; class=&quot;center-image modal-image&quot; /&gt;&lt;/p&gt;
+<p><img src="/media/img/vagabond-city-generation/road_network.png" alt="" width="400" class="center-image modal-image" /></p>
 
-&lt;p&gt;We now have a road network but it lacks structure and it is a bad navigation mesh. To fix that, I modified the cost function of A* to penalize turns. Consequently, the paths are more straight and simpler as you can see:&lt;/p&gt;
+<p>We now have a road network but it lacks structure and it is a bad navigation mesh. To fix that, I modified the cost function of A* to penalize turns. Consequently, the paths are more straight and simpler as you can see:</p>
 
-&lt;p&gt;&lt;img src=&quot;/media/img/vagabond-city-generation/road_network_turn_penalty.png&quot; alt=&quot;&quot; width=&quot;400&quot; class=&quot;center-image modal-image&quot; /&gt;&lt;/p&gt;
+<p><img src="/media/img/vagabond-city-generation/road_network_turn_penalty.png" alt="" width="400" class="center-image modal-image" /></p>
 
-&lt;p&gt;Currently, the edges are all of length one: they link two cells of the grid. But as the graph is composed of long straight lines, we can compress the graph by retrieving these lines. I achieve that using a DFS:&lt;/p&gt;
+<p>Currently, the edges are all of length one: they link two cells of the grid. But as the graph is composed of long straight lines, we can compress the graph by retrieving these lines. I achieve that using a DFS:</p>
 
-&lt;p&gt;&lt;img src=&quot;/media/img/vagabond-city-generation/road_network_graph.png&quot; alt=&quot;&quot; width=&quot;400&quot; class=&quot;center-image modal-image&quot; /&gt;&lt;/p&gt;
+<p><img src="/media/img/vagabond-city-generation/road_network_graph.png" alt="" width="400" class="center-image modal-image" /></p>
 
-&lt;p&gt;This graph is way more suitable as a navigation mesh.&lt;/p&gt;
+<p>This graph is way more suitable as a navigation mesh.</p>
 
-&lt;p&gt;The final step is to represent these roads as tiles. I simply rasterize a disk of random radius and with a random offset on each cell of the road network to have something a bit chaotic:&lt;/p&gt;
+<p>The final step is to represent these roads as tiles. I simply rasterize a disk of random radius and with a random offset on each cell of the road network to have something a bit chaotic:</p>
 
-&lt;p&gt;&lt;img src=&quot;/media/img/vagabond-city-generation/road_network_tiles.png&quot; alt=&quot;&quot; width=&quot;400&quot; class=&quot;center-image modal-image&quot; /&gt;&lt;/p&gt;
+<p><img src="/media/img/vagabond-city-generation/road_network_tiles.png" alt="" width="400" class="center-image modal-image" /></p>
 
-&lt;p&gt;And here is the final result with buildings displayed:&lt;/p&gt;
+<p>And here is the final result with buildings displayed:</p>
 
-&lt;p&gt;&lt;img src=&quot;/media/img/vagabond-city-generation/road_network_buildings.png&quot; alt=&quot;&quot; width=&quot;400&quot; class=&quot;center-image modal-image&quot; /&gt;&lt;/p&gt;
+<p><img src="/media/img/vagabond-city-generation/road_network_buildings.png" alt="" width="400" class="center-image modal-image" /></p>
 
-&lt;h1 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h1&gt;
+<h1 id="conclusion">Conclusion</h1>
 
-&lt;p&gt;Let us look at some cities generated by the generator to conclude this blog post:&lt;/p&gt;
+<p>Let us look at some cities generated by the generator to conclude this blog post:</p>
 
-&lt;p&gt;&lt;img src=&quot;/media/img/vagabond-city-generation/cities.gif&quot; alt=&quot;&quot; width=&quot;400&quot; class=&quot;center-image modal-image&quot; /&gt;&lt;/p&gt;
+<p><img src="/media/img/vagabond-city-generation/cities.gif" alt="" width="400" class="center-image modal-image" /></p>
 
-&lt;p&gt;The results are still a bit monotonous but it will be better when the buildings will be more distinct and new types of structures such as market places, wells or castles will be added.&lt;/p&gt;
+<p>The results are still a bit monotonous but it will be better when the buildings will be more distinct and new types of structures such as market places, wells or castles will be added.</p>
 
-&lt;p&gt;The next step is to populate the cities with villagers.&lt;/p&gt;
+<p>The next step is to populate the cities with villagers.</p>
 
-&lt;p&gt;All the assets used in this post were made by &lt;a href=&quot;https://opengameart.org/&quot;&gt;OpenGameArt&lt;/a&gt; artists, you can find them &lt;a href=&quot;https://opengameart.org/content/vagabonds-assets&quot;&gt;there&lt;/a&gt;.&lt;/p&gt;
+<p>All the assets used in this post were made by <a href="https://opengameart.org/">OpenGameArt</a> artists, you can find them <a href="https://opengameart.org/content/vagabonds-assets">there</a>.</p>
 
-&lt;p&gt;See you next time for more!&lt;/p&gt;</content><author><name>pierre</name></author><category term="vagabond" /><category term="pcg" /><summary type="html">Hi everyone! Last month, I had been working on city generation. The goal was to use buildings generated by my building generator, to place them on the map and to link them using roads. In this post, I will share with you the main ideas and techniques I used to achieve that. Here is an animation showing the overall process:</summary></entry><entry><title type="html">Vagabond – Building Generation</title><link href="https://pvigier.github.io/2020/02/09/vagabond-building-generation.html" rel="alternate" type="text/html" title="Vagabond – Building Generation" /><published>2020-02-09T00:00:00+01:00</published><updated>2020-02-09T00:00:00+01:00</updated><id>https://pvigier.github.io/2020/02/09/vagabond-building-generation</id><content type="html" xml:base="https://pvigier.github.io/2020/02/09/vagabond-building-generation.html">&lt;p&gt;Hi everyone!&lt;/p&gt;
+<p>See you next time for more!</p>]]></content><author><name>pierre</name></author><category term="vagabond" /><category term="pcg" /><summary type="html"><![CDATA[Hi everyone! Last month, I had been working on city generation. The goal was to use buildings generated by my building generator, to place them on the map and to link them using roads. In this post, I will share with you the main ideas and techniques I used to achieve that. Here is an animation showing the overall process:]]></summary></entry><entry><title type="html">Vagabond – Building Generation</title><link href="https://pvigier.github.io/2020/02/09/vagabond-building-generation.html" rel="alternate" type="text/html" title="Vagabond – Building Generation" /><published>2020-02-09T00:00:00+01:00</published><updated>2020-02-09T00:00:00+01:00</updated><id>https://pvigier.github.io/2020/02/09/vagabond-building-generation</id><content type="html" xml:base="https://pvigier.github.io/2020/02/09/vagabond-building-generation.html"><![CDATA[<p>Hi everyone!</p>
 
-&lt;p&gt;These last weeks, I had been working on building generation. I want to share with you the main ideas of my method, some insights, and my results!&lt;/p&gt;
+<p>These last weeks, I had been working on building generation. I want to share with you the main ideas of my method, some insights, and my results!</p>
 
-&lt;p&gt;Here is a quick glimpse of the overall process:&lt;/p&gt;
+<p>Here is a quick glimpse of the overall process:</p>
 
-&lt;p&gt;&lt;img src=&quot;/media/img/vagabond-building-generation/building_generation.gif&quot; alt=&quot;&quot; class=&quot;center-image modal-image&quot; /&gt;&lt;/p&gt;
+<p><img src="/media/img/vagabond-building-generation/building_generation.gif" alt="" class="center-image modal-image" /></p>
 
-&lt;!--more--&gt;
+<!--more-->
 
-&lt;h1 id=&quot;floor-plan-generation&quot;&gt;Floor Plan Generation&lt;/h1&gt;
+<h1 id="floor-plan-generation">Floor Plan Generation</h1>
 
-&lt;p&gt;The first step is to generate the floor plan that will be the input for the next steps.&lt;/p&gt;
+<p>The first step is to generate the floor plan that will be the input for the next steps.</p>
 
-&lt;p&gt;There were a lot of trials and errors at this step. I wanted something flexible, that is, the generator takes as input a list of rooms that the building must contain and it generates a floor plan, whatever the number of rooms or their shape is. Thus, we cannot rely on some patterns to arrange the rooms. Moreover, I wanted the generator to be robust and always return good enough shapes.&lt;/p&gt;
+<p>There were a lot of trials and errors at this step. I wanted something flexible, that is, the generator takes as input a list of rooms that the building must contain and it generates a floor plan, whatever the number of rooms or their shape is. Thus, we cannot rely on some patterns to arrange the rooms. Moreover, I wanted the generator to be robust and always return good enough shapes.</p>
 
-&lt;p&gt;I decided to use an incremental method: to place the rooms one by one.&lt;/p&gt;
+<p>I decided to use an incremental method: to place the rooms one by one.</p>
 
-&lt;p&gt;My first attempt was to maintain the frontier of the building as a list of edges. Then, at each step, I would select an edge and grow a new room from it. The size of the new room was randomly generated. It was a terrible idea, it creates a lot of holes in the building shapes.&lt;/p&gt;
+<p>My first attempt was to maintain the frontier of the building as a list of edges. Then, at each step, I would select an edge and grow a new room from it. The size of the new room was randomly generated. It was a terrible idea, it creates a lot of holes in the building shapes.</p>
 
-&lt;p&gt;&lt;img src=&quot;/media/img/vagabond-building-generation/floor_plans_edges.gif&quot; alt=&quot;&quot; width=&quot;400&quot; class=&quot;center-image modal-image&quot; /&gt;&lt;/p&gt;
+<p><img src="/media/img/vagabond-building-generation/floor_plans_edges.gif" alt="" width="400" class="center-image modal-image" /></p>
 
-&lt;p&gt;My second attempt to prevent the strange holes from occuring was to use a grid to place the rooms. A room would occupy exactly one cell and the frontier is now the set of cells that are neighbors to the already selected cells. Again, at each step, we select a cell in the frontier and add a room in this cell. But to have more variety, I chose to have columns with variable widths and rows with variable heights. It was a terrible idea, again. The issue, this time, is that all the rooms in the same column have the same width, and all the rooms in the same row have the same height, it was a bit weird. Moreover, the topology of the building was too simple for my liking.&lt;/p&gt;
+<p>My second attempt to prevent the strange holes from occuring was to use a grid to place the rooms. A room would occupy exactly one cell and the frontier is now the set of cells that are neighbors to the already selected cells. Again, at each step, we select a cell in the frontier and add a room in this cell. But to have more variety, I chose to have columns with variable widths and rows with variable heights. It was a terrible idea, again. The issue, this time, is that all the rooms in the same column have the same width, and all the rooms in the same row have the same height, it was a bit weird. Moreover, the topology of the building was too simple for my liking.</p>
 
-&lt;p&gt;&lt;img src=&quot;/media/img/vagabond-building-generation/floor_plans_variable.gif&quot; alt=&quot;&quot; width=&quot;400&quot; class=&quot;center-image modal-image&quot; /&gt;&lt;/p&gt;
+<p><img src="/media/img/vagabond-building-generation/floor_plans_variable.gif" alt="" width="400" class="center-image modal-image" /></p>
 
-&lt;p&gt;In my third attempt, I decided to fix the size of columns and rows, but the rooms can now occupy several cells which will allow more complex topologies. I think this is a good trade-off: we lose a bit of variety on the room shapes but having predictable room sizes will ease the next steps. Moreover, I find this solution particularly clean and simple to implement. I am still wondering why this was not the first thing I tried.&lt;/p&gt;
+<p>In my third attempt, I decided to fix the size of columns and rows, but the rooms can now occupy several cells which will allow more complex topologies. I think this is a good trade-off: we lose a bit of variety on the room shapes but having predictable room sizes will ease the next steps. Moreover, I find this solution particularly clean and simple to implement. I am still wondering why this was not the first thing I tried.</p>
 
-&lt;p&gt;&lt;img src=&quot;/media/img/vagabond-building-generation/floor_plans.gif&quot; alt=&quot;&quot; width=&quot;400&quot; class=&quot;center-image modal-image&quot; /&gt;&lt;/p&gt;
+<p><img src="/media/img/vagabond-building-generation/floor_plans.gif" alt="" width="400" class="center-image modal-image" /></p>
 
-&lt;p&gt;I want to give a bit more insight into how a cell is chosen from the frontier. If you select a random cell, there may be a collision problem (if the room takes several cells) and after several steps, you may have something very weird. To prevent that, all the cells in the frontier are tried, we check for collisions and a score is attributed to the configuration. Then, I randomly pick a cell among the cells that have the highest scores.&lt;/p&gt;
+<p>I want to give a bit more insight into how a cell is chosen from the frontier. If you select a random cell, there may be a collision problem (if the room takes several cells) and after several steps, you may have something very weird. To prevent that, all the cells in the frontier are tried, we check for collisions and a score is attributed to the configuration. Then, I randomly pick a cell among the cells that have the highest scores.</p>
 
-&lt;p&gt;One question remains: how to determine the score? Well, in the beginning, I tried to quantify the beauty of a floor plan, and it was hard to find good criteria. Then, I changed my way of thinking instead of trying to select the most beautiful floor plans, I penalize ugly and weird floor plans. And, it reveals to be way simpler to craft a score function that penalizes weird floor plans than one that finds the beautiful ones. I mainly penalize two things: extreme ratios, I don’t want too flattened buildings, and holes. Just with these two criteria, most weird building shapes are ruled out and the ones that are kept are at least correct.&lt;/p&gt;
+<p>One question remains: how to determine the score? Well, in the beginning, I tried to quantify the beauty of a floor plan, and it was hard to find good criteria. Then, I changed my way of thinking instead of trying to select the most beautiful floor plans, I penalize ugly and weird floor plans. And, it reveals to be way simpler to craft a score function that penalizes weird floor plans than one that finds the beautiful ones. I mainly penalize two things: extreme ratios, I don’t want too flattened buildings, and holes. Just with these two criteria, most weird building shapes are ruled out and the ones that are kept are at least correct.</p>
 
-&lt;h1 id=&quot;interior-generation&quot;&gt;Interior Generation&lt;/h1&gt;
+<h1 id="interior-generation">Interior Generation</h1>
 
-&lt;p&gt;Now, that we have floor plans, we can generate floors and walls. As the generator is for a 2D game, I have to take care of the projection and let enough place between rooms to be able to put the walls.&lt;/p&gt;
+<p>Now, that we have floor plans, we can generate floors and walls. As the generator is for a 2D game, I have to take care of the projection and let enough place between rooms to be able to put the walls.</p>
 
-&lt;p&gt;I can assign different tiles for the floor and walls of the rooms. But for now, they are uniform for the whole building.&lt;/p&gt;
+<p>I can assign different tiles for the floor and walls of the rooms. But for now, they are uniform for the whole building.</p>
 
-&lt;p&gt;&lt;img src=&quot;/media/img/vagabond-building-generation/interiors.gif&quot; alt=&quot;&quot; width=&quot;400&quot; class=&quot;center-image modal-image&quot; /&gt;&lt;/p&gt;
+<p><img src="/media/img/vagabond-building-generation/interiors.gif" alt="" width="400" class="center-image modal-image" /></p>
 
-&lt;h1 id=&quot;exterior-generation&quot;&gt;Exterior Generation&lt;/h1&gt;
+<h1 id="exterior-generation">Exterior Generation</h1>
 
-&lt;p&gt;Oddly, this was the first thing, I implemented. Even before I finished floor plan generation. Surely because I thought it was one of the easiest steps. In fact, there are some subtleties so that everything works well with 2D tiles.&lt;/p&gt;
+<p>Oddly, this was the first thing, I implemented. Even before I finished floor plan generation. Surely because I thought it was one of the easiest steps. In fact, there are some subtleties so that everything works well with 2D tiles.</p>
 
-&lt;p&gt;One preprocessing step that reveals useful is to merge rooms to have larger rectangle parts. To achieve that, I used a &lt;a href=&quot;https://0fps.net/2012/06/30/meshing-in-a-minecraft-game/&quot;&gt;greedy meshing&lt;/a&gt; algorithm.&lt;/p&gt;
+<p>One preprocessing step that reveals useful is to merge rooms to have larger rectangle parts. To achieve that, I used a <a href="https://0fps.net/2012/06/30/meshing-in-a-minecraft-game/">greedy meshing</a> algorithm.</p>
 
-&lt;p&gt;&lt;img src=&quot;/media/img/vagabond-building-generation/building_parts.gif&quot; alt=&quot;&quot; width=&quot;400&quot; class=&quot;center-image modal-image&quot; /&gt;&lt;/p&gt;
+<p><img src="/media/img/vagabond-building-generation/building_parts.gif" alt="" width="400" class="center-image modal-image" /></p>
 
-&lt;h2 id=&quot;wall-generation&quot;&gt;Wall Generation&lt;/h2&gt;
+<h2 id="wall-generation">Wall Generation</h2>
 
-&lt;p&gt;Nothing really difficult there. I just draw the bottom walls of building parts.&lt;/p&gt;
+<p>Nothing really difficult there. I just draw the bottom walls of building parts.</p>
 
-&lt;p&gt;&lt;img src=&quot;/media/img/vagabond-building-generation/walls.gif&quot; alt=&quot;&quot; width=&quot;400&quot; class=&quot;center-image modal-image&quot; /&gt;&lt;/p&gt;
+<p><img src="/media/img/vagabond-building-generation/walls.gif" alt="" width="400" class="center-image modal-image" /></p>
 
-&lt;h2 id=&quot;roof-generation&quot;&gt;Roof Generation&lt;/h2&gt;
+<h2 id="roof-generation">Roof Generation</h2>
 
-&lt;p&gt;Roofs are more challenging. I studied the different types of roofs a bit. For now, two of the simplest types, flat roofs and mansard roofs, are supported.&lt;/p&gt;
+<p>Roofs are more challenging. I studied the different types of roofs a bit. For now, two of the simplest types, flat roofs and mansard roofs, are supported.</p>
 
-&lt;p&gt;&lt;img src=&quot;/media/img/vagabond-building-generation/roofs.gif&quot; alt=&quot;&quot; width=&quot;400&quot; class=&quot;center-image modal-image&quot; /&gt;&lt;/p&gt;
+<p><img src="/media/img/vagabond-building-generation/roofs.gif" alt="" width="400" class="center-image modal-image" /></p>
 
-&lt;p&gt;I also have an experimental implementation of hip roof generation. Hip roofs are more complex because the tiling depends on the width and you must have a special case for the transition between two building parts. I will finish that later.&lt;/p&gt;
+<p>I also have an experimental implementation of hip roof generation. Hip roofs are more complex because the tiling depends on the width and you must have a special case for the transition between two building parts. I will finish that later.</p>
 
-&lt;p&gt;&lt;img src=&quot;/media/img/vagabond-building-generation/hip_roof.png&quot; alt=&quot;&quot; width=&quot;400&quot; class=&quot;center-image modal-image&quot; /&gt;&lt;/p&gt;
+<p><img src="/media/img/vagabond-building-generation/hip_roof.png" alt="" width="400" class="center-image modal-image" /></p>
 
-&lt;h1 id=&quot;room-generation&quot;&gt;Room Generation&lt;/h1&gt;
+<h1 id="room-generation">Room Generation</h1>
 
-&lt;p&gt;Placing objects in the rooms is by far the most interesting part of this generator.&lt;/p&gt;
+<p>Placing objects in the rooms is by far the most interesting part of this generator.</p>
 
-&lt;p&gt;The first step is to define object groups, it may be one object alone or objects that should always be placed together, for instance, a table with chairs. For each object group, I will also associate a collision box and a margin box. The collision box corresponds to the tiles used by the object group while the margin box corresponds to the tiles that must be free around the group to be able to interact with the objects in the game.&lt;/p&gt;
+<p>The first step is to define object groups, it may be one object alone or objects that should always be placed together, for instance, a table with chairs. For each object group, I will also associate a collision box and a margin box. The collision box corresponds to the tiles used by the object group while the margin box corresponds to the tiles that must be free around the group to be able to interact with the objects in the game.</p>
 
-&lt;p&gt;Here you can visualize the collision box and the margin box for some objects:&lt;/p&gt;
+<p>Here you can visualize the collision box and the margin box for some objects:</p>
 
-&lt;p&gt;&lt;img src=&quot;/media/img/vagabond-building-generation/object_boxes.png&quot; alt=&quot;&quot; width=&quot;400&quot; class=&quot;center-image modal-image&quot; /&gt;&lt;/p&gt;
+<p><img src="/media/img/vagabond-building-generation/object_boxes.png" alt="" width="400" class="center-image modal-image" /></p>
 
-&lt;p&gt;Then, for each room definition, I make a difference between objects that are necessary and those that are optional. Necessary objects must be placed in the room, otherwise, the room is invalid. For example, there must be a bed in a bedroom, if we fail to place one there, then the generator fails. On the contrary, decorations, such as a pot with a plant, are optional and if we fail to place them, the room is still valid.&lt;/p&gt;
+<p>Then, for each room definition, I make a difference between objects that are necessary and those that are optional. Necessary objects must be placed in the room, otherwise, the room is invalid. For example, there must be a bed in a bedroom, if we fail to place one there, then the generator fails. On the contrary, decorations, such as a pot with a plant, are optional and if we fail to place them, the room is still valid.</p>
 
-&lt;p&gt;Besides, for each object group in the room, constraints can be assigned to it. Some constraints I implemented are: distance to a wall, in a corner of the room or horizontally centered in the room.&lt;/p&gt;
+<p>Besides, for each object group in the room, constraints can be assigned to it. Some constraints I implemented are: distance to a wall, in a corner of the room or horizontally centered in the room.</p>
 
-&lt;p&gt;To place, necessary objects, I use a &lt;a href=&quot;https://en.wikipedia.org/wiki/Constraint_satisfaction_problem&quot;&gt;CSP&lt;/a&gt; solver I have designed especially for this problem. In particular, it can check very quickly for collisions between objects and that the room is connected, that is, we can access to all objects and doors in the room. My CSP solver uses a simple &lt;a href=&quot;https://en.wikipedia.org/wiki/Backtracking&quot;&gt;backtracking&lt;/a&gt; algorithm.&lt;/p&gt;
+<p>To place, necessary objects, I use a <a href="https://en.wikipedia.org/wiki/Constraint_satisfaction_problem">CSP</a> solver I have designed especially for this problem. In particular, it can check very quickly for collisions between objects and that the room is connected, that is, we can access to all objects and doors in the room. My CSP solver uses a simple <a href="https://en.wikipedia.org/wiki/Backtracking">backtracking</a> algorithm.</p>
 
-&lt;p&gt;One important thing, for procedural generation, is to keep the solver “non-deterministic” i.e. it does not always return the same solution. Otherwise, it would be boring. To achieve that, I simply shuffle the domains, the sets of positions tried for each object group.&lt;/p&gt;
+<p>One important thing, for procedural generation, is to keep the solver “non-deterministic” i.e. it does not always return the same solution. Otherwise, it would be boring. To achieve that, I simply shuffle the domains, the sets of positions tried for each object group.</p>
 
-&lt;p&gt;On the contrary, for optional objects, I do not use the CSP solver. This allows keeping the problems relatively small and easy for the solver and thus to solve them very quickly. For each optional object, I just pick randomly one of its valid position and if there are none, it is not placed and I try the next object.&lt;/p&gt;
+<p>On the contrary, for optional objects, I do not use the CSP solver. This allows keeping the problems relatively small and easy for the solver and thus to solve them very quickly. For each optional object, I just pick randomly one of its valid position and if there are none, it is not placed and I try the next object.</p>
 
-&lt;p&gt;Here are some living rooms generated with the same set of parameters:&lt;/p&gt;
+<p>Here are some living rooms generated with the same set of parameters:</p>
 
-&lt;p&gt;&lt;img src=&quot;/media/img/vagabond-building-generation/living_rooms.gif&quot; alt=&quot;&quot; width=&quot;400&quot; class=&quot;center-image modal-image&quot; /&gt;&lt;/p&gt;
+<p><img src="/media/img/vagabond-building-generation/living_rooms.gif" alt="" width="400" class="center-image modal-image" /></p>
 
-&lt;p&gt;And some buildings with objects:&lt;/p&gt;
+<p>And some buildings with objects:</p>
 
-&lt;p&gt;&lt;img src=&quot;/media/img/vagabond-building-generation/objects.gif&quot; alt=&quot;&quot; width=&quot;400&quot; class=&quot;center-image modal-image&quot; /&gt;&lt;/p&gt;
+<p><img src="/media/img/vagabond-building-generation/objects.gif" alt="" width="400" class="center-image modal-image" /></p>
 
-&lt;p&gt;For now, there are only three different types of rooms: a bedroom, a kitchen and a living room. I will design more later.&lt;/p&gt;
+<p>For now, there are only three different types of rooms: a bedroom, a kitchen and a living room. I will design more later.</p>
 
-&lt;h1 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h1&gt;
+<h1 id="conclusion">Conclusion</h1>
 
-&lt;p&gt;Let us look at some buildings generated by the generator to conclude this blog post:&lt;/p&gt;
+<p>Let us look at some buildings generated by the generator to conclude this blog post:</p>
 
-&lt;p&gt;&lt;img src=&quot;/media/img/vagabond-building-generation/buildings.gif&quot; alt=&quot;&quot; class=&quot;center-image modal-image&quot; /&gt;&lt;/p&gt;
+<p><img src="/media/img/vagabond-building-generation/buildings.gif" alt="" class="center-image modal-image" /></p>
 
-&lt;p&gt;The whole process is quite fast, under 1ms for a whole building, it will allow me to generate hundreds to thousands of buildings during world generation!&lt;/p&gt;
+<p>The whole process is quite fast, under 1ms for a whole building, it will allow me to generate hundreds to thousands of buildings during world generation!</p>
 
-&lt;p&gt;Most of the ideas described here are very simple, but as we say, the devil is in the detail, and there were a lot of details there!&lt;/p&gt;
+<p>Most of the ideas described here are very simple, but as we say, the devil is in the detail, and there were a lot of details there!</p>
 
-&lt;p&gt;Now, that we have buildings, the next step is obviously to generate cities. It is one of the last steps before the release of the alpha version. I am so excited to eventually share my work with people! :)&lt;/p&gt;
+<p>Now, that we have buildings, the next step is obviously to generate cities. It is one of the last steps before the release of the alpha version. I am so excited to eventually share my work with people! :)</p>
 
-&lt;p&gt;All the assets used in this post were made by &lt;a href=&quot;https://opengameart.org/&quot;&gt;OpenGameArt&lt;/a&gt; artists, you can find them &lt;a href=&quot;https://opengameart.org/content/vagabonds-assets&quot;&gt;there&lt;/a&gt;.&lt;/p&gt;
+<p>All the assets used in this post were made by <a href="https://opengameart.org/">OpenGameArt</a> artists, you can find them <a href="https://opengameart.org/content/vagabonds-assets">there</a>.</p>
 
-&lt;p&gt;See you next time for more!&lt;/p&gt;</content><author><name>pierre</name></author><category term="vagabond" /><category term="pcg" /><summary type="html">Hi everyone! These last weeks, I had been working on building generation. I want to share with you the main ideas of my method, some insights, and my results! Here is a quick glimpse of the overall process:</summary></entry><entry><title type="html">Vagabond – Let’s Fight</title><link href="https://pvigier.github.io/2019/11/18/vagabond-let-s-fight.html" rel="alternate" type="text/html" title="Vagabond – Let’s Fight" /><published>2019-11-18T00:00:00+01:00</published><updated>2019-11-18T00:00:00+01:00</updated><id>https://pvigier.github.io/2019/11/18/vagabond-let-s-fight</id><content type="html" xml:base="https://pvigier.github.io/2019/11/18/vagabond-let-s-fight.html">&lt;p&gt;Hi everyone!&lt;/p&gt;
+<p>See you next time for more!</p>]]></content><author><name>pierre</name></author><category term="vagabond" /><category term="pcg" /><summary type="html"><![CDATA[Hi everyone! These last weeks, I had been working on building generation. I want to share with you the main ideas of my method, some insights, and my results! Here is a quick glimpse of the overall process:]]></summary></entry><entry><title type="html">Vagabond – Let’s Fight</title><link href="https://pvigier.github.io/2019/11/18/vagabond-let-s-fight.html" rel="alternate" type="text/html" title="Vagabond – Let’s Fight" /><published>2019-11-18T00:00:00+01:00</published><updated>2019-11-18T00:00:00+01:00</updated><id>https://pvigier.github.io/2019/11/18/vagabond-let-s-fight</id><content type="html" xml:base="https://pvigier.github.io/2019/11/18/vagabond-let-s-fight.html"><![CDATA[<p>Hi everyone!</p>
 
-&lt;p&gt;It’s been a long time since the last devlog.&lt;/p&gt;
+<p>It’s been a long time since the last devlog.</p>
 
-&lt;p&gt;I have been mainly working on monsters and combats. I created a lot of components and systems but nothing which deserves its own blog post. Let’s see the improvements.&lt;/p&gt;
+<p>I have been mainly working on monsters and combats. I created a lot of components and systems but nothing which deserves its own blog post. Let’s see the improvements.</p>
 
-&lt;video controls=&quot;&quot; width=&quot;600&quot;&gt;
-    &lt;source src=&quot;/media/video/vagabond-let-s-fight/attack_dungeon_updated.mp4&quot; type=&quot;video/mp4&quot; /&gt;
+<video controls="" width="600">
+    <source src="/media/video/vagabond-let-s-fight/attack_dungeon_updated.mp4" type="video/mp4" />
     Sorry, your browser doesn't support embedded videos.
-&lt;/video&gt;
+</video>
 
-&lt;!--more--&gt;
+<!--more-->
 
-&lt;h1 id=&quot;monsters&quot;&gt;Monsters&lt;/h1&gt;
+<h1 id="monsters">Monsters</h1>
 
-&lt;p&gt;Firstly, I ingested several monsters, even if you will only see bats in this devlog. And implemented a very basic artificial intelligence: they wander in rooms of dungeons.&lt;/p&gt;
+<p>Firstly, I ingested several monsters, even if you will only see bats in this devlog. And implemented a very basic artificial intelligence: they wander in rooms of dungeons.</p>
 
-&lt;video controls=&quot;&quot; width=&quot;600&quot;&gt;
-    &lt;source src=&quot;/media/video/vagabond-let-s-fight/monster_wander.mp4&quot; type=&quot;video/mp4&quot; /&gt;
+<video controls="" width="600">
+    <source src="/media/video/vagabond-let-s-fight/monster_wander.mp4" type="video/mp4" />
     Sorry, your browser doesn't support embedded videos.
-&lt;/video&gt;
+</video>
 
-&lt;h1 id=&quot;combat-system&quot;&gt;Combat System&lt;/h1&gt;
+<h1 id="combat-system">Combat System</h1>
 
-&lt;p&gt;It was then time to kick their ass. I had to modify the physics engine to support hurtboxes and hitboxes.&lt;/p&gt;
+<p>It was then time to kick their ass. I had to modify the physics engine to support hurtboxes and hitboxes.</p>
 
-&lt;p&gt;Then, I had to improve the way animations are synchronized between clients which requires me to do huge changes in the codebase.&lt;/p&gt;
+<p>Then, I had to improve the way animations are synchronized between clients which requires me to do huge changes in the codebase.</p>
 
-&lt;p&gt;Eventually, it was possible to attack the monsters:&lt;/p&gt;
+<p>Eventually, it was possible to attack the monsters:</p>
 
-&lt;video controls=&quot;&quot; width=&quot;600&quot;&gt;
-    &lt;source src=&quot;/media/video/vagabond-let-s-fight/combat_system.mp4&quot; type=&quot;video/mp4&quot; /&gt;
+<video controls="" width="600">
+    <source src="/media/video/vagabond-let-s-fight/combat_system.mp4" type="video/mp4" />
     Sorry, your browser doesn't support embedded videos.
-&lt;/video&gt;
+</video>
 
-&lt;p&gt;Monsters receive a small knockout just after being hit.&lt;/p&gt;
+<p>Monsters receive a small knockout just after being hit.</p>
 
-&lt;p&gt;It is not impressive yet, but with some particle effects and sound effects, it should be funnier.&lt;/p&gt;
+<p>It is not impressive yet, but with some particle effects and sound effects, it should be funnier.</p>
 
-&lt;h1 id=&quot;hud&quot;&gt;HUD&lt;/h1&gt;
+<h1 id="hud">HUD</h1>
 
-&lt;p&gt;It had been weeks, I was postponing the work on the user interface. I rolled up my sleeves and made a basic HUD to display the target monster’s name and health.&lt;/p&gt;
+<p>It had been weeks, I was postponing the work on the user interface. I rolled up my sleeves and made a basic HUD to display the target monster’s name and health.</p>
 
-&lt;p&gt;Moreover, I change the inputs. Now, everything is done with the mouse. Thus, I created a custom golden cursor you can see in the video below.&lt;/p&gt;
+<p>Moreover, I change the inputs. Now, everything is done with the mouse. Thus, I created a custom golden cursor you can see in the video below.</p>
 
-&lt;video controls=&quot;&quot; width=&quot;600&quot;&gt;
-    &lt;source src=&quot;/media/video/vagabond-let-s-fight/attack_interface.mp4&quot; type=&quot;video/mp4&quot; /&gt;
+<video controls="" width="600">
+    <source src="/media/video/vagabond-let-s-fight/attack_interface.mp4" type="video/mp4" />
     Sorry, your browser doesn't support embedded videos.
-&lt;/video&gt;
+</video>
 
-&lt;p&gt;I also started to do preparatory work on a drag and drop system for the future inventory interface.&lt;/p&gt;
+<p>I also started to do preparatory work on a drag and drop system for the future inventory interface.</p>
 
-&lt;h1 id=&quot;cave-generation-update&quot;&gt;Cave Generation Update&lt;/h1&gt;
+<h1 id="cave-generation-update">Cave Generation Update</h1>
 
-&lt;p&gt;Finally, I worked on the cave generator. I fixed pernicious bugs occurring during tile generation. Moreover, I added some cycles during maze generation. I am very happy with the results:&lt;/p&gt;
+<p>Finally, I worked on the cave generator. I fixed pernicious bugs occurring during tile generation. Moreover, I added some cycles during maze generation. I am very happy with the results:</p>
 
-&lt;p&gt;&lt;img src=&quot;/media/img/vagabond-let-s-fight/dungeon_generation_v3.gif&quot; alt=&quot;&quot; width=&quot;400&quot; class=&quot;center-image modal-image&quot; /&gt;&lt;/p&gt;
+<p><img src="/media/img/vagabond-let-s-fight/dungeon_generation_v3.gif" alt="" width="400" class="center-image modal-image" /></p>
 
-&lt;p&gt;I shared this animation on Reddit on &lt;a href=&quot;https://www.reddit.com/r/gamedev/comments/dx95df/cave_generation_using_bsp_and_cellular_automaton/&quot;&gt;r/gamedev&lt;/a&gt;, I received many kind comments, it was very motivating!&lt;/p&gt;
+<p>I shared this animation on Reddit on <a href="https://www.reddit.com/r/gamedev/comments/dx95df/cave_generation_using_bsp_and_cellular_automaton/">r/gamedev</a>, I received many kind comments, it was very motivating!</p>
 
-&lt;h1 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h1&gt;
+<h1 id="conclusion">Conclusion</h1>
 
-&lt;p&gt;That’s all for this devlog.&lt;/p&gt;
+<p>That’s all for this devlog.</p>
 
-&lt;p&gt;I am currently working on items, inventory, and characters. I think it will be a great step for the game and I hope I will have a lot of nice stuff to show.&lt;/p&gt;
+<p>I am currently working on items, inventory, and characters. I think it will be a great step for the game and I hope I will have a lot of nice stuff to show.</p>
 
-&lt;p&gt;See you next time for more!&lt;/p&gt;</content><author><name>pierre</name></author><category term="vagabond" /><summary type="html">Hi everyone! It’s been a long time since the last devlog. I have been mainly working on monsters and combats. I created a lot of components and systems but nothing which deserves its own blog post. Let’s see the improvements. Sorry, your browser doesn't support embedded videos.</summary></entry><entry><title type="html">Vagabond – Teleporting Into Dungeons</title><link href="https://pvigier.github.io/2019/10/20/vagabond-teleporting-into-dungeons.html" rel="alternate" type="text/html" title="Vagabond – Teleporting Into Dungeons" /><published>2019-10-20T00:00:00+02:00</published><updated>2019-10-20T00:00:00+02:00</updated><id>https://pvigier.github.io/2019/10/20/vagabond-teleporting-into-dungeons</id><content type="html" xml:base="https://pvigier.github.io/2019/10/20/vagabond-teleporting-into-dungeons.html">&lt;p&gt;Hi everyone!&lt;/p&gt;
+<p>See you next time for more!</p>]]></content><author><name>pierre</name></author><category term="vagabond" /><summary type="html"><![CDATA[Hi everyone! It’s been a long time since the last devlog. I have been mainly working on monsters and combats. I created a lot of components and systems but nothing which deserves its own blog post. Let’s see the improvements. Sorry, your browser doesn't support embedded videos.]]></summary></entry><entry><title type="html">Vagabond – Teleporting Into Dungeons</title><link href="https://pvigier.github.io/2019/10/20/vagabond-teleporting-into-dungeons.html" rel="alternate" type="text/html" title="Vagabond – Teleporting Into Dungeons" /><published>2019-10-20T00:00:00+02:00</published><updated>2019-10-20T00:00:00+02:00</updated><id>https://pvigier.github.io/2019/10/20/vagabond-teleporting-into-dungeons</id><content type="html" xml:base="https://pvigier.github.io/2019/10/20/vagabond-teleporting-into-dungeons.html"><![CDATA[<p>Hi everyone!</p>
 
-&lt;p&gt;Last two weeks, I was working on teleporting the players from one map to another. I will use this system to enter into dungeons, buildings, etc. and also to leave them. But it was not that easy to implement as it required some deep architectural changes in the game engine.&lt;/p&gt;
+<p>Last two weeks, I was working on teleporting the players from one map to another. I will use this system to enter into dungeons, buildings, etc. and also to leave them. But it was not that easy to implement as it required some deep architectural changes in the game engine.</p>
 
-&lt;video controls=&quot;&quot; width=&quot;600&quot;&gt;
-    &lt;source src=&quot;/media/video/vagabond-teleporting-into-dungeons/dungeon_entrance.mp4&quot; type=&quot;video/mp4&quot; /&gt;
+<video controls="" width="600">
+    <source src="/media/video/vagabond-teleporting-into-dungeons/dungeon_entrance.mp4" type="video/mp4" />
     Sorry, your browser doesn't support embedded videos.
-&lt;/video&gt;
+</video>
 
-&lt;!--more--&gt;
+<!--more-->
 
-&lt;h1 id=&quot;a-multilayer-world&quot;&gt;A Multilayer World&lt;/h1&gt;
+<h1 id="a-multilayer-world">A Multilayer World</h1>
 
-&lt;p&gt;In a 2D top-down game, it is hard to make an open-world with only one map like Minecraft. It would mean it is not possible to go underground or upstairs in buildings. Thus, I need to be able to display several maps and to go from one map to another using &lt;em&gt;doors&lt;/em&gt;.&lt;/p&gt;
+<p>In a 2D top-down game, it is hard to make an open-world with only one map like Minecraft. It would mean it is not possible to go underground or upstairs in buildings. Thus, I need to be able to display several maps and to go from one map to another using <em>doors</em>.</p>
 
-&lt;p&gt;But it is easier said than done. In particular for a multiplayer game, as there may be several players on different maps, and so you must manage several maps simultaneously. While in a single-player game, you just keep the map where the player is currently on.&lt;/p&gt;
+<p>But it is easier said than done. In particular for a multiplayer game, as there may be several players on different maps, and so you must manage several maps simultaneously. While in a single-player game, you just keep the map where the player is currently on.</p>
 
-&lt;p&gt;Moreover, when I store the position of an entity, not only I must store its &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;x&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;y&lt;/code&gt; coordinates but also the map on which it is. More precisely, as the world can be quite large, it is cut in chunks so I store the indices of the chunk on which the entity is currently on.&lt;/p&gt;
+<p>Moreover, when I store the position of an entity, not only I must store its <code class="language-plaintext highlighter-rouge">x</code> and <code class="language-plaintext highlighter-rouge">y</code> coordinates but also the map on which it is. More precisely, as the world can be quite large, it is cut in chunks so I store the indices of the chunk on which the entity is currently on.</p>
 
-&lt;p&gt;Previously, I was using a data structure like this one:&lt;/p&gt;
+<p>Previously, I was using a data structure like this one:</p>
 
-&lt;div class=&quot;language-cpp highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Position&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;kt&quot;&gt;float&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;kt&quot;&gt;float&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;y&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">struct</span> <span class="nc">Position</span>
+<span class="p">{</span>
+    <span class="kt">float</span> <span class="n">x</span><span class="p">;</span>
+    <span class="kt">float</span> <span class="n">y</span><span class="p">;</span>
+<span class="p">};</span>
+</code></pre></div></div>
 
-&lt;p&gt;And now, I am using something like that:&lt;/p&gt;
+<p>And now, I am using something like that:</p>
 
-&lt;div class=&quot;language-cpp highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Position&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;c1&quot;&gt;// Chunk id&lt;/span&gt;
-    &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;j&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;k&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;c1&quot;&gt;// Offset&lt;/span&gt;
-    &lt;span class=&quot;kt&quot;&gt;float&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;kt&quot;&gt;float&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;y&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">struct</span> <span class="nc">Position</span>
+<span class="p">{</span>
+    <span class="c1">// Chunk id</span>
+    <span class="kt">int</span> <span class="n">i</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">j</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">k</span><span class="p">;</span>
+    <span class="c1">// Offset</span>
+    <span class="kt">float</span> <span class="n">x</span><span class="p">;</span>
+    <span class="kt">float</span> <span class="n">y</span><span class="p">;</span>
+<span class="p">};</span>
+</code></pre></div></div>
 
-&lt;p&gt;This little change in the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Position&lt;/code&gt; data structure forced me to rework my physics engine and other systems.&lt;/p&gt;
+<p>This little change in the <code class="language-plaintext highlighter-rouge">Position</code> data structure forced me to rework my physics engine and other systems.</p>
 
-&lt;h1 id=&quot;teleportation-system&quot;&gt;Teleportation System&lt;/h1&gt;
+<h1 id="teleportation-system">Teleportation System</h1>
 
-&lt;p&gt;Once these architectural changes were done, I was ready to implement my teleportation system. As I use an entity-component-system, implementing this was just creating a new component and a new system.&lt;/p&gt;
+<p>Once these architectural changes were done, I was ready to implement my teleportation system. As I use an entity-component-system, implementing this was just creating a new component and a new system.</p>
 
-&lt;p&gt;The door component just contains a destination:&lt;/p&gt;
+<p>The door component just contains a destination:</p>
 
-&lt;div class=&quot;language-cpp highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;DoorComponent&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;Position&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;destination&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">struct</span> <span class="nc">DoorComponent</span>
+<span class="p">{</span>
+    <span class="n">Position</span> <span class="n">destination</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
 
-&lt;p&gt;The door system receives collision messages from the physics engine. If a collision occurs between an entity that has a door component and another entity, it transports the other entity at the door’s destination. Nothing difficult, once all the other systems are in place.&lt;/p&gt;
+<p>The door system receives collision messages from the physics engine. If a collision occurs between an entity that has a door component and another entity, it transports the other entity at the door’s destination. Nothing difficult, once all the other systems are in place.</p>
 
-&lt;p&gt;And it works well, even in multilayer mode where there are two players on different maps:&lt;/p&gt;
+<p>And it works well, even in multilayer mode where there are two players on different maps:</p>
 
-&lt;video controls=&quot;&quot; width=&quot;600&quot;&gt;
-    &lt;source src=&quot;/media/video/vagabond-teleporting-into-dungeons/dungeon_entrance_multiplayer.mp4&quot; type=&quot;video/mp4&quot; /&gt;
+<video controls="" width="600">
+    <source src="/media/video/vagabond-teleporting-into-dungeons/dungeon_entrance_multiplayer.mp4" type="video/mp4" />
     Sorry, your browser doesn't support embedded videos.
-&lt;/video&gt;
+</video>
 
-&lt;h1 id=&quot;dungeon-entrances&quot;&gt;Dungeon Entrances&lt;/h1&gt;
+<h1 id="dungeon-entrances">Dungeon Entrances</h1>
 
-&lt;p&gt;Finally, I worked on a dungeon entrance generator. Nothing fancy but it works well and you can change the materials of the walls to match the one used in the dungeon:&lt;/p&gt;
+<p>Finally, I worked on a dungeon entrance generator. Nothing fancy but it works well and you can change the materials of the walls to match the one used in the dungeon:</p>
 
-&lt;p&gt;&lt;img src=&quot;/media/img/vagabond-teleporting-into-dungeons/dungeon_entrances.gif&quot; alt=&quot;&quot; class=&quot;center-image modal-image&quot; /&gt;&lt;/p&gt;
+<p><img src="/media/img/vagabond-teleporting-into-dungeons/dungeon_entrances.gif" alt="" class="center-image modal-image" /></p>
 
-&lt;h1 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h1&gt;
+<h1 id="conclusion">Conclusion</h1>
 
-&lt;p&gt;That’s all for this devlog.&lt;/p&gt;
+<p>That’s all for this devlog.</p>
 
-&lt;p&gt;Next week, I will work on monsters and add them inside the dungeons. That will be a big step!&lt;/p&gt;
+<p>Next week, I will work on monsters and add them inside the dungeons. That will be a big step!</p>
 
-&lt;p&gt;See you next week for more!&lt;/p&gt;</content><author><name>pierre</name></author><category term="vagabond" /><summary type="html">Hi everyone! Last two weeks, I was working on teleporting the players from one map to another. I will use this system to enter into dungeons, buildings, etc. and also to leave them. But it was not that easy to implement as it required some deep architectural changes in the game engine. Sorry, your browser doesn't support embedded videos.</summary></entry><entry><title type="html">Palette Swapping With Shaders</title><link href="https://pvigier.github.io/2019/10/06/palette-swapping-with-shaders.html" rel="alternate" type="text/html" title="Palette Swapping With Shaders" /><published>2019-10-06T00:00:00+02:00</published><updated>2019-10-06T00:00:00+02:00</updated><id>https://pvigier.github.io/2019/10/06/palette-swapping-with-shaders</id><content type="html" xml:base="https://pvigier.github.io/2019/10/06/palette-swapping-with-shaders.html">&lt;p&gt;Hi everyone!&lt;/p&gt;
+<p>See you next week for more!</p>]]></content><author><name>pierre</name></author><category term="vagabond" /><summary type="html"><![CDATA[Hi everyone! Last two weeks, I was working on teleporting the players from one map to another. I will use this system to enter into dungeons, buildings, etc. and also to leave them. But it was not that easy to implement as it required some deep architectural changes in the game engine. Sorry, your browser doesn't support embedded videos.]]></summary></entry><entry><title type="html">Palette Swapping With Shaders</title><link href="https://pvigier.github.io/2019/10/06/palette-swapping-with-shaders.html" rel="alternate" type="text/html" title="Palette Swapping With Shaders" /><published>2019-10-06T00:00:00+02:00</published><updated>2019-10-06T00:00:00+02:00</updated><id>https://pvigier.github.io/2019/10/06/palette-swapping-with-shaders</id><content type="html" xml:base="https://pvigier.github.io/2019/10/06/palette-swapping-with-shaders.html"><![CDATA[<p>Hi everyone!</p>
 
-&lt;p&gt;In this devlog, I will show you a technique that I love and that I will abuse in &lt;a href=&quot;https://www.vagabondgame.com&quot;&gt;Vagabond&lt;/a&gt;: palette swapping.&lt;/p&gt;
+<p>In this devlog, I will show you a technique that I love and that I will abuse in <a href="https://www.vagabondgame.com">Vagabond</a>: palette swapping.</p>
 
-&lt;p&gt;Palette swapping is simply changing the palette of a texture. Here, we will do that at runtime using shaders. It was a useful technique in the old days to add variety in the assets without using too much memory. Now, it is used in procedural generation to produce new assets, I will show many examples in later devlogs.&lt;/p&gt;
+<p>Palette swapping is simply changing the palette of a texture. Here, we will do that at runtime using shaders. It was a useful technique in the old days to add variety in the assets without using too much memory. Now, it is used in procedural generation to produce new assets, I will show many examples in later devlogs.</p>
 
-&lt;p&gt;&lt;img src=&quot;/media/img/palette-swapping-with-shaders/body_palette_swapping.gif&quot; alt=&quot;&quot; class=&quot;center-image modal-image&quot; /&gt;&lt;/p&gt;
+<p><img src="/media/img/palette-swapping-with-shaders/body_palette_swapping.gif" alt="" class="center-image modal-image" /></p>
 
-&lt;!--more--&gt;
+<!--more-->
 
-&lt;h1 id=&quot;preparing-the-images&quot;&gt;Preparing the Images&lt;/h1&gt;
+<h1 id="preparing-the-images">Preparing the Images</h1>
 
-&lt;p&gt;The first step is to prepare your images for palette swapping. In a &lt;a href=&quot;https://en.wikipedia.org/wiki/Raster_graphics&quot;&gt;raster image&lt;/a&gt;, each pixel contains a color. What we would like instead is that each pixel contains the index of its color in a palette. This way, we decouple the structure of the image (the areas with the same color) with the real colors.&lt;/p&gt;
+<p>The first step is to prepare your images for palette swapping. In a <a href="https://en.wikipedia.org/wiki/Raster_graphics">raster image</a>, each pixel contains a color. What we would like instead is that each pixel contains the index of its color in a palette. This way, we decouple the structure of the image (the areas with the same color) with the real colors.</p>
 
-&lt;p&gt;In fact, several image formats support this way of storing images. For instance, the &lt;a href=&quot;https://en.wikipedia.org/wiki/Portable_Network_Graphics#Pixel_format&quot;&gt;PNG image format&lt;/a&gt; has an indexed color option. Unfortunately, many libraries that load images will provide an array of colors even if the image was stored in indexed mode. It is the case of SFML, the library I used. It uses &lt;a href=&quot;https://github.com/nothings/stb&quot;&gt;stb_image&lt;/a&gt; under the hood which automatically “depalettizes” images i.e. it replaces indices by the corresponding color in the palette.&lt;/p&gt;
+<p>In fact, several image formats support this way of storing images. For instance, the <a href="https://en.wikipedia.org/wiki/Portable_Network_Graphics#Pixel_format">PNG image format</a> has an indexed color option. Unfortunately, many libraries that load images will provide an array of colors even if the image was stored in indexed mode. It is the case of SFML, the library I used. It uses <a href="https://github.com/nothings/stb">stb_image</a> under the hood which automatically “depalettizes” images i.e. it replaces indices by the corresponding color in the palette.</p>
 
-&lt;p&gt;Consequently, to avoid this problem, I store separately the image and the palette. The image is in grayscale mode and the gray level of each pixel corresponds to the index of its color in the palette.&lt;/p&gt;
+<p>Consequently, to avoid this problem, I store separately the image and the palette. The image is in grayscale mode and the gray level of each pixel corresponds to the index of its color in the palette.</p>
 
-&lt;p&gt;Here is an example of what we expect:&lt;/p&gt;
+<p>Here is an example of what we expect:</p>
 
-&lt;p&gt;&lt;img src=&quot;/media/img/palette-swapping-with-shaders/preprocess.png&quot; alt=&quot;&quot; class=&quot;center-image modal-image&quot; /&gt;&lt;/p&gt;
+<p><img src="/media/img/palette-swapping-with-shaders/preprocess.png" alt="" class="center-image modal-image" /></p>
 
-&lt;p&gt;To do that, I use a little Python function that uses the &lt;a href=&quot;https://github.com/python-pillow/Pillow&quot;&gt;Pillow&lt;/a&gt; library:&lt;/p&gt;
+<p>To do that, I use a little Python function that uses the <a href="https://github.com/python-pillow/Pillow">Pillow</a> library:</p>
 
-&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;io&lt;/span&gt;
-&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;numpy&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;as&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;
-&lt;span class=&quot;kn&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;PIL&lt;/span&gt; &lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Image&lt;/span&gt;
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">io</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="n">np</span>
+<span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">Image</span>
 
-&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;convert_to_indexed_image&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;image&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;palette_size&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
-    &lt;span class=&quot;c1&quot;&gt;# Convert to an indexed image
-&lt;/span&gt;    &lt;span class=&quot;n&quot;&gt;indexed_image&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;image&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;convert&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'RGBA'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;convert&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mode&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'P'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dither&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'NONE'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;colors&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;palette_size&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;# Be careful it can remove colors
-&lt;/span&gt;    &lt;span class=&quot;c1&quot;&gt;# Save and load the image to update the info (transparency field in particular)
-&lt;/span&gt;    &lt;span class=&quot;n&quot;&gt;f&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;io&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;BytesIO&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;indexed_image&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;save&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;f&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;'png'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;indexed_image&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Image&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;open&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;f&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-    &lt;span class=&quot;c1&quot;&gt;# Reinterpret the indexed image as a grayscale image
-&lt;/span&gt;    &lt;span class=&quot;n&quot;&gt;grayscale_image&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Image&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fromarray&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;asarray&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;indexed_image&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;'L'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-    &lt;span class=&quot;c1&quot;&gt;# Create the palette
-&lt;/span&gt;    &lt;span class=&quot;n&quot;&gt;palette&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;indexed_image&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;getpalette&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;transparency&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;list&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;indexed_image&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;info&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'transparency'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;])&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;palette_colors&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;asarray&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;([[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;palette&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;+&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;transparency&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]]&lt;/span&gt; \
-        &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;range&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;palette_size&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)]]).&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;astype&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'uint8'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;palette_image&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Image&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fromarray&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;palette_colors&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mode&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'RGBA'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;grayscale_image&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;palette_image&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+<span class="k">def</span> <span class="nf">convert_to_indexed_image</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">palette_size</span><span class="p">):</span>
+    <span class="c1"># Convert to an indexed image
+</span>    <span class="n">indexed_image</span> <span class="o">=</span> <span class="n">image</span><span class="p">.</span><span class="n">convert</span><span class="p">(</span><span class="s">'RGBA'</span><span class="p">).</span><span class="n">convert</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s">'P'</span><span class="p">,</span> <span class="n">dither</span><span class="o">=</span><span class="s">'NONE'</span><span class="p">,</span> <span class="n">colors</span><span class="o">=</span><span class="n">palette_size</span><span class="p">)</span> <span class="c1"># Be careful it can remove colors
+</span>    <span class="c1"># Save and load the image to update the info (transparency field in particular)
+</span>    <span class="n">f</span> <span class="o">=</span> <span class="n">io</span><span class="p">.</span><span class="n">BytesIO</span><span class="p">()</span>
+    <span class="n">indexed_image</span><span class="p">.</span><span class="n">save</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="s">'png'</span><span class="p">)</span>
+    <span class="n">indexed_image</span> <span class="o">=</span> <span class="n">Image</span><span class="p">.</span><span class="nb">open</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+    <span class="c1"># Reinterpret the indexed image as a grayscale image
+</span>    <span class="n">grayscale_image</span> <span class="o">=</span> <span class="n">Image</span><span class="p">.</span><span class="n">fromarray</span><span class="p">(</span><span class="n">np</span><span class="p">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">indexed_image</span><span class="p">),</span> <span class="s">'L'</span><span class="p">)</span>
+    <span class="c1"># Create the palette
+</span>    <span class="n">palette</span> <span class="o">=</span> <span class="n">indexed_image</span><span class="p">.</span><span class="n">getpalette</span><span class="p">()</span>
+    <span class="n">transparency</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">indexed_image</span><span class="p">.</span><span class="n">info</span><span class="p">[</span><span class="s">'transparency'</span><span class="p">])</span>
+    <span class="n">palette_colors</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">asarray</span><span class="p">([[</span><span class="n">palette</span><span class="p">[</span><span class="mi">3</span><span class="o">*</span><span class="n">i</span><span class="p">:</span><span class="mi">3</span><span class="o">*</span><span class="n">i</span><span class="o">+</span><span class="mi">3</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="n">transparency</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span> \
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">palette_size</span><span class="p">)]]).</span><span class="n">astype</span><span class="p">(</span><span class="s">'uint8'</span><span class="p">)</span>
+    <span class="n">palette_image</span> <span class="o">=</span> <span class="n">Image</span><span class="p">.</span><span class="n">fromarray</span><span class="p">(</span><span class="n">palette_colors</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s">'RGBA'</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">grayscale_image</span><span class="p">,</span> <span class="n">palette_image</span>
+</code></pre></div></div>
 
-&lt;p&gt;Firstly, the function converts the image to the palette mode. Then, it reinterprets it as a grayscale image. Finally, it extracts the palette. Nothing fancy, all the hard work is done by Pillow.&lt;/p&gt;
+<p>Firstly, the function converts the image to the palette mode. Then, it reinterprets it as a grayscale image. Finally, it extracts the palette. Nothing fancy, all the hard work is done by Pillow.</p>
 
-&lt;h1 id=&quot;shader&quot;&gt;Shader&lt;/h1&gt;
+<h1 id="shader">Shader</h1>
 
-&lt;p&gt;Now, that we have preprocessed our images, we are ready to write the shader to finally swap the palettes. There are two strategies to pass the palette to the shader: by using a texture or a uniform array. I find that it is easier to do it using a uniform array so I use that.&lt;/p&gt;
+<p>Now, that we have preprocessed our images, we are ready to write the shader to finally swap the palettes. There are two strategies to pass the palette to the shader: by using a texture or a uniform array. I find that it is easier to do it using a uniform array so I use that.</p>
 
-&lt;p&gt;Here is my shader, I use GLSL but I think you can easily translate it in another shading language as it is dead simple:&lt;/p&gt;
+<p>Here is my shader, I use GLSL but I think you can easily translate it in another shading language as it is dead simple:</p>
 
-&lt;div class=&quot;language-glsl highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;cp&quot;&gt;#version 330 core
-&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;vec2&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;TexCoords&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+<div class="language-glsl highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#version 330 core
+</span><span class="k">in</span> <span class="kt">vec2</span> <span class="n">TexCoords</span><span class="p">;</span>
 
-&lt;span class=&quot;k&quot;&gt;uniform&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;sampler2D&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Texture&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;uniform&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;vec4&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Palette&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;32&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+<span class="k">uniform</span> <span class="kt">sampler2D</span> <span class="n">Texture</span><span class="p">;</span>
+<span class="k">uniform</span> <span class="kt">vec4</span> <span class="n">Palette</span><span class="p">[</span><span class="mi">32</span><span class="p">];</span>
 
-&lt;span class=&quot;k&quot;&gt;out&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;vec4&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Color&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+<span class="k">out</span> <span class="kt">vec4</span> <span class="n">Color</span><span class="p">;</span>
 
-&lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;Color&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Palette&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;texture&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Texture&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;TexCoords&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;r&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;255&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)];&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+<span class="kt">void</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">Color</span> <span class="o">=</span> <span class="n">Palette</span><span class="p">[</span><span class="kt">int</span><span class="p">(</span><span class="n">texture</span><span class="p">(</span><span class="n">Texture</span><span class="p">,</span> <span class="n">TexCoords</span><span class="p">).</span><span class="n">r</span> <span class="o">*</span> <span class="mi">255</span><span class="p">)];</span>
+<span class="p">}</span>
+</code></pre></div></div>
 
-&lt;p&gt;We just use the texture to read the red channel of the current texel. The red channel value is a floating-point number between 0 and 1 so we multiply by 255 and we cast to &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;int&lt;/code&gt; to retrieve the original gray level between 0 and 255 that is stored in the image. Finally, we used that to get the color from the palette.&lt;/p&gt;
+<p>We just use the texture to read the red channel of the current texel. The red channel value is a floating-point number between 0 and 1 so we multiply by 255 and we cast to <code class="language-plaintext highlighter-rouge">int</code> to retrieve the original gray level between 0 and 255 that is stored in the image. Finally, we used that to get the color from the palette.</p>
 
-&lt;p&gt;The animation at the beginning of the article comes from in-game screenshots where I use the following palettes to color the body of the character:&lt;/p&gt;
+<p>The animation at the beginning of the article comes from in-game screenshots where I use the following palettes to color the body of the character:</p>
 
-&lt;p&gt;&lt;img src=&quot;/media/img/palette-swapping-with-shaders/body_palettes.png&quot; alt=&quot;&quot; class=&quot;center-image modal-image&quot; /&gt;&lt;/p&gt;
+<p><img src="/media/img/palette-swapping-with-shaders/body_palettes.png" alt="" class="center-image modal-image" /></p>
 
-&lt;h1 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h1&gt;
+<h1 id="conclusion">Conclusion</h1>
 
-&lt;p&gt;That is all for palette swapping. I hope it gives you some ideas.&lt;/p&gt;
+<p>That is all for palette swapping. I hope it gives you some ideas.</p>
 
-&lt;p&gt;In a later post, I will show you how to procedurally generate palettes to push limits of palette swapping.&lt;/p&gt;
+<p>In a later post, I will show you how to procedurally generate palettes to push limits of palette swapping.</p>
 
-&lt;p&gt;See you next week for more!&lt;/p&gt;</content><author><name>pierre</name></author><category term="vagabond" /><category term="pcg" /><summary type="html">Hi everyone! In this devlog, I will show you a technique that I love and that I will abuse in Vagabond: palette swapping. Palette swapping is simply changing the palette of a texture. Here, we will do that at runtime using shaders. It was a useful technique in the old days to add variety in the assets without using too much memory. Now, it is used in procedural generation to produce new assets, I will show many examples in later devlogs.</summary></entry><entry><title type="html">Vagabond – Exploring the World</title><link href="https://pvigier.github.io/2019/09/22/vagabond-exploring-the-world.html" rel="alternate" type="text/html" title="Vagabond – Exploring the World" /><published>2019-09-22T00:00:00+02:00</published><updated>2019-09-22T00:00:00+02:00</updated><id>https://pvigier.github.io/2019/09/22/vagabond-exploring-the-world</id><content type="html" xml:base="https://pvigier.github.io/2019/09/22/vagabond-exploring-the-world.html">&lt;p&gt;Hi everyone!&lt;/p&gt;
+<p>See you next week for more!</p>]]></content><author><name>pierre</name></author><category term="vagabond" /><category term="pcg" /><summary type="html"><![CDATA[Hi everyone! In this devlog, I will show you a technique that I love and that I will abuse in Vagabond: palette swapping. Palette swapping is simply changing the palette of a texture. Here, we will do that at runtime using shaders. It was a useful technique in the old days to add variety in the assets without using too much memory. Now, it is used in procedural generation to produce new assets, I will show many examples in later devlogs.]]></summary></entry><entry><title type="html">Vagabond – Exploring the World</title><link href="https://pvigier.github.io/2019/09/22/vagabond-exploring-the-world.html" rel="alternate" type="text/html" title="Vagabond – Exploring the World" /><published>2019-09-22T00:00:00+02:00</published><updated>2019-09-22T00:00:00+02:00</updated><id>https://pvigier.github.io/2019/09/22/vagabond-exploring-the-world</id><content type="html" xml:base="https://pvigier.github.io/2019/09/22/vagabond-exploring-the-world.html"><![CDATA[<p>Hi everyone!</p>
 
-&lt;p&gt;This is the first devlog since I stopped working on the game engine and really started working on the game. I did not publish a post last week, I started writing an article about the new implementation of my &lt;a href=&quot;https://github.com/pvigier/ecs&quot;&gt;entity-component-system library&lt;/a&gt; but I did not find the time to finish it yet. The last two weeks were pretty busy.&lt;/p&gt;
+<p>This is the first devlog since I stopped working on the game engine and really started working on the game. I did not publish a post last week, I started writing an article about the new implementation of my <a href="https://github.com/pvigier/ecs">entity-component-system library</a> but I did not find the time to finish it yet. The last two weeks were pretty busy.</p>
 
-&lt;!--more--&gt;
+<!--more-->
 
-&lt;h1 id=&quot;moving-in-the-world&quot;&gt;Moving in the World&lt;/h1&gt;
+<h1 id="moving-in-the-world">Moving in the World</h1>
 
-&lt;p&gt;The first goal was to be able to move a character in a generated world. To do that, I had to plug the &lt;a href=&quot;/2019/05/26/vagabond-generating-tiles.html&quot;&gt;world generator&lt;/a&gt; with the rest of the game engine. Then, displaying the world and the character was just creating some nodes in the scene graph.&lt;/p&gt;
+<p>The first goal was to be able to move a character in a generated world. To do that, I had to plug the <a href="/2019/05/26/vagabond-generating-tiles.html">world generator</a> with the rest of the game engine. Then, displaying the world and the character was just creating some nodes in the scene graph.</p>
 
-&lt;p&gt;I tried to use the entity-component-system pattern as much as possible. It was a bit difficult at the beginning as it was the first time I used it in practice. Separating data in components and logic in systems is a manner of thinking I was not familiar with. However, it revealed extremely powerful, in particular in a roguelite and a multiplayer context. Being able to create new entities by blending components is useful to generate a huge amount of content. Moreover, the separation of logic in systems allows reusing common parts of logic between the server and the client easily.&lt;/p&gt;
+<p>I tried to use the entity-component-system pattern as much as possible. It was a bit difficult at the beginning as it was the first time I used it in practice. Separating data in components and logic in systems is a manner of thinking I was not familiar with. However, it revealed extremely powerful, in particular in a roguelite and a multiplayer context. Being able to create new entities by blending components is useful to generate a huge amount of content. Moreover, the separation of logic in systems allows reusing common parts of logic between the server and the client easily.</p>
 
-&lt;p&gt;Here is a small screencast of a (naked) character walking in the world:&lt;/p&gt;
+<p>Here is a small screencast of a (naked) character walking in the world:</p>
 
-&lt;video controls=&quot;&quot; width=&quot;600&quot;&gt;
-    &lt;source src=&quot;/media/video/vagabond-exploring-the-world/walking.mp4&quot; type=&quot;video/mp4&quot; /&gt;
+<video controls="" width="600">
+    <source src="/media/video/vagabond-exploring-the-world/walking.mp4" type="video/mp4" />
     Sorry, your browser doesn't support embedded videos.
-&lt;/video&gt;
+</video>
 
-&lt;h1 id=&quot;multiplayer-mode-is-working&quot;&gt;Multiplayer Mode Is Working&lt;/h1&gt;
+<h1 id="multiplayer-mode-is-working">Multiplayer Mode Is Working</h1>
 
-&lt;p&gt;I decided to directly create the multiplayer mode. In fact, the single-player mode just runs a local server which does not accept any external connection. I think that in the long term, starting with this design is easier than firstly creating the single-player game and then trying to add a multiplayer mode.&lt;/p&gt;
+<p>I decided to directly create the multiplayer mode. In fact, the single-player mode just runs a local server which does not accept any external connection. I think that in the long term, starting with this design is easier than firstly creating the single-player game and then trying to add a multiplayer mode.</p>
 
-&lt;p&gt;The client does not generate nor store the world, it is streamed by the server. Thus, the connection is pretty fast, the player does not have to wait while the entire world is downloading.&lt;/p&gt;
+<p>The client does not generate nor store the world, it is streamed by the server. Thus, the connection is pretty fast, the player does not have to wait while the entire world is downloading.</p>
 
-&lt;p&gt;Here is a small screencast of a second player joining the server opened by another player:&lt;/p&gt;
+<p>Here is a small screencast of a second player joining the server opened by another player:</p>
 
-&lt;video controls=&quot;&quot; width=&quot;600&quot;&gt;
-    &lt;source src=&quot;/media/video/vagabond-exploring-the-world/multiplayer.mp4&quot; type=&quot;video/mp4&quot; /&gt;
+<video controls="" width="600">
+    <source src="/media/video/vagabond-exploring-the-world/multiplayer.mp4" type="video/mp4" />
     Sorry, your browser doesn't support embedded videos.
-&lt;/video&gt;
+</video>
 
-&lt;h1 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h1&gt;
+<h1 id="conclusion">Conclusion</h1>
 
-&lt;p&gt;The next goal is to be able to add pieces of equipment to the characters so that they are not naked anymore!&lt;/p&gt;
+<p>The next goal is to be able to add pieces of equipment to the characters so that they are not naked anymore!</p>
 
-&lt;p&gt;See you next week for more!&lt;/p&gt;</content><author><name>pierre</name></author><category term="vagabond" /><summary type="html">Hi everyone! This is the first devlog since I stopped working on the game engine and really started working on the game. I did not publish a post last week, I started writing an article about the new implementation of my entity-component-system library but I did not find the time to finish it yet. The last two weeks were pretty busy.</summary></entry><entry><title type="html">Beginner’s Guide to Game Networking</title><link href="https://pvigier.github.io/2019/09/08/beginner-guide-game-networking.html" rel="alternate" type="text/html" title="Beginner’s Guide to Game Networking" /><published>2019-09-08T00:00:00+02:00</published><updated>2019-09-08T00:00:00+02:00</updated><id>https://pvigier.github.io/2019/09/08/beginner-guide-game-networking</id><content type="html" xml:base="https://pvigier.github.io/2019/09/08/beginner-guide-game-networking.html">&lt;p&gt;During the last two weeks, I was working on the network engine of my game. And before that, I knew nothing about game networking. Thus, I read a lot of articles and did a lot of experiments to understand all the concepts and be able to code my own network engine.&lt;/p&gt;
+<p>See you next week for more!</p>]]></content><author><name>pierre</name></author><category term="vagabond" /><summary type="html"><![CDATA[Hi everyone! This is the first devlog since I stopped working on the game engine and really started working on the game. I did not publish a post last week, I started writing an article about the new implementation of my entity-component-system library but I did not find the time to finish it yet. The last two weeks were pretty busy.]]></summary></entry><entry><title type="html">Beginner’s Guide to Game Networking</title><link href="https://pvigier.github.io/2019/09/08/beginner-guide-game-networking.html" rel="alternate" type="text/html" title="Beginner’s Guide to Game Networking" /><published>2019-09-08T00:00:00+02:00</published><updated>2019-09-08T00:00:00+02:00</updated><id>https://pvigier.github.io/2019/09/08/beginner-guide-game-networking</id><content type="html" xml:base="https://pvigier.github.io/2019/09/08/beginner-guide-game-networking.html"><![CDATA[<p>During the last two weeks, I was working on the network engine of my game. And before that, I knew nothing about game networking. Thus, I read a lot of articles and did a lot of experiments to understand all the concepts and be able to code my own network engine.</p>
 
-&lt;p&gt;In this guide, I want to share with you the different concepts you must learn before to write your own game engine and the best resources and articles to learn them.&lt;/p&gt;
+<p>In this guide, I want to share with you the different concepts you must learn before to write your own game engine and the best resources and articles to learn them.</p>
 
-&lt;p&gt;There are mainly two possible network architectures: peer-to-peer and client-server. In the peer-to-peer architecture, data is exchanged between any pair of connected players while in the client-server architecture, data is only exchanged between players and the server.&lt;/p&gt;
+<p>There are mainly two possible network architectures: peer-to-peer and client-server. In the peer-to-peer architecture, data is exchanged between any pair of connected players while in the client-server architecture, data is only exchanged between players and the server.</p>
 
-&lt;p&gt;While the peer-to-peer architecture is still used in some games, client-server is the standard as it is easier to implement, it requires less bandwidth and it is easier to prevent cheating. Thus, in this guide, we will focus on client-server architecture.&lt;/p&gt;
+<p>While the peer-to-peer architecture is still used in some games, client-server is the standard as it is easier to implement, it requires less bandwidth and it is easier to prevent cheating. Thus, in this guide, we will focus on client-server architecture.</p>
 
-&lt;p&gt;More precisely, we will be interested in authoritative servers, it means that the server is always right. For instance, if a player thinks it is at coordinates (10, 5) but the server tells him that it is at (5, 3), then the client should update its position to the server’s one, and not the opposite. Using an authoritative server enables us to detect cheating more easily.&lt;/p&gt;
+<p>More precisely, we will be interested in authoritative servers, it means that the server is always right. For instance, if a player thinks it is at coordinates (10, 5) but the server tells him that it is at (5, 3), then the client should update its position to the server’s one, and not the opposite. Using an authoritative server enables us to detect cheating more easily.</p>
 
-&lt;p&gt;There are mainly three components in game networking:&lt;/p&gt;
+<p>There are mainly three components in game networking:</p>
 
-&lt;ul&gt;
-  &lt;li&gt;Transport protocol: how to transport the data between clients and the server?&lt;/li&gt;
-  &lt;li&gt;Application protocol: what to send from clients to the server and from the server to clients and in which format?&lt;/li&gt;
-  &lt;li&gt;Application logic: how to use the exchanged data to update clients and the server?&lt;/li&gt;
-&lt;/ul&gt;
+<ul>
+  <li>Transport protocol: how to transport the data between clients and the server?</li>
+  <li>Application protocol: what to send from clients to the server and from the server to clients and in which format?</li>
+  <li>Application logic: how to use the exchanged data to update clients and the server?</li>
+</ul>
 
-&lt;p&gt;It is really important to understand the role of each part and its challenges.&lt;/p&gt;
+<p>It is really important to understand the role of each part and its challenges.</p>
 
-&lt;!--more--&gt;
+<!--more-->
 
-&lt;h1 id=&quot;transport-protocol&quot;&gt;Transport Protocol&lt;/h1&gt;
+<h1 id="transport-protocol">Transport Protocol</h1>
 
-&lt;p&gt;The first part is choosing a protocol to transport the data between the server and the clients. There are two Internet protocols available for that: &lt;a href=&quot;https://en.wikipedia.org/wiki/Transmission_Control_Protocol&quot;&gt;TCP&lt;/a&gt; and &lt;a href=&quot;https://en.wikipedia.org/wiki/User_Datagram_Protocol&quot;&gt;UDP&lt;/a&gt;. But you can also make your own custom transport protocol based on one of them or use a library that uses them.&lt;/p&gt;
+<p>The first part is choosing a protocol to transport the data between the server and the clients. There are two Internet protocols available for that: <a href="https://en.wikipedia.org/wiki/Transmission_Control_Protocol">TCP</a> and <a href="https://en.wikipedia.org/wiki/User_Datagram_Protocol">UDP</a>. But you can also make your own custom transport protocol based on one of them or use a library that uses them.</p>
 
-&lt;h2 id=&quot;tcp-vs-udp&quot;&gt;TCP vs UDP&lt;/h2&gt;
+<h2 id="tcp-vs-udp">TCP vs UDP</h2>
 
-&lt;p&gt;Both TCP and UDP are based on &lt;a href=&quot;https://en.wikipedia.org/wiki/Internet_Protocol&quot;&gt;IP&lt;/a&gt;. IP allows to transmit a packet from a source to a destination but it provides no guarantee that the sent packet will eventually arrive at destination nor that it will arrive only once, nor that the data is not corrupted during the transfer, nor that a sequence of packets will arrive in order. Moreover, a packet can only contain a limited size of data which is given by the &lt;a href=&quot;https://en.wikipedia.org/wiki/Maximum_transmission_unit&quot;&gt;MTU&lt;/a&gt;.&lt;/p&gt;
+<p>Both TCP and UDP are based on <a href="https://en.wikipedia.org/wiki/Internet_Protocol">IP</a>. IP allows to transmit a packet from a source to a destination but it provides no guarantee that the sent packet will eventually arrive at destination nor that it will arrive only once, nor that the data is not corrupted during the transfer, nor that a sequence of packets will arrive in order. Moreover, a packet can only contain a limited size of data which is given by the <a href="https://en.wikipedia.org/wiki/Maximum_transmission_unit">MTU</a>.</p>
 
-&lt;p&gt;UDP is only a thin layer above IP. Consequently, it has the same limitations. TCP, however, has a lot of features. It provides a reliable, ordered, and error-checked connection between two hosts. Thus TCP is really handy and is used in numerous other protocols such as &lt;a href=&quot;https://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol&quot;&gt;HTTP&lt;/a&gt;, &lt;a href=&quot;https://en.wikipedia.org/wiki/File_Transfer_Protocol&quot;&gt;FTP&lt;/a&gt; or &lt;a href=&quot;https://en.wikipedia.org/wiki/Simple_Mail_Transfer_Protocol&quot;&gt;SMTP&lt;/a&gt;. But all these features come with a cost: &lt;a href=&quot;https://en.wikipedia.org/wiki/Latency_(engineering)&quot;&gt;&lt;em&gt;latency&lt;/em&gt;&lt;/a&gt;.&lt;/p&gt;
+<p>UDP is only a thin layer above IP. Consequently, it has the same limitations. TCP, however, has a lot of features. It provides a reliable, ordered, and error-checked connection between two hosts. Thus TCP is really handy and is used in numerous other protocols such as <a href="https://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol">HTTP</a>, <a href="https://en.wikipedia.org/wiki/File_Transfer_Protocol">FTP</a> or <a href="https://en.wikipedia.org/wiki/Simple_Mail_Transfer_Protocol">SMTP</a>. But all these features come with a cost: <a href="https://en.wikipedia.org/wiki/Latency_(engineering)"><em>latency</em></a>.</p>
 
-&lt;p&gt;In order to understand why these features may cause latency. We must understand how TCP works. When a source host sends a packet to a destination host, it expects to receive an acknowledgement (ACK). If it does not receive any after some time (because its packet has been lost or the acknowledgement has been lost or any other reason), it sends again the packet. Moreover, TCP ensures the packets are arriving in order, so while the lost packet has not been received, the other packets cannot be processed even if they have already been received by the destination host.&lt;/p&gt;
+<p>In order to understand why these features may cause latency. We must understand how TCP works. When a source host sends a packet to a destination host, it expects to receive an acknowledgement (ACK). If it does not receive any after some time (because its packet has been lost or the acknowledgement has been lost or any other reason), it sends again the packet. Moreover, TCP ensures the packets are arriving in order, so while the lost packet has not been received, the other packets cannot be processed even if they have already been received by the destination host.</p>
 
-&lt;p&gt;But as you may know, latency is important in multiplayer video games especially for action based games such as FPS. That is the reason why many games use UDP with a custom protocol.&lt;/p&gt;
+<p>But as you may know, latency is important in multiplayer video games especially for action based games such as FPS. That is the reason why many games use UDP with a custom protocol.</p>
 
-&lt;p&gt;They are several ways a custom protocol using UDP may be more efficient than TCP. For example, it can mark some packets as reliable and some others as unreliable. Thus, it will not care if an unreliable packet arrives or not at its destination. Or it can manage several streams of data so that a lost packet in one stream will not slow down the other streams. For instance, there can be a stream for user inputs and another one for chat messages, thus if a chat message, which is nonurgent data, is lost, it will not slow down a trigger input, which is urgent. Or, the custom protocol can implement reliability in another way than TCP which is more efficient under video games assumption.&lt;/p&gt;
+<p>They are several ways a custom protocol using UDP may be more efficient than TCP. For example, it can mark some packets as reliable and some others as unreliable. Thus, it will not care if an unreliable packet arrives or not at its destination. Or it can manage several streams of data so that a lost packet in one stream will not slow down the other streams. For instance, there can be a stream for user inputs and another one for chat messages, thus if a chat message, which is nonurgent data, is lost, it will not slow down a trigger input, which is urgent. Or, the custom protocol can implement reliability in another way than TCP which is more efficient under video games assumption.</p>
 
-&lt;p&gt;So, if TCP is so shitty, let’s implement our custom transport protocol based on UDP?&lt;/p&gt;
+<p>So, if TCP is so shitty, let’s implement our custom transport protocol based on UDP?</p>
 
-&lt;p&gt;It is more complex than that. Even if TCP is almost always sub-optimal for video game networking. It may nevertheless work fine for your game and spare you precious time. For instance, latency may not be an issue for a turn-by-turn game or for a game that is only playable on LAN networks, where the latency and the packet loss rate is way smaller than on the Internet.&lt;/p&gt;
+<p>It is more complex than that. Even if TCP is almost always sub-optimal for video game networking. It may nevertheless work fine for your game and spare you precious time. For instance, latency may not be an issue for a turn-by-turn game or for a game that is only playable on LAN networks, where the latency and the packet loss rate is way smaller than on the Internet.</p>
 
-&lt;p&gt;Many successful games, such as World of Warcraft, Minecraft or Terraria, use TCP. However, most of FPS use a custom protocol based on UDP, we are going to talk more about that in the next sections.&lt;/p&gt;
+<p>Many successful games, such as World of Warcraft, Minecraft or Terraria, use TCP. However, most of FPS use a custom protocol based on UDP, we are going to talk more about that in the next sections.</p>
 
-&lt;p&gt;If you decide to use TCP, ensure that &lt;a href=&quot;https://en.wikipedia.org/wiki/Nagle%27s_algorithm&quot;&gt;Nagle’s algorithm&lt;/a&gt; is disabled as it buffers packets before sending them and consequently increases the latency.&lt;/p&gt;
+<p>If you decide to use TCP, ensure that <a href="https://en.wikipedia.org/wiki/Nagle%27s_algorithm">Nagle’s algorithm</a> is disabled as it buffers packets before sending them and consequently increases the latency.</p>
 
-&lt;p&gt;To know more about the differences between UDP and TCP in a multiplayer game context, you can read the article &lt;a href=&quot;https://web.archive.org/web/20180823015049/https://gafferongames.com/post/udp_vs_tcp/&quot;&gt;&lt;em&gt;UDP vs. TCP&lt;/em&gt;&lt;/a&gt; by Glenn Fiedler.&lt;/p&gt;
+<p>To know more about the differences between UDP and TCP in a multiplayer game context, you can read the article <a href="https://web.archive.org/web/20180823015049/https://gafferongames.com/post/udp_vs_tcp/"><em>UDP vs. TCP</em></a> by Glenn Fiedler.</p>
 
-&lt;h2 id=&quot;custom-protocol&quot;&gt;Custom Protocol&lt;/h2&gt;
+<h2 id="custom-protocol">Custom Protocol</h2>
 
-&lt;p&gt;So you want to create your own transport protocol but you are not sure where to start? You are lucky because Glenn Fielder wrote two great series of articles explaining a way to do that. You will find plenty of smart ideas there.&lt;/p&gt;
+<p>So you want to create your own transport protocol but you are not sure where to start? You are lucky because Glenn Fielder wrote two great series of articles explaining a way to do that. You will find plenty of smart ideas there.</p>
 
-&lt;p&gt;The first one &lt;a href=&quot;https://web.archive.org/web/20180823012240/https://gafferongames.com/categories/game-networking&quot;&gt;&lt;em&gt;Networking for Game Programmers&lt;/em&gt;&lt;/a&gt; from 2008 is simpler than the second one &lt;a href=&quot;https://web.archive.org/web/20180823014904/https://gafferongames.com/categories/building-a-game-network-protocol&quot;&gt;&lt;em&gt;Building A Game Network Protocol&lt;/em&gt;&lt;/a&gt; from 2016. I advise you to start with the oldest one.&lt;/p&gt;
+<p>The first one <a href="https://web.archive.org/web/20180823012240/https://gafferongames.com/categories/game-networking"><em>Networking for Game Programmers</em></a> from 2008 is simpler than the second one <a href="https://web.archive.org/web/20180823014904/https://gafferongames.com/categories/building-a-game-network-protocol"><em>Building A Game Network Protocol</em></a> from 2016. I advise you to start with the oldest one.</p>
 
-&lt;p&gt;Be aware that Glenn Fiedler is a strong advocate of using a custom UDP based protocol. And after having read his articles, you will surely share its point of view that TCP has major flaws for video games and you will want to implement your own protocol.&lt;/p&gt;
+<p>Be aware that Glenn Fiedler is a strong advocate of using a custom UDP based protocol. And after having read his articles, you will surely share its point of view that TCP has major flaws for video games and you will want to implement your own protocol.</p>
 
-&lt;p&gt;But if you are new to networking, please do yourself a favor and use TCP or a library. You have surely many things to learn before being able to implement successfully a custom transport protocol.&lt;/p&gt;
+<p>But if you are new to networking, please do yourself a favor and use TCP or a library. You have surely many things to learn before being able to implement successfully a custom transport protocol.</p>
 
-&lt;h2 id=&quot;network-libraries&quot;&gt;Network Libraries&lt;/h2&gt;
+<h2 id="network-libraries">Network Libraries</h2>
 
-&lt;p&gt;If you need something more efficient than TCP but do not want to bother implementing a custom protocol and dive into many issues, you can use a networking library. There are plenty available:&lt;/p&gt;
+<p>If you need something more efficient than TCP but do not want to bother implementing a custom protocol and dive into many issues, you can use a networking library. There are plenty available:</p>
 
-&lt;ul&gt;
-  &lt;li&gt;&lt;a href=&quot;https://github.com/networkprotocol/yojimbo&quot;&gt;yojimbo&lt;/a&gt; by Glenn Fiedler&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;https://github.com/facebookarchive/RakNet&quot;&gt;RakNet&lt;/a&gt; which is not maintained anymore but a fork &lt;a href=&quot;https://github.com/SLikeSoft/SLikeNet&quot;&gt;SLikeNet&lt;/a&gt; seems to be active.&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;http://enet.bespin.org/&quot;&gt;ENet&lt;/a&gt; which is a library that has been made for the multiplayer FPS &lt;a href=&quot;http://cubeengine.com/&quot;&gt;Cube&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;https://github.com/ValveSoftware/GameNetworkingSockets&quot;&gt;GameNetworkingSockets&lt;/a&gt; by Valve&lt;/li&gt;
-&lt;/ul&gt;
+<ul>
+  <li><a href="https://github.com/networkprotocol/yojimbo">yojimbo</a> by Glenn Fiedler</li>
+  <li><a href="https://github.com/facebookarchive/RakNet">RakNet</a> which is not maintained anymore but a fork <a href="https://github.com/SLikeSoft/SLikeNet">SLikeNet</a> seems to be active.</li>
+  <li><a href="http://enet.bespin.org/">ENet</a> which is a library that has been made for the multiplayer FPS <a href="http://cubeengine.com/">Cube</a></li>
+  <li><a href="https://github.com/ValveSoftware/GameNetworkingSockets">GameNetworkingSockets</a> by Valve</li>
+</ul>
 
-&lt;p&gt;I have not tried them all but my preference goes to ENet as it is simple to use and robust. Moreover, it has clear documentation and a tutorial to get started.&lt;/p&gt;
+<p>I have not tried them all but my preference goes to ENet as it is simple to use and robust. Moreover, it has clear documentation and a tutorial to get started.</p>
 
-&lt;h2 id=&quot;transport-protocol--conclusion&quot;&gt;Transport Protocol – Conclusion&lt;/h2&gt;
+<h2 id="transport-protocol--conclusion">Transport Protocol – Conclusion</h2>
 
-&lt;p&gt;To sum up, there exists two base transport protocols: TCP and UDP. TCP has a lot of useful features: reliability, preserving packet order, error detection, while UDP does not but due to its design TCP has higher latency which may be inadequate for certain games. Thus, to have lower latency, it is possible to create a custom transport protocol using UDP or to use a library that provides a transport protocol based on UDP adapted for multiplayer video games.&lt;/p&gt;
+<p>To sum up, there exists two base transport protocols: TCP and UDP. TCP has a lot of useful features: reliability, preserving packet order, error detection, while UDP does not but due to its design TCP has higher latency which may be inadequate for certain games. Thus, to have lower latency, it is possible to create a custom transport protocol using UDP or to use a library that provides a transport protocol based on UDP adapted for multiplayer video games.</p>
 
-&lt;p&gt;Choosing between TCP, UDP or using a library depends on several factors. Firstly, the needs of your game: does it require a very low latency? Secondly, the needs of the application protocol: does it require a reliable protocol? As we will see in the next part, it is possible to design an application protocol that is fine with an unreliable protocol. Finally, the experience of the networking developer.&lt;/p&gt;
+<p>Choosing between TCP, UDP or using a library depends on several factors. Firstly, the needs of your game: does it require a very low latency? Secondly, the needs of the application protocol: does it require a reliable protocol? As we will see in the next part, it is possible to design an application protocol that is fine with an unreliable protocol. Finally, the experience of the networking developer.</p>
 
-&lt;p&gt;I have two pieces of advice:&lt;/p&gt;
+<p>I have two pieces of advice:</p>
 
-&lt;ul&gt;
-  &lt;li&gt;Abstract your transport protocol as much as possible from the rest of the application. So that you can easily change it without rewriting everything.&lt;/li&gt;
-  &lt;li&gt;Do not optimize prematurely. If you are not a networking expert and you are not sure if you really need a custom transport protocol build on UDP, you may start using TCP or a library that provides reliability and, test and measure. If there are issues and you are sure it comes from the transport protocol, then it may be the time to create your own transport protocol.&lt;/li&gt;
-&lt;/ul&gt;
+<ul>
+  <li>Abstract your transport protocol as much as possible from the rest of the application. So that you can easily change it without rewriting everything.</li>
+  <li>Do not optimize prematurely. If you are not a networking expert and you are not sure if you really need a custom transport protocol build on UDP, you may start using TCP or a library that provides reliability and, test and measure. If there are issues and you are sure it comes from the transport protocol, then it may be the time to create your own transport protocol.</li>
+</ul>
 
-&lt;p&gt;To finish, this part, I advise you to read &lt;a href=&quot;https://web.archive.org/web/20190519135537/http://trac.bookofhook.com/bookofhook/trac.cgi/wiki/IntroductionToMultiplayerGameProgramming&quot;&gt;&lt;em&gt;Introduction to Multiplayer Game Programming&lt;/em&gt;&lt;/a&gt; by Brian Hook which covers a lot of topics we have discussed here.&lt;/p&gt;
+<p>To finish, this part, I advise you to read <a href="https://web.archive.org/web/20190519135537/http://trac.bookofhook.com/bookofhook/trac.cgi/wiki/IntroductionToMultiplayerGameProgramming"><em>Introduction to Multiplayer Game Programming</em></a> by Brian Hook which covers a lot of topics we have discussed here.</p>
 
-&lt;h1 id=&quot;application-protocol&quot;&gt;Application Protocol&lt;/h1&gt;
+<h1 id="application-protocol">Application Protocol</h1>
 
-&lt;p&gt;Now that you have a way to exchange data between clients and the server you must decide what data to exchange and with which format.&lt;/p&gt;
+<p>Now that you have a way to exchange data between clients and the server you must decide what data to exchange and with which format.</p>
 
-&lt;p&gt;The classic scheme is that clients send inputs or actions to the server and the server sends the current game state to the clients.&lt;/p&gt;
+<p>The classic scheme is that clients send inputs or actions to the server and the server sends the current game state to the clients.</p>
 
-&lt;p&gt;The server does not send the whole state but a filtered state with the entities that are around a player. It does that for three reasons. Firstly, the whole state may be way too large to be transmitted at high frequency. Secondly, the clients are mainly interested in the visual and audio data as most of the game logic is only simulated on the game server. Finally, in some games, the player must not know some data such as the position of an opponent at the other end of the map, otherwise, he can sniff the packets and know exactly where to go to kill him.&lt;/p&gt;
+<p>The server does not send the whole state but a filtered state with the entities that are around a player. It does that for three reasons. Firstly, the whole state may be way too large to be transmitted at high frequency. Secondly, the clients are mainly interested in the visual and audio data as most of the game logic is only simulated on the game server. Finally, in some games, the player must not know some data such as the position of an opponent at the other end of the map, otherwise, he can sniff the packets and know exactly where to go to kill him.</p>
 
-&lt;!--image--&gt;
+<!--image-->
 
-&lt;h2 id=&quot;serialization&quot;&gt;Serialization&lt;/h2&gt;
+<h2 id="serialization">Serialization</h2>
 
-&lt;p&gt;The first step is to convert the data we want to send (the inputs or the game state) in a format suitable for transmission. This process is called &lt;a href=&quot;https://en.wikipedia.org/wiki/Serialization&quot;&gt;&lt;em&gt;serialization&lt;/em&gt;&lt;/a&gt;.&lt;/p&gt;
+<p>The first step is to convert the data we want to send (the inputs or the game state) in a format suitable for transmission. This process is called <a href="https://en.wikipedia.org/wiki/Serialization"><em>serialization</em></a>.</p>
 
-&lt;p&gt;A first idea may be to use a human readable-format such as JSON or XML. But it would not be efficient at all and takes a lot of bandwidth needlessly.&lt;/p&gt;
+<p>A first idea may be to use a human readable-format such as JSON or XML. But it would not be efficient at all and takes a lot of bandwidth needlessly.</p>
 
-&lt;p&gt;Instead, it is advisable to use a binary format which is much more compact. Thus, the packets will just contain a bunch of bytes. One issue you should be careful about is &lt;a href=&quot;https://en.wikipedia.org/wiki/Endianness&quot;&gt;&lt;em&gt;endianness&lt;/em&gt;&lt;/a&gt;, the order of bytes may vary from one computer to another.&lt;/p&gt;
+<p>Instead, it is advisable to use a binary format which is much more compact. Thus, the packets will just contain a bunch of bytes. One issue you should be careful about is <a href="https://en.wikipedia.org/wiki/Endianness"><em>endianness</em></a>, the order of bytes may vary from one computer to another.</p>
 
-&lt;p&gt;You can use a library to help you serialize your data such as:&lt;/p&gt;
+<p>You can use a library to help you serialize your data such as:</p>
 
-&lt;ul&gt;
-  &lt;li&gt;&lt;a href=&quot;https://google.github.io/flatbuffers/&quot;&gt;FlatBuffers&lt;/a&gt; by Google&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;https://capnproto.org/&quot;&gt;Cap’n Proto&lt;/a&gt; by Sandstorm&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;http://uscilab.github.io/cereal/serialization_archives.html&quot;&gt;cereal&lt;/a&gt; by Shane Grant and Randolph Voorhies&lt;/li&gt;
-&lt;/ul&gt;
+<ul>
+  <li><a href="https://google.github.io/flatbuffers/">FlatBuffers</a> by Google</li>
+  <li><a href="https://capnproto.org/">Cap’n Proto</a> by Sandstorm</li>
+  <li><a href="http://uscilab.github.io/cereal/serialization_archives.html">cereal</a> by Shane Grant and Randolph Voorhies</li>
+</ul>
 
-&lt;p&gt;Just be careful that the library makes portable archives and takes care of endianness.&lt;/p&gt;
+<p>Just be careful that the library makes portable archives and takes care of endianness.</p>
 
-&lt;p&gt;The alternative is to handle everything yourself, it is not really difficult, especially if you have a data-oriented approach in your code. It may also allow you to do certain optimization that is not always possible to achieve with a library.&lt;/p&gt;
+<p>The alternative is to handle everything yourself, it is not really difficult, especially if you have a data-oriented approach in your code. It may also allow you to do certain optimization that is not always possible to achieve with a library.</p>
 
-&lt;p&gt;Glenn Fiedler wrote two articles about serialization: &lt;a href=&quot;https://web.archive.org/web/20180823004533/https://gafferongames.com/post/reading_and_writing_packets/&quot;&gt;&lt;em&gt;Reading and Writing Packets&lt;/em&gt;&lt;/a&gt; and &lt;a href=&quot;https://web.archive.org/web/20180823015044/https://gafferongames.com/post/serialization_strategies/&quot;&gt;&lt;em&gt;Serialization Strategies&lt;/em&gt;&lt;/a&gt;.&lt;/p&gt;
+<p>Glenn Fiedler wrote two articles about serialization: <a href="https://web.archive.org/web/20180823004533/https://gafferongames.com/post/reading_and_writing_packets/"><em>Reading and Writing Packets</em></a> and <a href="https://web.archive.org/web/20180823015044/https://gafferongames.com/post/serialization_strategies/"><em>Serialization Strategies</em></a>.</p>
 
-&lt;h2 id=&quot;compression&quot;&gt;Compression&lt;/h2&gt;
+<h2 id="compression">Compression</h2>
 
-&lt;p&gt;The quantity of data that can be exchanged by clients and the server is limited by the bandwidth. Compressing your data may allow you to exchange more data in each snapshot, to have a faster refresh rate, or simply to have lower requirements on the bandwidth.&lt;/p&gt;
+<p>The quantity of data that can be exchanged by clients and the server is limited by the bandwidth. Compressing your data may allow you to exchange more data in each snapshot, to have a faster refresh rate, or simply to have lower requirements on the bandwidth.</p>
 
-&lt;h3 id=&quot;bit-packing&quot;&gt;Bit packing&lt;/h3&gt;
+<h3 id="bit-packing">Bit packing</h3>
 
-&lt;p&gt;The first technique is bit packing. It consists in using exactly the number of bits you need to represent a given quantity. For instance, if you have an enumeration that can take 16 different values, you will use only 4 bits instead of a whole byte (8 bits).&lt;/p&gt;
+<p>The first technique is bit packing. It consists in using exactly the number of bits you need to represent a given quantity. For instance, if you have an enumeration that can take 16 different values, you will use only 4 bits instead of a whole byte (8 bits).</p>
 
-&lt;p&gt;Glenn Fiedler explains how to achieve that in the second part of &lt;a href=&quot;https://web.archive.org/web/20180823004533/https://gafferongames.com/post/reading_and_writing_packets/&quot;&gt;&lt;em&gt;Reading and Writing Packets&lt;/em&gt;&lt;/a&gt;.&lt;/p&gt;
+<p>Glenn Fiedler explains how to achieve that in the second part of <a href="https://web.archive.org/web/20180823004533/https://gafferongames.com/post/reading_and_writing_packets/"><em>Reading and Writing Packets</em></a>.</p>
 
-&lt;p&gt;Bit packing works particularly well with quantization which is the next topic.&lt;/p&gt;
+<p>Bit packing works particularly well with quantization which is the next topic.</p>
 
-&lt;h3 id=&quot;quantization&quot;&gt;Quantization&lt;/h3&gt;
+<h3 id="quantization">Quantization</h3>
 
-&lt;p&gt;&lt;a href=&quot;https://en.wikipedia.org/wiki/Quantization_(signal_processing)&quot;&gt;&lt;em&gt;Quantization&lt;/em&gt;&lt;/a&gt; is a lossy compression technique which consists in only using a subset of possible values to encode a quantity. The simplest way to achieve quantization is by truncating floating-point numbers.&lt;/p&gt;
+<p><a href="https://en.wikipedia.org/wiki/Quantization_(signal_processing)"><em>Quantization</em></a> is a lossy compression technique which consists in only using a subset of possible values to encode a quantity. The simplest way to achieve quantization is by truncating floating-point numbers.</p>
 
-&lt;p&gt;Glenn Fiedler (again!) shows how to use quantization in practice in his article &lt;a href=&quot;https://web.archive.org/web/20180823021121/https://gafferongames.com/post/snapshot_compression/&quot;&gt;Snapshot Compression&lt;/a&gt;.&lt;/p&gt;
+<p>Glenn Fiedler (again!) shows how to use quantization in practice in his article <a href="https://web.archive.org/web/20180823021121/https://gafferongames.com/post/snapshot_compression/">Snapshot Compression</a>.</p>
 
-&lt;p&gt;Shawn Hargreaves also has some interesting articles on compression including quantization, you can find them all &lt;a href=&quot;http://www.shawnhargreaves.com/blogindex.html#networking&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
+<p>Shawn Hargreaves also has some interesting articles on compression including quantization, you can find them all <a href="http://www.shawnhargreaves.com/blogindex.html#networking">here</a>.</p>
 
-&lt;h3 id=&quot;compression-algorithms&quot;&gt;Compression Algorithms&lt;/h3&gt;
+<h3 id="compression-algorithms">Compression Algorithms</h3>
 
-&lt;p&gt;The next technique is using lossless compression algorithms.&lt;/p&gt;
+<p>The next technique is using lossless compression algorithms.</p>
 
-&lt;p&gt;In my opinion, the three more interesting algorithms to know are:&lt;/p&gt;
-&lt;ul&gt;
-  &lt;li&gt;&lt;a href=&quot;https://en.wikipedia.org/wiki/Huffman_coding&quot;&gt;Huffman coding&lt;/a&gt; with a precomputed code which is extremely fast and can give good results. It was used to compress the packets in the Quake3 network engine.&lt;/li&gt;
-  &lt;li&gt;Using &lt;a href=&quot;http://www.zlib.net/&quot;&gt;zlib&lt;/a&gt; which is a general-purpose compression algorithm and it never expands the data. It is used in numerous applications as you can see &lt;a href=&quot;https://en.wikipedia.org/wiki/Zlib&quot;&gt;here&lt;/a&gt;. It may be overkill for state updates. But it may be interesting if you have to send assets, long texts or terrains from the server to clients.&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;https://en.wikipedia.org/wiki/Run-length_encoding&quot;&gt;Run-length encoding&lt;/a&gt; is maybe the simplest compression algorithm but it is very efficient for certain types of data. It is specifically suitable for compressing terrains made of tiles or voxels where many adjacent elements are similar.&lt;/li&gt;
-&lt;/ul&gt;
+<p>In my opinion, the three more interesting algorithms to know are:</p>
+<ul>
+  <li><a href="https://en.wikipedia.org/wiki/Huffman_coding">Huffman coding</a> with a precomputed code which is extremely fast and can give good results. It was used to compress the packets in the Quake3 network engine.</li>
+  <li>Using <a href="http://www.zlib.net/">zlib</a> which is a general-purpose compression algorithm and it never expands the data. It is used in numerous applications as you can see <a href="https://en.wikipedia.org/wiki/Zlib">here</a>. It may be overkill for state updates. But it may be interesting if you have to send assets, long texts or terrains from the server to clients.</li>
+  <li><a href="https://en.wikipedia.org/wiki/Run-length_encoding">Run-length encoding</a> is maybe the simplest compression algorithm but it is very efficient for certain types of data. It is specifically suitable for compressing terrains made of tiles or voxels where many adjacent elements are similar.</li>
+</ul>
 
-&lt;p&gt;There is also a paid library by Rad Game Tools called &lt;a href=&quot;http://www.radgametools.com/oodlenetwork.htm&quot;&gt;Oodle Network Compression&lt;/a&gt;. On the page, they show an interesting graph where they compared the compression ratio of Huffman coding, zlib and their solution, very instructive.&lt;/p&gt;
+<p>There is also a paid library by Rad Game Tools called <a href="http://www.radgametools.com/oodlenetwork.htm">Oodle Network Compression</a>. On the page, they show an interesting graph where they compared the compression ratio of Huffman coding, zlib and their solution, very instructive.</p>
 
-&lt;h3 id=&quot;delta-compression&quot;&gt;Delta Compression&lt;/h3&gt;
+<h3 id="delta-compression">Delta Compression</h3>
 
-&lt;p&gt;The last compression technique is delta compression. It consists in sending only the differences between the current game state and the last state received by a client.&lt;/p&gt;
+<p>The last compression technique is delta compression. It consists in sending only the differences between the current game state and the last state received by a client.</p>
 
-&lt;p&gt;It was first used in Quake3 network engine, here are two articles explaining how it was used:&lt;/p&gt;
-&lt;ul&gt;
-  &lt;li&gt;&lt;a href=&quot;https://web.archive.org/web/20190628180906/http://trac.bookofhook.com/bookofhook/trac.cgi/wiki/Quake3Networking&quot;&gt;&lt;em&gt;The Quake3 Networking Model&lt;/em&gt;&lt;/a&gt; by Brian Hook&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;http://fabiensanglard.net/quake3/network.php&quot;&gt;&lt;em&gt;Quake 3 Source Code Review: Network Model&lt;/em&gt;&lt;/a&gt; by Fabien Sanglard&lt;/li&gt;
-&lt;/ul&gt;
+<p>It was first used in Quake3 network engine, here are two articles explaining how it was used:</p>
+<ul>
+  <li><a href="https://web.archive.org/web/20190628180906/http://trac.bookofhook.com/bookofhook/trac.cgi/wiki/Quake3Networking"><em>The Quake3 Networking Model</em></a> by Brian Hook</li>
+  <li><a href="http://fabiensanglard.net/quake3/network.php"><em>Quake 3 Source Code Review: Network Model</em></a> by Fabien Sanglard</li>
+</ul>
 
-&lt;p&gt;Glenn Fiedler also used it in the second part of his article &lt;a href=&quot;https://web.archive.org/web/20180823021121/https://gafferongames.com/post/snapshot_compression/&quot;&gt;&lt;em&gt;Snapshot Compression&lt;/em&gt;&lt;/a&gt;.&lt;/p&gt;
+<p>Glenn Fiedler also used it in the second part of his article <a href="https://web.archive.org/web/20180823021121/https://gafferongames.com/post/snapshot_compression/"><em>Snapshot Compression</em></a>.</p>
 
-&lt;h2 id=&quot;encryption&quot;&gt;Encryption&lt;/h2&gt;
+<h2 id="encryption">Encryption</h2>
 
-&lt;p&gt;Finally, you may want to encrypt the communication between clients and the server for several reasons:&lt;/p&gt;
+<p>Finally, you may want to encrypt the communication between clients and the server for several reasons:</p>
 
-&lt;ul&gt;
-  &lt;li&gt;privacy/confidentiality: the messages can only be read by its receiver, any other person who sniffs the network will not be able to read them.&lt;/li&gt;
-  &lt;li&gt;authenticity: any person who wants to impersonate a player will have to know its key.&lt;/li&gt;
-  &lt;li&gt;cheating prevention: it will be way harder for malicious players to craft custom packets to cheat, they will have to reproduce the encryption scheme and find the key (which changes at each connection).&lt;/li&gt;
-&lt;/ul&gt;
+<ul>
+  <li>privacy/confidentiality: the messages can only be read by its receiver, any other person who sniffs the network will not be able to read them.</li>
+  <li>authenticity: any person who wants to impersonate a player will have to know its key.</li>
+  <li>cheating prevention: it will be way harder for malicious players to craft custom packets to cheat, they will have to reproduce the encryption scheme and find the key (which changes at each connection).</li>
+</ul>
 
-&lt;p&gt;I strongly advise you to use a library to help you. I suggest &lt;a href=&quot;https://download.libsodium.org/doc/&quot;&gt;libsodium&lt;/a&gt; as it is particularly simple to use and it provides great tutorials. You will be in particular interested by the &lt;a href=&quot;https://download.libsodium.org/doc/key_exchange&quot;&gt;key exchange&lt;/a&gt; tutorial to generate new keys for each new connection.&lt;/p&gt;
+<p>I strongly advise you to use a library to help you. I suggest <a href="https://download.libsodium.org/doc/">libsodium</a> as it is particularly simple to use and it provides great tutorials. You will be in particular interested by the <a href="https://download.libsodium.org/doc/key_exchange">key exchange</a> tutorial to generate new keys for each new connection.</p>
 
-&lt;h2 id=&quot;application-protocol--conclusion&quot;&gt;Application Protocol – Conclusion&lt;/h2&gt;
+<h2 id="application-protocol--conclusion">Application Protocol – Conclusion</h2>
 
-&lt;p&gt;That is all for this part. I think that compression is totally optional and it depends on your game and how much bandwidth is needed. Encryption is, in my opinion, not optional but it may be skipped in a first prototype.&lt;/p&gt;
+<p>That is all for this part. I think that compression is totally optional and it depends on your game and how much bandwidth is needed. Encryption is, in my opinion, not optional but it may be skipped in a first prototype.</p>
 
-&lt;h1 id=&quot;application-logic&quot;&gt;Application Logic&lt;/h1&gt;
+<h1 id="application-logic">Application Logic</h1>
 
-&lt;p&gt;You are now able to update the state in the client but you may experience latency issues. Indeed, you have to wait for a game state update from the server after having triggered an input to see its effect in the world.&lt;/p&gt;
+<p>You are now able to update the state in the client but you may experience latency issues. Indeed, you have to wait for a game state update from the server after having triggered an input to see its effect in the world.</p>
 
-&lt;p&gt;Moreover, between two state updates, the world is completely static. Thus, movements will be completely chopped if the state update rate is low.&lt;/p&gt;
+<p>Moreover, between two state updates, the world is completely static. Thus, movements will be completely chopped if the state update rate is low.</p>
 
-&lt;p&gt;There are several techniques to mitigate these issues that I will present in the next section.&lt;/p&gt;
+<p>There are several techniques to mitigate these issues that I will present in the next section.</p>
 
-&lt;h2 id=&quot;latency-mitigation-techniques&quot;&gt;Latency Mitigation Techniques&lt;/h2&gt;
+<h2 id="latency-mitigation-techniques">Latency Mitigation Techniques</h2>
 
-&lt;p&gt;All the techniques presented in this section are presented in-depth in &lt;a href=&quot;https://www.gabrielgambetta.com/client-server-game-architecture.html&quot;&gt;&lt;em&gt;Fast-Paced Multiplayer&lt;/em&gt;&lt;/a&gt; by Gabriel Gambetta. I strongly advise you to read this series of articles which is great. There is also a live demo to see how these techniques work in practice.&lt;/p&gt;
+<p>All the techniques presented in this section are presented in-depth in <a href="https://www.gabrielgambetta.com/client-server-game-architecture.html"><em>Fast-Paced Multiplayer</em></a> by Gabriel Gambetta. I strongly advise you to read this series of articles which is great. There is also a live demo to see how these techniques work in practice.</p>
 
-&lt;p&gt;The first technique is to apply the result of an input directly without waiting for the response from the server. It is called &lt;em&gt;client-side prediction&lt;/em&gt;. However, when the client receives an update from the server, it has to check that its prediction was correct, otherwise, it must modify its state according to what it has received from the server as the server is the authority. This technique was first used in Quake, you can read more in the &lt;a href=&quot;http://fabiensanglard.net/quakeSource/index.php&quot;&gt;&lt;em&gt;Quake Engine code review&lt;/em&gt;&lt;/a&gt; by Fabien Sanglard.&lt;/p&gt;
+<p>The first technique is to apply the result of an input directly without waiting for the response from the server. It is called <em>client-side prediction</em>. However, when the client receives an update from the server, it has to check that its prediction was correct, otherwise, it must modify its state according to what it has received from the server as the server is the authority. This technique was first used in Quake, you can read more in the <a href="http://fabiensanglard.net/quakeSource/index.php"><em>Quake Engine code review</em></a> by Fabien Sanglard.</p>
 
-&lt;p&gt;The second set of techniques is for smoothing the movement of other entities between two state updates. There are two ways to achieve this: by doing interpolation or extrapolation. Interpolation is using the two last states and showing the transition from one to another. Its drawback is that it induces a bit of latency because the client always shows what happens in the past. Extrapolation consists in predicting where the entities would be now according to the last state the client received. Its drawback is that if an entity completely changes its direction, there would be a large error between the prediction and the real position.&lt;/p&gt;
+<p>The second set of techniques is for smoothing the movement of other entities between two state updates. There are two ways to achieve this: by doing interpolation or extrapolation. Interpolation is using the two last states and showing the transition from one to another. Its drawback is that it induces a bit of latency because the client always shows what happens in the past. Extrapolation consists in predicting where the entities would be now according to the last state the client received. Its drawback is that if an entity completely changes its direction, there would be a large error between the prediction and the real position.</p>
 
-&lt;p&gt;The last technique which is most advanced and only useful in FPS is &lt;em&gt;lag compensation&lt;/em&gt;. With lag compensation, the server takes into account the latency of the client when they are shooting at a target. For instance, if the player did a headshot on its screen but in reality, its target is elsewhere due to latency, it would be unfair to the player to refuse him his kill due to latency. So the server will rewind in time, at the time the player shot to simulate what the player saw on its screen and check the collision between his shot and the target.&lt;/p&gt;
+<p>The last technique which is most advanced and only useful in FPS is <em>lag compensation</em>. With lag compensation, the server takes into account the latency of the client when they are shooting at a target. For instance, if the player did a headshot on its screen but in reality, its target is elsewhere due to latency, it would be unfair to the player to refuse him his kill due to latency. So the server will rewind in time, at the time the player shot to simulate what the player saw on its screen and check the collision between his shot and the target.</p>
 
-&lt;p&gt;Glenn Fiedler (always!) wrote &lt;a href=&quot;https://web.archive.org/web/20180823005028/https://gafferongames.com/post/networked_physics_2004/&quot;&gt;&lt;em&gt;Network Physics (2004)&lt;/em&gt;&lt;/a&gt; in 2004 where he laid the foundations of synchronizing a physics simulation between a server and a client. In 2014, he wrote a new series of articles, &lt;a href=&quot;https://web.archive.org/web/20180823004853/https://gafferongames.com/categories/networked-physics&quot;&gt;&lt;em&gt;Networking Physics&lt;/em&gt;&lt;/a&gt;, where he showed more techniques to synchronize a physics simulation.&lt;/p&gt;
+<p>Glenn Fiedler (always!) wrote <a href="https://web.archive.org/web/20180823005028/https://gafferongames.com/post/networked_physics_2004/"><em>Network Physics (2004)</em></a> in 2004 where he laid the foundations of synchronizing a physics simulation between a server and a client. In 2014, he wrote a new series of articles, <a href="https://web.archive.org/web/20180823004853/https://gafferongames.com/categories/networked-physics"><em>Networking Physics</em></a>, where he showed more techniques to synchronize a physics simulation.</p>
 
-&lt;p&gt;There are also two articles on Valve’s wiki, &lt;a href=&quot;https://developer.valvesoftware.com/wiki/Source_Multiplayer_Networking&quot;&gt;&lt;em&gt;Source Multiplayer Networking&lt;/em&gt;&lt;/a&gt; and &lt;a href=&quot;https://developer.valvesoftware.com/wiki/Latency_Compensating_Methods_in_Client/Server_In-game_Protocol_Design_and_Optimization&quot;&gt;&lt;em&gt;Latency Compensating Methods in Client/Server In-game Protocol Design and Optimization&lt;/em&gt;&lt;/a&gt;, which deal with latency compensation.&lt;/p&gt;
+<p>There are also two articles on Valve’s wiki, <a href="https://developer.valvesoftware.com/wiki/Source_Multiplayer_Networking"><em>Source Multiplayer Networking</em></a> and <a href="https://developer.valvesoftware.com/wiki/Latency_Compensating_Methods_in_Client/Server_In-game_Protocol_Design_and_Optimization"><em>Latency Compensating Methods in Client/Server In-game Protocol Design and Optimization</em></a>, which deal with latency compensation.</p>
 
-&lt;h2 id=&quot;cheating-prevention&quot;&gt;Cheating Prevention&lt;/h2&gt;
+<h2 id="cheating-prevention">Cheating Prevention</h2>
 
-&lt;p&gt;There are mainly two ways to cheat in a mutliplayer game: by sending malicious packets to the server or by reading data coming from the server that give an unfair advantage to the cheater.&lt;/p&gt;
+<p>There are mainly two ways to cheat in a mutliplayer game: by sending malicious packets to the server or by reading data coming from the server that give an unfair advantage to the cheater.</p>
 
-&lt;p&gt;A first technique is to make hard for cheaters to craft malicious packets and to read incoming packets. As we explained before, encryption is a good way to achieve that as it will &lt;a href=&quot;https://en.wikipedia.org/wiki/Obfuscation&quot;&gt;obfuscate&lt;/a&gt; the incoming packets and the cheaters will have to get the keys and reproduce the encryption scheme to craft malicious packets.&lt;/p&gt;
+<p>A first technique is to make hard for cheaters to craft malicious packets and to read incoming packets. As we explained before, encryption is a good way to achieve that as it will <a href="https://en.wikipedia.org/wiki/Obfuscation">obfuscate</a> the incoming packets and the cheaters will have to get the keys and reproduce the encryption scheme to craft malicious packets.</p>
 
-&lt;p&gt;The second technique is to have an authoritative server that only receives commands/inputs/actions. The client should never be able to modify the server state by another way than sending inputs. Then, each time the server receives an input, it should check that this input is valid before to apply it.&lt;/p&gt;
+<p>The second technique is to have an authoritative server that only receives commands/inputs/actions. The client should never be able to modify the server state by another way than sending inputs. Then, each time the server receives an input, it should check that this input is valid before to apply it.</p>
 
-&lt;p&gt;The best technique to prevent cheaters from accessing data they should not know about is simply by making sure the server does not send it in the first place. For instance, the server should not send to the players the position of opponents or monsters that are far from them. Otherwise, even if they are not visible in the game, the players can read the incoming packets and know exactly where to go to kill their targets. This kind of cheating is called &lt;em&gt;map hack&lt;/em&gt; or &lt;em&gt;world hack&lt;/em&gt;.&lt;/p&gt;
+<p>The best technique to prevent cheaters from accessing data they should not know about is simply by making sure the server does not send it in the first place. For instance, the server should not send to the players the position of opponents or monsters that are far from them. Otherwise, even if they are not visible in the game, the players can read the incoming packets and know exactly where to go to kill their targets. This kind of cheating is called <em>map hack</em> or <em>world hack</em>.</p>
 
-&lt;p&gt;If you want to know more about cheating you can read the article &lt;a href=&quot;https://en.wikipedia.org/wiki/Cheating_in_online_games&quot;&gt;Cheating in online games&lt;/a&gt; on Wikipedia which contains a list of possible ways of cheating and solutions to detect and prevent them.&lt;/p&gt;
+<p>If you want to know more about cheating you can read the article <a href="https://en.wikipedia.org/wiki/Cheating_in_online_games">Cheating in online games</a> on Wikipedia which contains a list of possible ways of cheating and solutions to detect and prevent them.</p>
 
-&lt;h2 id=&quot;application-logic--conclusion&quot;&gt;Application Logic – Conclusion&lt;/h2&gt;
+<h2 id="application-logic--conclusion">Application Logic – Conclusion</h2>
 
-&lt;p&gt;I advise you to implement a way to simulate high latency and low refresh rates in your game to be able to test your game in bad conditions even if both the client and the server are running on your computer. It will simplify greatly the implementation of latency mitigation techniques.&lt;/p&gt;
+<p>I advise you to implement a way to simulate high latency and low refresh rates in your game to be able to test your game in bad conditions even if both the client and the server are running on your computer. It will simplify greatly the implementation of latency mitigation techniques.</p>
 
-&lt;h1 id=&quot;other-useful-resources&quot;&gt;Other Useful Resources&lt;/h1&gt;
+<h1 id="other-useful-resources">Other Useful Resources</h1>
 
-&lt;p&gt;If you are looking for more networking resources, you can find them there:&lt;/p&gt;
-&lt;ul&gt;
-  &lt;li&gt;&lt;a href=&quot;https://web.archive.org/web/20190328001900/https://gafferongames.com/&quot;&gt;Glenn Fielder’s blog&lt;/a&gt;, you should read its entire blog, it contains lots of great articles. &lt;a href=&quot;https://web.archive.org/web/20180823014743/https://gafferongames.com/tags/networking&quot;&gt;Here&lt;/a&gt; are all its articles concerning networking.&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;https://github.com/MFatihMAR/Awesome-Game-Networking&quot;&gt;Awesome Game Networking&lt;/a&gt; by M. Fatih MAR is an extensive list of articles and videos on game networking.&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;https://www.reddit.com/r/gamedev/wiki/index#wiki_networking&quot;&gt;r/gamedev’s wiki&lt;/a&gt; also contains many useful links.&lt;/li&gt;
-&lt;/ul&gt;
+<p>If you are looking for more networking resources, you can find them there:</p>
+<ul>
+  <li><a href="https://web.archive.org/web/20190328001900/https://gafferongames.com/">Glenn Fielder’s blog</a>, you should read its entire blog, it contains lots of great articles. <a href="https://web.archive.org/web/20180823014743/https://gafferongames.com/tags/networking">Here</a> are all its articles concerning networking.</li>
+  <li><a href="https://github.com/MFatihMAR/Awesome-Game-Networking">Awesome Game Networking</a> by M. Fatih MAR is an extensive list of articles and videos on game networking.</li>
+  <li><a href="https://www.reddit.com/r/gamedev/wiki/index#wiki_networking">r/gamedev’s wiki</a> also contains many useful links.</li>
+</ul>
 
-&lt;h1 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h1&gt;
+<h1 id="conclusion">Conclusion</h1>
 
-&lt;p&gt;That is all for this guide. I hope you learned a few things and find interesting articles. Good luck with the creation of your network engine!&lt;/p&gt;
+<p>That is all for this guide. I hope you learned a few things and find interesting articles. Good luck with the creation of your network engine!</p>
 
-&lt;p&gt;See you next week for more!&lt;/p&gt;
+<p>See you next week for more!</p>
 
-&lt;p&gt;Edit: Thanks to the redditors for the &lt;a href=&quot;https://www.reddit.com/r/gamedev/comments/d1oz18/beginners_guide_to_game_networking/&quot;&gt;feedback&lt;/a&gt;. I tried to take it into account.&lt;/p&gt;</content><author><name>pierre</name></author><category term="vagabond" /><category term="game-engine" /><summary type="html">During the last two weeks, I was working on the network engine of my game. And before that, I knew nothing about game networking. Thus, I read a lot of articles and did a lot of experiments to understand all the concepts and be able to code my own network engine. In this guide, I want to share with you the different concepts you must learn before to write your own game engine and the best resources and articles to learn them. There are mainly two possible network architectures: peer-to-peer and client-server. In the peer-to-peer architecture, data is exchanged between any pair of connected players while in the client-server architecture, data is only exchanged between players and the server. While the peer-to-peer architecture is still used in some games, client-server is the standard as it is easier to implement, it requires less bandwidth and it is easier to prevent cheating. Thus, in this guide, we will focus on client-server architecture. More precisely, we will be interested in authoritative servers, it means that the server is always right. For instance, if a player thinks it is at coordinates (10, 5) but the server tells him that it is at (5, 3), then the client should update its position to the server’s one, and not the opposite. Using an authoritative server enables us to detect cheating more easily. There are mainly three components in game networking: Transport protocol: how to transport the data between clients and the server? Application protocol: what to send from clients to the server and from the server to clients and in which format? Application logic: how to use the exchanged data to update clients and the server? It is really important to understand the role of each part and its challenges.</summary></entry></feed>
+<p>Edit: Thanks to the redditors for the <a href="https://www.reddit.com/r/gamedev/comments/d1oz18/beginners_guide_to_game_networking/">feedback</a>. I tried to take it into account.</p>]]></content><author><name>pierre</name></author><category term="vagabond" /><category term="game-engine" /><summary type="html"><![CDATA[During the last two weeks, I was working on the network engine of my game. And before that, I knew nothing about game networking. Thus, I read a lot of articles and did a lot of experiments to understand all the concepts and be able to code my own network engine. In this guide, I want to share with you the different concepts you must learn before to write your own game engine and the best resources and articles to learn them. There are mainly two possible network architectures: peer-to-peer and client-server. In the peer-to-peer architecture, data is exchanged between any pair of connected players while in the client-server architecture, data is only exchanged between players and the server. While the peer-to-peer architecture is still used in some games, client-server is the standard as it is easier to implement, it requires less bandwidth and it is easier to prevent cheating. Thus, in this guide, we will focus on client-server architecture. More precisely, we will be interested in authoritative servers, it means that the server is always right. For instance, if a player thinks it is at coordinates (10, 5) but the server tells him that it is at (5, 3), then the client should update its position to the server’s one, and not the opposite. Using an authoritative server enables us to detect cheating more easily. There are mainly three components in game networking: Transport protocol: how to transport the data between clients and the server? Application protocol: what to send from clients to the server and from the server to clients and in which format? Application logic: how to use the exchanged data to update clients and the server? It is really important to understand the role of each part and its challenges.]]></summary></entry></feed>

@@ -9,7 +9,7 @@
         <!-- SEO -->
         <!-- Begin Jekyll SEO tag v2.7.1 -->
 <title>Distributing a C++ Program on Linux | pvigier’s blog</title>
-<meta name="generator" content="Jekyll v4.1.1" />
+<meta name="generator" content="Jekyll v4.2.1" />
 <meta property="og:title" content="Distributing a C++ Program on Linux" />
 <meta name="author" content="pierre" />
 <meta property="og:locale" content="en_US" />
@@ -23,7 +23,7 @@
 <meta name="twitter:card" content="summary" />
 <meta property="twitter:title" content="Distributing a C++ Program on Linux" />
 <script type="application/ld+json">
-{"author":{"@type":"Person","name":"pierre"},"headline":"Distributing a C++ Program on Linux","dateModified":"2018-10-07T00:00:00+02:00","datePublished":"2018-10-07T00:00:00+02:00","description":"Hi! Today I will tackle a problem I faced when I wanted to distribute the alpha version of Simulopolis two weeks ago: distributing a C++ binary on different Linux distributions. So, two weeks ago, I was happy as I had a version of Simulopolis which ran smoothly on my laptop. And I thought it was time to share it with people to have some feedback. Very naively, I took the binary and the assets, put them on a new folder and uploaded the whole thing on itch.io. Then, I sent a message to my big brother telling him that he can try my game. He downloaded the game and when he tried to run the game, he obtained this error message: ./Simulopolis: error while loading shared libraries: libboost_serialization.so.1.65.1: cannot open shared object file: No such file or directory Uhh, this was not expected! We read the error message, it tells that a dependency I use to build the game is missing on my brother’s system. So he tried to install Boost Serialization, SFML and TinyXML the three libraries I use in Simulopolis. But that did not solve the problem because the program is looking for a specific version of the dependency (here the version 1.65.1 of Boost serialization). And as he was on a different Linux distribution, Fedora, than me, Ubuntu, it was not the same version of Boost Serialization that was available in its package manager.","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://pvigier.github.io/2018/10/07/distributing-c++-program-linux.html"},"url":"https://pvigier.github.io/2018/10/07/distributing-c++-program-linux.html","@context":"https://schema.org"}</script>
+{"mainEntityOfPage":{"@type":"WebPage","@id":"https://pvigier.github.io/2018/10/07/distributing-c++-program-linux.html"},"description":"Hi! Today I will tackle a problem I faced when I wanted to distribute the alpha version of Simulopolis two weeks ago: distributing a C++ binary on different Linux distributions. So, two weeks ago, I was happy as I had a version of Simulopolis which ran smoothly on my laptop. And I thought it was time to share it with people to have some feedback. Very naively, I took the binary and the assets, put them on a new folder and uploaded the whole thing on itch.io. Then, I sent a message to my big brother telling him that he can try my game. He downloaded the game and when he tried to run the game, he obtained this error message: ./Simulopolis: error while loading shared libraries: libboost_serialization.so.1.65.1: cannot open shared object file: No such file or directory Uhh, this was not expected! We read the error message, it tells that a dependency I use to build the game is missing on my brother’s system. So he tried to install Boost Serialization, SFML and TinyXML the three libraries I use in Simulopolis. But that did not solve the problem because the program is looking for a specific version of the dependency (here the version 1.65.1 of Boost serialization). And as he was on a different Linux distribution, Fedora, than me, Ubuntu, it was not the same version of Boost Serialization that was available in its package manager.","url":"https://pvigier.github.io/2018/10/07/distributing-c++-program-linux.html","author":{"@type":"Person","name":"pierre"},"@type":"BlogPosting","headline":"Distributing a C++ Program on Linux","dateModified":"2018-10-07T00:00:00+02:00","datePublished":"2018-10-07T00:00:00+02:00","@context":"https://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 
         <!-- Bootstrap -->
@@ -33,7 +33,7 @@
         <link href="/media/css/syntax.css" rel="stylesheet">
         <link href="/media/css/modal.css" rel="stylesheet">
         <!-- RSS -->
-        <link type="application/atom+xml" rel="alternate" href="https://pvigier.github.io/rss.xml" title="pvigier's blog" />
+        <link type="application/atom+xml" rel="alternate" href="https://pvigier.github.io/rss.xml" title="pvigier&apos;s blog" />
     </head>
     <body>
         <div class="blog-masthead">

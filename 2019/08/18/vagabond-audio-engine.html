@@ -9,7 +9,7 @@
         <!-- SEO -->
         <!-- Begin Jekyll SEO tag v2.7.1 -->
 <title>Vagabond – Audio Engine | pvigier’s blog</title>
-<meta name="generator" content="Jekyll v4.1.1" />
+<meta name="generator" content="Jekyll v4.2.1" />
 <meta property="og:title" content="Vagabond – Audio Engine" />
 <meta name="author" content="pierre" />
 <meta property="og:locale" content="en_US" />
@@ -23,7 +23,7 @@
 <meta name="twitter:card" content="summary" />
 <meta property="twitter:title" content="Vagabond – Audio Engine" />
 <script type="application/ld+json">
-{"author":{"@type":"Person","name":"pierre"},"headline":"Vagabond – Audio Engine","dateModified":"2019-08-18T00:00:00+02:00","datePublished":"2019-08-18T00:00:00+02:00","description":"After the graphics engine and the physics engine, this week, I have worked on the audio engine. To play sounds and music I use the audio part of SFML which is really good. It is a thin wrapper around OpenAL. It supports WAV, OGG/Vorbis and FLAC. Moreover, it also supports spatialization and it is really easy to use. There are only two things for which an audio engine is needed. The first one is to make sure that the total number of sounds and music never exceeds 256 (which is an internal limit according to SFML documentation). To do that, the audio engine refuses to play a new sound or music if the limit has already been reached. And as soon as a sound or a music finishes, it removes its instance to be able to play a new one. The second thing is being able to pause all sounds and music, play other sounds and music and then be able to resume all the sounds and music that have been paused. This use case happens when you are in-game and some sounds or music are playing. Then you go to the pause menu, all the game simulation is paused, so the sounds and music should be paused too. Some sounds are played by the user interface in the pause menu. Finally, when the player returns to the game, the simulation resumes and all the sounds and music should be resumed too. To achieve that, I will use two abstractions, one for each of the two issues, respectively the audio engine and the audio scene. Let us dive into the details of these abstractions.","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://pvigier.github.io/2019/08/18/vagabond-audio-engine.html"},"url":"https://pvigier.github.io/2019/08/18/vagabond-audio-engine.html","@context":"https://schema.org"}</script>
+{"mainEntityOfPage":{"@type":"WebPage","@id":"https://pvigier.github.io/2019/08/18/vagabond-audio-engine.html"},"description":"After the graphics engine and the physics engine, this week, I have worked on the audio engine. To play sounds and music I use the audio part of SFML which is really good. It is a thin wrapper around OpenAL. It supports WAV, OGG/Vorbis and FLAC. Moreover, it also supports spatialization and it is really easy to use. There are only two things for which an audio engine is needed. The first one is to make sure that the total number of sounds and music never exceeds 256 (which is an internal limit according to SFML documentation). To do that, the audio engine refuses to play a new sound or music if the limit has already been reached. And as soon as a sound or a music finishes, it removes its instance to be able to play a new one. The second thing is being able to pause all sounds and music, play other sounds and music and then be able to resume all the sounds and music that have been paused. This use case happens when you are in-game and some sounds or music are playing. Then you go to the pause menu, all the game simulation is paused, so the sounds and music should be paused too. Some sounds are played by the user interface in the pause menu. Finally, when the player returns to the game, the simulation resumes and all the sounds and music should be resumed too. To achieve that, I will use two abstractions, one for each of the two issues, respectively the audio engine and the audio scene. Let us dive into the details of these abstractions.","url":"https://pvigier.github.io/2019/08/18/vagabond-audio-engine.html","author":{"@type":"Person","name":"pierre"},"@type":"BlogPosting","headline":"Vagabond – Audio Engine","dateModified":"2019-08-18T00:00:00+02:00","datePublished":"2019-08-18T00:00:00+02:00","@context":"https://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 
         <!-- Bootstrap -->
@@ -33,7 +33,7 @@
         <link href="/media/css/syntax.css" rel="stylesheet">
         <link href="/media/css/modal.css" rel="stylesheet">
         <!-- RSS -->
-        <link type="application/atom+xml" rel="alternate" href="https://pvigier.github.io/rss.xml" title="pvigier's blog" />
+        <link type="application/atom+xml" rel="alternate" href="https://pvigier.github.io/rss.xml" title="pvigier&apos;s blog" />
     </head>
     <body>
         <div class="blog-masthead">
