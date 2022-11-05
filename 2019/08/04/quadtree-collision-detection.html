@@ -23,7 +23,7 @@
 <meta name="twitter:card" content="summary" />
 <meta property="twitter:title" content="Quadtree and Collision Detection" />
 <script type="application/ld+json">
-{"mainEntityOfPage":{"@type":"WebPage","@id":"https://pvigier.github.io/2019/08/04/quadtree-collision-detection.html"},"description":"This week was short as I was still working on the 2D light system on Monday and Tuesday. I spent the rest of my time working on a quadtree implementation. In this article, I will share with you my implementation and my thoughts while designing it. Firstly, I want to argue why I decided to implement a quadtree. A Quadtree is a space partitioning data structure. Its main advantage against other data structures is its versatility. It offers good performance for insertion, removal and lookup. Thus, we can use it in a dynamic context where the data often change. Moreover, it is quite easy to understand and implement. If you are totally new to space partitioning, I advise you to read this article by Robert Nystrom. If you want a gentler introduction to quadtrees, you can read this article or this one. In my game, there are several places where using a quadtree is an instant win: During collision detection, using a quadtree is way more efficient than the brute-force approach (testing all pairs). It is not the most efficient approach though, see this article if you want an overview of possible approaches and benchmarks. But, I will start using this in the first version of my physics engine. I may change later and use a more specialized algorithm if I need to. In the scene graph, to perform culling, I can use a quadtree to find all the nodes that are visible. In the light system, I can use a quadtree to find the walls that are intersecting the light visibility polygon. In an AI system, I can use a quadtree to find all the objects or enemies that are close to an entity. etc. As you can notice, quadtrees are very versatile. They are a nice tool to have in your toolbox. You can find all the code that I will show next on GitHub.","url":"https://pvigier.github.io/2019/08/04/quadtree-collision-detection.html","author":{"@type":"Person","name":"pierre"},"@type":"BlogPosting","headline":"Quadtree and Collision Detection","dateModified":"2019-08-04T00:00:00+02:00","datePublished":"2019-08-04T00:00:00+02:00","@context":"https://schema.org"}</script>
+{"@type":"BlogPosting","headline":"Quadtree and Collision Detection","dateModified":"2019-08-04T00:00:00+02:00","datePublished":"2019-08-04T00:00:00+02:00","description":"This week was short as I was still working on the 2D light system on Monday and Tuesday. I spent the rest of my time working on a quadtree implementation. In this article, I will share with you my implementation and my thoughts while designing it. Firstly, I want to argue why I decided to implement a quadtree. A Quadtree is a space partitioning data structure. Its main advantage against other data structures is its versatility. It offers good performance for insertion, removal and lookup. Thus, we can use it in a dynamic context where the data often change. Moreover, it is quite easy to understand and implement. If you are totally new to space partitioning, I advise you to read this article by Robert Nystrom. If you want a gentler introduction to quadtrees, you can read this article or this one. In my game, there are several places where using a quadtree is an instant win: During collision detection, using a quadtree is way more efficient than the brute-force approach (testing all pairs). It is not the most efficient approach though, see this article if you want an overview of possible approaches and benchmarks. But, I will start using this in the first version of my physics engine. I may change later and use a more specialized algorithm if I need to. In the scene graph, to perform culling, I can use a quadtree to find all the nodes that are visible. In the light system, I can use a quadtree to find the walls that are intersecting the light visibility polygon. In an AI system, I can use a quadtree to find all the objects or enemies that are close to an entity. etc. As you can notice, quadtrees are very versatile. They are a nice tool to have in your toolbox. You can find all the code that I will show next on GitHub.","url":"https://pvigier.github.io/2019/08/04/quadtree-collision-detection.html","mainEntityOfPage":{"@type":"WebPage","@id":"https://pvigier.github.io/2019/08/04/quadtree-collision-detection.html"},"author":{"@type":"Person","name":"pierre"},"@context":"https://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 
         <!-- Bootstrap -->
@@ -416,7 +416,7 @@
 
 <p>Then, if the node is a leaf and we can insert a new value in it i.e. we are at <code class="language-plaintext highlighter-rouge">MaxDepth</code> or <code class="language-plaintext highlighter-rouge">Threshold</code> is not reached yet, we insert there. Otherwise, we split this node and we try again.</p>
 
-<p>If it is an interior, we compute the quadrant in which the value’s bounding box is contained. If it is entirely contained in a child, we do a recursive call. Otherwise, we insert in this node.</p>
+<p>If it is an interior, we compute the quadrant in which the value bounding box is contained. If it is entirely contained in a child, we do a recursive call. Otherwise, we insert in this node.</p>
 
 <p>Finally, here is the split routine:</p>
 
@@ -482,7 +482,7 @@
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p>If the current node is a leaf, we remove the value from the list of values of the current node and we return <code class="language-plaintext highlighter-rouge">true</code>. The return value will tell its parent that it should try to merge with its children. Otherwise, we determine in which quadrant the value’s bounding box lies in. If it is entirely contained in a child, we do a recursive call and we try to merge the node if we are told to. Otherwise, we remove from the values of the current node.</p>
+<p>If the current node is a leaf, we remove the value from the list of values of the current node and we return <code class="language-plaintext highlighter-rouge">true</code>. The return value will tell its parent that it should try to merge with its children. Otherwise, we determine in which quadrant the value bounding box lies in. If it is entirely contained in a child, we do a recursive call and we try to merge the node if we are told to. Otherwise, we remove from the values of the current node.</p>
 
 <p>As we do not care about the order of the values stored in a node, I use a small optimization to erase a value, I just swap the value to erase with the last one and pop back:</p>
 
@@ -680,27 +680,9 @@
 	<p>Tags: <span class="label label-primary"><a href="/tag/vagabond">vagabond</a></span> <span class="label label-primary"><a href="/tag/game-engine">game-engine</a></span> <span class="label label-primary"><a href="/tag/cpp">cpp</a></span> </p>
 	
 </div><!-- /.blog-post -->
+<!-- Steam -->
 <hr/>
-<p>Subscribe to the newsletter if you do not want to miss any new article:</p>
-<!-- Begin Mailchimp Signup Form -->
-<link href="//cdn-images.mailchimp.com/embedcode/horizontal-slim-10_7.css" rel="stylesheet" type="text/css">
-<style type="text/css">
-	#mc_embed_signup{background:#fff; clear:left; font:14px Helvetica,Arial,sans-serif; width:100%;}
-	/* Add your own Mailchimp form style overrides in your site stylesheet or in this style block.
-	   We recommend moving this block and the preceding CSS link to the HEAD of your HTML file. */
-</style>
-<div id="mc_embed_signup">
-<form action="https://ymail.us20.list-manage.com/subscribe/post?u=7bb3b720a12ef1d8e0b48d8da&amp;id=7516dd4562" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate" target="_blank" novalidate>
-    <div id="mc_embed_signup_scroll">
-
-	<input type="email" value="" name="EMAIL" class="email" id="mce-EMAIL" placeholder="email address" required>
-    <!-- real people should not fill this in and expect good things - do not remove this or risk form bot signups-->
-    <div style="position: absolute; left: -5000px;" aria-hidden="true"><input type="text" name="b_7bb3b720a12ef1d8e0b48d8da_7516dd4562" tabindex="-1" value=""></div>
-    <div class="clear"><input type="submit" value="Subscribe" name="subscribe" id="mc-embedded-subscribe" class="button"></div>
-    </div>
-</form>
-</div>
-<!--End mc_embed_signup-->
+<iframe src="https://store.steampowered.com/widget/1673090/" frameborder="0" width="646" height="190"></iframe>
 <!-- Disqus -->
 <hr/>
 <div id="disqus_thread"></div>
@@ -726,6 +708,7 @@ s.setAttribute('data-timestamp', +new Date());
                 </div>
                 <div class="col-sm-3 col-sm-offset-1 blog-sidebar">
     <p><strong><a href="https://store.steampowered.com/app/1673090/Vagabond/">Wishlist Vagabond on Steam!</a></strong></p>
+    <a href="https://store.steampowered.com/app/1673090/Vagabond/"><img src="/media/img/wishlist_vagabond.png" alt="Wishlist Vagabond on Steam" /></a>
 	<div class="sidebar-module">
         <h4>Tags</h4>
         <ol class="list-unstyled">
@@ -736,7 +719,7 @@ s.setAttribute('data-timestamp', +new Date());
 		
 			<li><a href="/tag/cpp">cpp (8)</a></li>
 		
-			<li><a href="/tag/pcg">pcg (15)</a></li>
+			<li><a href="/tag/pcg">pcg (16)</a></li>
 		
 			<li><a href="/tag/simulopolis">simulopolis (5)</a></li>
 		
@@ -748,7 +731,7 @@ s.setAttribute('data-timestamp', +new Date());
 		
 			<li><a href="/tag/git">git (1)</a></li>
 		
-			<li><a href="/tag/vagabond">vagabond (26)</a></li>
+			<li><a href="/tag/vagabond">vagabond (27)</a></li>
 		
 			<li><a href="/tag/ecs">ecs (2)</a></li>
 		
@@ -760,6 +743,14 @@ s.setAttribute('data-timestamp', +new Date());
         <h4>Archives</h4>
         <ol class="list-unstyled">
 		
+        
+            
+            
+            
+            
+			<li id="yNovember 2022"><a href="/2022/11">November 2022 (1)</a></li>
+				
+            
         
             
             

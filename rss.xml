@@ -1,8 +1,355 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.1">Jekyll</generator><link href="https://pvigier.github.io/rss.xml" rel="self" type="application/atom+xml" /><link href="https://pvigier.github.io/" rel="alternate" type="text/html" /><updated>2022-01-18T11:16:59+01:00</updated><id>https://pvigier.github.io/rss.xml</id><title type="html">pvigier’s blog</title><author><name>Pierre Vigier</name></author><entry><title type="html">Vagabond – Dungeon and Cave Generation – Part 3</title><link href="https://pvigier.github.io/2021/03/20/vagabond-dungeon-cave-generation-part3.html" rel="alternate" type="text/html" title="Vagabond – Dungeon and Cave Generation – Part 3" /><published>2021-03-20T00:00:00+01:00</published><updated>2021-03-20T00:00:00+01:00</updated><id>https://pvigier.github.io/2021/03/20/vagabond-dungeon-cave-generation-part3</id><content type="html" xml:base="https://pvigier.github.io/2021/03/20/vagabond-dungeon-cave-generation-part3.html"><![CDATA[<p><img src="/media/img/vagabond-dungeon-cave-generation-part3/dungeon_generation.gif" alt="" width="400" class="center-image modal-image" /></p>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.1">Jekyll</generator><link href="https://pvigier.github.io/rss.xml" rel="self" type="application/atom+xml" /><link href="https://pvigier.github.io/" rel="alternate" type="text/html" /><updated>2022-11-05T16:00:21+01:00</updated><id>https://pvigier.github.io/rss.xml</id><title type="html">pvigier’s blog</title><author><name>Pierre Vigier</name></author><entry><title type="html">Room Generation using Constraint Satisfaction</title><link href="https://pvigier.github.io/2022/11/05/room-generation-using-constraint-satisfaction.html" rel="alternate" type="text/html" title="Room Generation using Constraint Satisfaction" /><published>2022-11-05T00:00:00+01:00</published><updated>2022-11-05T00:00:00+01:00</updated><id>https://pvigier.github.io/2022/11/05/room-generation-using-constraint-satisfaction</id><content type="html" xml:base="https://pvigier.github.io/2022/11/05/room-generation-using-constraint-satisfaction.html"><![CDATA[<p>Two weeks ago, I was part of <a href="https://www.roguelike.club/">Roguelike Celebration</a> and gave a talk on room generation using constraint satisfaction. It was great! Here is the video of my talk:</p>
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/oVhq8V93gHM" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
+
+<p>I don’t know why but the sound is a little jerky at times. :( And with my terrible accent, it may not be easy to understand certain parts. So I will transcript the talk in this article.</p>
+
+<p>Before we start, you can get the demo code that accompanies the talk on my <a href="https://github.com/pvigier/room_generator">GitHub account</a> and the slides <a href="https://docs.google.com/presentation/d/1lECom7pLqrKIiVtetD_KEZHAtFeXWwcMqCItoteSEQ4/edit?usp=sharing">here</a>.</p>
+
+<!--more-->
+
+<h1 id="whats-a-room-generator">What’s a Room Generator</h1>
+
+<p>So let’s start by defining, what’s a room generator.</p>
+
+<table class="image-table">
+  <thead>
+    <tr>
+      <th style="text-align: center">Before</th>
+      <th style="text-align: center">After</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center"><img src="/media/img/room-generation-constraint-satisfaction/laboratory_empty.png" alt="" width="250" /></td>
+      <td style="text-align: center"><img src="/media/img/room-generation-constraint-satisfaction/laboratory_filled.png" alt="" width="250" /></td>
+    </tr>
+  </tbody>
+</table>
+
+<p>The input is simply any structure, it can be a building, a dungeon, anything. And it doesn’t matter what algorithm generated it. As it looks desperately empty, we want to fill the structure with objects, decorations and monsters. That’s what is room generation.</p>
+
+<table class="image-table">
+  <thead>
+    <tr>
+      <th style="text-align: center">Before</th>
+      <th style="text-align: center">After</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center"><img src="/media/img/room-generation-constraint-satisfaction/dungeon_empty.png" alt="" width="250" /></td>
+      <td style="text-align: center"><img src="/media/img/room-generation-constraint-satisfaction/dungeon_filled.png" alt="" width="250" /></td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="image-table">
+  <thead>
+    <tr>
+      <th style="text-align: center">Before</th>
+      <th style="text-align: center">After</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center"><img src="/media/img/room-generation-constraint-satisfaction/cave_empty.png" alt="" width="250" /></td>
+      <td style="text-align: center"><img src="/media/img/room-generation-constraint-satisfaction/cave_filled.png" alt="" width="250" /></td>
+    </tr>
+  </tbody>
+</table>
+
+<p>It works for buildings, but it also works well for caves or dungeons.</p>
+
+<table class="image-table">
+  <tbody>
+    <tr>
+      <td><img src="/media/img/room-generation-constraint-satisfaction/ruins.png" alt="" width="250" /></td>
+      <td><img src="/media/img/room-generation-constraint-satisfaction/market_place.png" alt="" width="250" /></td>
+    </tr>
+  </tbody>
+</table>
+
+<p>And even for outdoor structures like the ruins on the left, or for the market place in this village.</p>
+
+<h1 id="whats-a-constraint-satisfaction-problem-csp">What’s a Constraint Satisfaction Problem (CSP)?</h1>
+
+<p>The generator is based on <a href="https://en.wikipedia.org/wiki/Constraint_satisfaction_problem">constraint satisfaction problems</a> that I will abbreviate as CSP.</p>
+
+<p>A CSP is composed of three things:</p>
+
+<ol>
+  <li>There are <em>variables</em> which in room generation will represent the objects to place in the room.</li>
+  <li>There is a <em>domain</em> for each variable. They are the finite sets of possible values for each variable. In room generation, the domains are simply all the possible positions for each object.</li>
+  <li>There are the <em>constraints</em>, which are predicates on the values taken by the variables. In room generation, we may require that objects don’t overlap, that there are paths to access objects or we may want specific objects to be against a wall or in a corner.</li>
+</ol>
+
+<p>Solving a CSP is just finding an assignment that satisfies all the constraints.</p>
+
+<p>We can notice two things. First, it’s very intuitive to use. If we want to have a shower next to a wall, we just have to add a constraint to do so. And we have strong guarantees on the output, which is always a nice thing in procedural generation.</p>
+
+<h1 id="basic-solver-backtracking">Basic Solver: Backtracking</h1>
+
+<p>Now, let’s see the basic algorithm to solve a CSP. It is called the <a href="https://en.wikipedia.org/wiki/Backtracking">“Backtracking Algorithm”</a>.</p>
+
+<p><img src="/media/img/room-generation-constraint-satisfaction/backtracking.gif" alt="" class="center-image modal-image" /></p>
+
+<p>This is just a refined brute force approach, we will enumerate all the possible assignments by recursively assigning the variables one after the other.</p>
+
+<p>The only subtlety is that each time we try to assign a variable, we check the constraints, if they are satisfied we move to the next variable with a recursive call. But if the constraints are not satisfied or the recursive call fails, we move to the next value in the domain. And if there is no value left in the domain, we backtrack to the previous variable.</p>
+
+<!--code-->
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">solve</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">assignment</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;=</span> <span class="n">n</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">True</span>
+    <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">domains</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span>
+        <span class="n">assignment</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="k">if</span> <span class="n">check_constraints</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">assignment</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">solve</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">assignment</span><span class="p">):</span>
+                <span class="k">return</span> <span class="bp">True</span>
+    <span class="k">return</span> <span class="bp">False</span>
+</code></pre></div></div>
+
+<p>It’s simple as you can see it’s less than 10 lines of code. And, it works very well, if there is a solution to the problem, it will find it. And with the constraints that I am presenting here, it is also very fast.</p>
+
+<p>But as we always try the values in the same order, the solver is deterministic and will always output the same solution. Not ideal for a procedural generator.</p>
+
+<h1 id="how-to-turn-that-into-a-generator">How to Turn That into a Generator</h1>
+
+<p>However, it is very easy to fix this problem.</p>
+
+<p><img src="/media/img/room-generation-constraint-satisfaction/backtracking_random.gif" alt="" class="center-image modal-image" /></p>
+
+<p>We just have to shuffle the domains each time we want a new room.</p>
+
+<p>If you are using an external library to solve your CSPs, just make sure that the selection process of values in domains is random.</p>
+
+<p>Notice that the order in which the variables are processed doesn’t matter. And it doesn’t need to be random.</p>
+
+<p>In fact, there is a heuristic called “Minimum Remaining Value” that can speed up the solver significantly. It consists in assigning the variables with smaller domains first because they are more constrained than the others.</p>
+
+<h1 id="modeling-the-room">Modeling the Room</h1>
+
+<p>The structure of the room is simply represented as a 2D or a 3D grid.</p>
+
+<table class="image-table">
+  <thead>
+    <tr>
+      <th style="text-align: center">Room</th>
+      <th style="text-align: center">Grid</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center"><img src="/media/img/room-generation-constraint-satisfaction/dungeon_structure.png" alt="" width="250" /></td>
+      <td style="text-align: center"><img src="/media/img/room-generation-constraint-satisfaction/dungeon_grid.png" alt="" width="250" /></td>
+    </tr>
+    <tr>
+      <td style="text-align: center"><img src="/media/img/room-generation-constraint-satisfaction/cave_empty.png" alt="" width="250" /></td>
+      <td style="text-align: center"><img src="/media/img/room-generation-constraint-satisfaction/cave_grid.png" alt="" width="250" /></td>
+    </tr>
+  </tbody>
+</table>
+
+<p>A 3D grid can be useful even for a 2D game. For example, in my game, I use a 3D grid with three layers to be able to have objects above others.</p>
+
+<p>Cells in this grid can be in three different states:</p>
+<ol>
+  <li>The <em>empty</em> state, when a cell is free and can receive an object. These are the black tiles on the pictures.</li>
+  <li>The <em>margin</em> state when a cell is free and we want it to remain free. These are the grey tiles on the pictures. We can notice that the connections to the other rooms are margin cells to make sure that these tiles remain free.</li>
+  <li>The <em>full</em> state when a cell is already physically occupied by an object or a wall. These are the white tiles on the pictures.</li>
+</ol>
+
+<p>We may also want to add more data to a cell like marking it as a wall or a door which will be useful for certain constraints.</p>
+
+<h1 id="modeling-the-objects">Modeling the Objects</h1>
+
+<p><img src="/media/img/room-generation-constraint-satisfaction/Table.png" alt="" class="center-image modal-image" /></p>
+
+<p>First, I find it more useful if a variable can represent not only one object but a group of objects. For example, a table with two chairs.</p>
+
+<p>We could do that by using several variables and constraints to force the objects to be next to each others. But it would make the CSP much more complex and difficult to solve for no good reason.</p>
+
+<p>Then, I specify a collision box which is the physical space that the objects will occupy.</p>
+
+<p>And a margin box which will be the space around the objects that will need to remain free for gameplay or aesthetic reasons.</p>
+
+<p><img src="/media/img/room-generation-constraint-satisfaction/Forge.png" alt="" class="center-image modal-image" /></p>
+
+<p>For example, we want space in front of the forge to make sure the players can access it.</p>
+
+<p><img src="/media/img/room-generation-constraint-satisfaction/Counter.png" alt="" class="center-image modal-image" /></p>
+
+<p>Finally, I added the support for optional boolean masks for the two boxes to be able to add finer details if needed. As you can see with the counter.</p>
+
+<h1 id="more-randomness">More Randomness</h1>
+
+<p>I specify the lists of objects for my rooms in JSON and here is what looks like the definition of a variable.</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+    </span><span class="nl">"objects"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"Painting1"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Painting2"</span><span class="p">,</span><span class="w"> </span><span class="err">...</span><span class="p">],</span><span class="w">
+    </span><span class="nl">"constraints"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+        </span><span class="p">{</span><span class="w">
+            </span><span class="nl">"NextToWallConstraint"</span><span class="p">:</span><span class="w"> </span><span class="p">{}</span><span class="w">
+        </span><span class="p">}</span><span class="w">
+    </span><span class="p">],</span><span class="w">
+    </span><span class="nl">"range"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">]</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>First, we can notice that for a given variable I sample among a list of objects. In the example, I want to add a painting in the room and I choose among a list of them.</p>
+
+<p>Then, let’s observe that the more we add variables to the CSP, the more difficult it will be for the solver to find a solution. And there are some objects like decorations, if the solver fails to place them, it’s not a big deal, the room stays valid.</p>
+
+<p>So I separate the objects in two lists. The required objects which are the objects that the solver needs to place, otherwise the room loses its meaning.</p>
+
+<p>And the optional objects, the solver will try to place them after the required objects but it will just try each value in their domains once and don’t backtrack if it fails to place an object.</p>
+
+<p>What’s nice with optional objects as they are not required, we can make them more random with for example a probability of appearance or a random count. For example, the paintings have a range attribute and the solver will try to place between one and three in the room.</p>
+
+<p>I will stress more on that at the end of the talk but optional objects are very useful to add variability in the generated rooms.</p>
+
+<h1 id="unary-constraints">Unary Constraints</h1>
+
+<p>Let’s look quickly at some of the constraints.</p>
+
+<p>The simplest constraints are the unary constraints. They are the constraints that deal with only one variable.</p>
+
+<p>For example, you want an object to be at a certain distance to a wall or in a corner.</p>
+
+<p>The strategy for these constraints is just to remove the values in the domain that don’t satisfy the constraint before running the solver.</p>
+
+<table class="image-table">
+  <tbody>
+    <tr>
+      <td><img src="/media/img/room-generation-constraint-satisfaction/wall_constraint.png" alt="" /></td>
+      <td><img src="/media/img/room-generation-constraint-satisfaction/corner_constraint.png" alt="" /></td>
+    </tr>
+  </tbody>
+</table>
+
+<p>So if you add a constraint that an object needs to be against the north wall, the domain will be only the purple cells of the first row. And if you want the object to be in a corner, the domain will be only the four purple cells in the corners.</p>
+
+<h1 id="no-overlap-constraint">No Overlap Constraint</h1>
+
+<p>The two next constraints are so important for room generation and they need to be implemented efficiently that I baked them directly in the solver.</p>
+
+<p><img src="/media/img/room-generation-constraint-satisfaction/grid.png" alt="" class="center-image modal-image" /></p>
+
+<p>To quickly check the overlap between objects, we will just reuse the grid we got as input but we will update it after each assignment or backtracking. After an assignment, we add the object, and after a backtracking, we remove the object.</p>
+
+<h1 id="connectivity-constraint">Connectivity Constraint</h1>
+
+<p>The connectivity constraint implies that all the free cells must be reachable.</p>
+
+<p>You can check that using a simple <a href="https://en.wikipedia.org/wiki/Depth-first_search">depth-first search algorithm</a>. But you would need to run the DFS after each assignment which could be very expensive.</p>
+
+<p>There is a little trick that can help a lot.</p>
+
+<table class="image-table">
+  <tbody>
+    <tr>
+      <td><img src="/media/img/room-generation-constraint-satisfaction/heuristic1.png" alt="" /></td>
+      <td><img src="/media/img/room-generation-constraint-satisfaction/heuristic5.png" alt="" /></td>
+    </tr>
+  </tbody>
+</table>
+
+<p>If we look at the tiles around the object we just placed, and the free tiles are in one piece, then we are sure that the room is still connected.</p>
+
+<table class="image-table">
+  <thead>
+    <tr>
+      <th style="text-align: center"><img src="/media/img/room-generation-constraint-satisfaction/heuristic3.png" alt="" /></th>
+      <th style="text-align: center"><img src="/media/img/room-generation-constraint-satisfaction/heuristic4.png" alt="" /></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center">Don’t disconnect</td>
+      <td style="text-align: center">Do disconnect</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>However, if the surrounding is in two or more pieces then, we may have disconnected the rooms and we need to run the expensive DFS to check. This heuristic can save us most of the DFS calls.</p>
+
+<h1 id="10000-bowls-of-oatmeal-problem">“10’000 bowls of oatmeal” Problem</h1>
+
+<p>So far so good but we have an issue and it has a name, it’s called the “10’000 bowls of oatmeal Problem”.</p>
+
+<p><img src="/media/img/room-generation-constraint-satisfaction/oatmeal.png" alt="" class="center-image modal-image" /></p>
+
+<p>It says that we can very easily generate a lot of bowls of oatmeal by just changing the position or the rotation of each oat, but they will all look the same.</p>
+
+<p>In our case:</p>
+<ul>
+  <li>the bowl is the room.</li>
+  <li>the oatmeal is the objects.</li>
+</ul>
+
+<p><img src="/media/img/room-generation-constraint-satisfaction/inns_oatmeal.gif" alt="" width="400" class="center-image modal-image" /></p>
+
+<p>And as you can see on the picture, if we use the same input, the solver just move the objects in the rooms and we get a very similar output.</p>
+
+<h1 id="solution-1-change-the-bowl">Solution 1: Change the Bowl</h1>
+
+<p>The solution to the 10’000 bowls of oatmeal problem is of course, as all procedural generation practitioners know, to generate different bowls. Different shapes of bowls, different colors of bowls. And that way, all the bowls are different!</p>
+
+<p><img src="/media/img/room-generation-constraint-satisfaction/bowls.png" alt="" class="center-image modal-image" /></p>
+
+<p>Of course, I’m kidding but there is an idea there to mitigate the issue.</p>
+
+<p>If you change the context in which the objects are seen, the pattern may be less recognizable.</p>
+
+<p><img src="/media/img/room-generation-constraint-satisfaction/inns_bowls.gif" alt="" width="400" class="center-image modal-image" /></p>
+
+<p>You can play on the shape of the structure, the textures, the skins of objects, etc.</p>
+
+<h1 id="solution-2-dont-just-eat-oatmeal">Solution 2: Don’t Just Eat Oatmeal</h1>
+
+<p>But the real solution to the 10’000 bowls of oatmeal problem is of course to change the inputs.</p>
+
+<p>First, don’t overuse a room template. In particular, avoid using the same room template for two rooms close to each other.</p>
+
+<p><img src="/media/img/room-generation-constraint-satisfaction/laboratories.gif" alt="" width="400" class="center-image modal-image" /></p>
+
+<p>Then, use alternative and optional objects. As explained, it helps to add variability in the room templates. That’s what we can see on the animation.</p>
+
+<p>The best solution is to have a higher level generator to generate the inputs to make the room very different or so that they have more meaning.</p>
+
+<p>For example, maybe you have to generate a house for a character. And you have already generated the hobbies for this character. Let’s say he’s fond of astronomy. That would be nice, if you can inject this meaning into the room generator and place a telescope in the house.</p>
+
+<h1 id="tags-and-triggers">Tags and Triggers</h1>
+
+<p>One nice and simple way to achieve this, that I am using in my game, is to use tags and triggers.</p>
+
+<p>Your other generators will generate a context which is just a bag of tags. In our example, it will contain the tag “hobby_astronomy”.</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+    </span><span class="nl">"objects"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"Telescope"</span><span class="p">],</span><span class="w">
+    </span><span class="nl">"trigger"</span><span class="p">:</span><span class="w"> </span><span class="s2">"hobby_astronomy"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Then, in the object description, you just add a trigger that will add the object only if the given tag is in the context.</p>
+
+<p>That way, your generators are only loosely coupled. And if you need it you can make more advanced conditions for your triggers using propositional logic.</p>
+
+<h1 id="conclusion">Conclusion</h1>
+
+<p>To conclude, I would say the using CSP in your generators is easy to reason about and easy to implement. But be careful of the 10’000 bowls of oatmeal issue.</p>
+
+<p>Here are some references if you want to go further in some of the topics we dealt with:</p>
+<ul>
+  <li>On CSP Theory: Chapter 6 of Artificial Intelligence: A Modern Approach, Russel &amp; Norvig</li>
+  <li>On “10’000 bowls of oatmeal” issue: <a href="https://galaxykate0.tumblr.com/post/139774965871/so-you-want-to-build-a-generator">So you want to build a generator…</a>, Kate Compton</li>
+  <li>On Tags: <a href="http://www.gameaipro.com/GameAIPro3/GameAIPro3_Chapter38_Procedural_Level_and_Story_Generation_Using_Tag-Based_Content_Selection.pdf">Procedural Level and Story Generation Using Tag-Based Content Selection</a>, Jurie Horneman in Game AI Pro 3</li>
+</ul>]]></content><author><name>pierre</name></author><category term="vagabond" /><category term="pcg" /><summary type="html"><![CDATA[Two weeks ago, I was part of Roguelike Celebration and gave a talk on room generation using constraint satisfaction. It was great! Here is the video of my talk: I don’t know why but the sound is a little jerky at times. :( And with my terrible accent, it may not be easy to understand certain parts. So I will transcript the talk in this article. Before we start, you can get the demo code that accompanies the talk on my GitHub account and the slides here.]]></summary></entry><entry><title type="html">Vagabond – Dungeon and Cave Generation – Part 3</title><link href="https://pvigier.github.io/2021/03/20/vagabond-dungeon-cave-generation-part3.html" rel="alternate" type="text/html" title="Vagabond – Dungeon and Cave Generation – Part 3" /><published>2021-03-20T00:00:00+01:00</published><updated>2021-03-20T00:00:00+01:00</updated><id>https://pvigier.github.io/2021/03/20/vagabond-dungeon-cave-generation-part3</id><content type="html" xml:base="https://pvigier.github.io/2021/03/20/vagabond-dungeon-cave-generation-part3.html"><![CDATA[<p><img src="/media/img/vagabond-dungeon-cave-generation-part3/dungeon_generation.gif" alt="" width="400" class="center-image modal-image" /></p>
 
 <p>Few weeks ago, I released the <a href="https://www.vagabondgame.com/2021/03/06/alpha-2-is-released.html">version alpha 2 of Vagabond</a>. One of the new features is the ability to mine ore veins in caves. This article is the follow-up of the two previous parts on dungeon generation (<a href="/2019/06/23/vagabond-dungeon-cave-generation.html">part 1</a>, <a href="/2019/06/30/vagabond-dungeon-cave-generation-part2.html">part 2</a>) where I explained how the structure of the caves were generated. However, the rooms were completely empty. In this article, I will explain how the rooms are filled with monsters, bosses, ore veins and treasures.</p>
 
-<p>If you want to try the game and explore the procedurally generated caves presented here, you can play the free demo available on <a href="https://pvigier.itch.io/vagabond-demo">itch.io</a>. If you have any feedback, do not hesitate to send me a message, I would be delighted to read it. And if you like the project, it is still possible to support the game by buying the complete game with a special offer for early birds. ;)</p>
+<p>If you want to try the game and explore the procedurally generated caves presented here, you can play the free demo available on <a href="https://store.steampowered.com/app/1673090/Vagabond/">Steam</a>. If you have any feedback, do not hesitate to send me a message, I would be delighted to read it.</p>
 
 <!--more-->
 
@@ -54,7 +401,7 @@
 
 <p>That’s all for this quick update on the dungeon generator. The dungeons are now fully playable!</p>
 
-<p>In the future, I would like to make the dungeons more interesting, I have several avenues to explore in mind. On the one hand, I would like to work on the lore of dungeons: to generate stories and quests for each dungeons. On the other hand, I would like to make dungeons more interesting by theirself: maybe by adding keys, locks and puzzles, by having several stairs, and also by adding some special objects in corners and dead ends to encourage the players to explore.</p>]]></content><author><name>pierre</name></author><category term="vagabond" /><category term="pcg" /><summary type="html"><![CDATA[Few weeks ago, I released the version alpha 2 of Vagabond. One of the new features is the ability to mine ore veins in caves. This article is the follow-up of the two previous parts on dungeon generation (part 1, part 2) where I explained how the structure of the caves were generated. However, the rooms were completely empty. In this article, I will explain how the rooms are filled with monsters, bosses, ore veins and treasures. If you want to try the game and explore the procedurally generated caves presented here, you can play the free demo available on itch.io. If you have any feedback, do not hesitate to send me a message, I would be delighted to read it. And if you like the project, it is still possible to support the game by buying the complete game with a special offer for early birds. ;)]]></summary></entry><entry><title type="html">Procedural Death Animation With Falling Sand Automata</title><link href="https://pvigier.github.io/2020/12/12/procedural-death-animation-with-falling-sand-automata.html" rel="alternate" type="text/html" title="Procedural Death Animation With Falling Sand Automata" /><published>2020-12-12T00:00:00+01:00</published><updated>2020-12-12T00:00:00+01:00</updated><id>https://pvigier.github.io/2020/12/12/procedural-death-animation-with-falling-sand-automata</id><content type="html" xml:base="https://pvigier.github.io/2020/12/12/procedural-death-animation-with-falling-sand-automata.html"><![CDATA[<p>Hi everyone!</p>
+<p>In the future, I would like to make the dungeons more interesting, I have several avenues to explore in mind. On the one hand, I would like to work on the lore of dungeons: to generate stories and quests for each dungeons. On the other hand, I would like to make dungeons more interesting by theirself: maybe by adding keys, locks and puzzles, by having several stairs, and also by adding some special objects in corners and dead ends to encourage the players to explore.</p>]]></content><author><name>pierre</name></author><category term="vagabond" /><category term="pcg" /><summary type="html"><![CDATA[Few weeks ago, I released the version alpha 2 of Vagabond. One of the new features is the ability to mine ore veins in caves. This article is the follow-up of the two previous parts on dungeon generation (part 1, part 2) where I explained how the structure of the caves were generated. However, the rooms were completely empty. In this article, I will explain how the rooms are filled with monsters, bosses, ore veins and treasures. If you want to try the game and explore the procedurally generated caves presented here, you can play the free demo available on Steam. If you have any feedback, do not hesitate to send me a message, I would be delighted to read it.]]></summary></entry><entry><title type="html">Procedural Death Animation With Falling Sand Automata</title><link href="https://pvigier.github.io/2020/12/12/procedural-death-animation-with-falling-sand-automata.html" rel="alternate" type="text/html" title="Procedural Death Animation With Falling Sand Automata" /><published>2020-12-12T00:00:00+01:00</published><updated>2020-12-12T00:00:00+01:00</updated><id>https://pvigier.github.io/2020/12/12/procedural-death-animation-with-falling-sand-automata</id><content type="html" xml:base="https://pvigier.github.io/2020/12/12/procedural-death-animation-with-falling-sand-automata.html"><![CDATA[<p>Hi everyone!</p>
 
 <p>In this post, I will show you how I used falling sand automata to generate death animations for monsters of my game <a href="https://www.vagabondgame.com/">Vagabond</a>.</p>
 
@@ -123,15 +470,15 @@
 
 <p>It has been a while since last time. I was working very hard on Vagabond to be able to announce you today that Vagabond is now in alpha!</p>
 
-<p>The game is available on <a href="https://pvigier.itch.io/vagabond-demo">itch.io</a> and its official website is <a href="https://www.vagabondgame.com/">vagabondgame.com</a>.</p>
+<p>The game is available on <a href="https://store.steampowered.com/app/1673090/Vagabond/">Steam</a> and its official website is <a href="https://www.vagabondgame.com/">vagabondgame.com</a>.</p>
 
 <!--more-->
 
-<p>I wrote an <a href="https://www.vagabondgame.com/2020/12/09/alpha-1-is-released.html">article</a> on the game’s website about this first version if you want to know more. All the announcements about the game (releases, changelogs, news, etc.) will be there, while the devlogs will stay here, on my personal website.</p>
+<p>I wrote an <a href="https://www.vagabondgame.com/2020/12/09/alpha-1-is-released.html">article</a> on the game website about this first version if you want to know more. All the announcements about the game (releases, changelogs, news, etc.) will be there, while the devlogs will stay here, on my personal website.</p>
 
 <p>During these nearly nine months without post, I did many things and therefore I have many things to write so expect several articles in the comings days and weeks! :)</p>
 
-<p>See you next time for more!</p>]]></content><author><name>pierre</name></author><category term="vagabond" /><summary type="html"><![CDATA[Hi everyone! It has been a while since last time. I was working very hard on Vagabond to be able to announce you today that Vagabond is now in alpha! The game is available on itch.io and its official website is vagabondgame.com.]]></summary></entry><entry><title type="html">Vagabond – City Generation</title><link href="https://pvigier.github.io/2020/03/15/vagabond-city-generation.html" rel="alternate" type="text/html" title="Vagabond – City Generation" /><published>2020-03-15T00:00:00+01:00</published><updated>2020-03-15T00:00:00+01:00</updated><id>https://pvigier.github.io/2020/03/15/vagabond-city-generation</id><content type="html" xml:base="https://pvigier.github.io/2020/03/15/vagabond-city-generation.html"><![CDATA[<p>Hi everyone!</p>
+<p>See you next time for more!</p>]]></content><author><name>pierre</name></author><category term="vagabond" /><summary type="html"><![CDATA[Hi everyone! It has been a while since last time. I was working very hard on Vagabond to be able to announce you today that Vagabond is now in alpha! The game is available on Steam and its official website is vagabondgame.com.]]></summary></entry><entry><title type="html">Vagabond – City Generation</title><link href="https://pvigier.github.io/2020/03/15/vagabond-city-generation.html" rel="alternate" type="text/html" title="Vagabond – City Generation" /><published>2020-03-15T00:00:00+01:00</published><updated>2020-03-15T00:00:00+01:00</updated><id>https://pvigier.github.io/2020/03/15/vagabond-city-generation</id><content type="html" xml:base="https://pvigier.github.io/2020/03/15/vagabond-city-generation.html"><![CDATA[<p>Hi everyone!</p>
 
 <p>Last month, I had been working on city generation. The goal was to use buildings generated by my <a href="/2020/02/09/vagabond-building-generation.html">building generator</a>, to place them on the map and to link them using roads.</p>
 
@@ -348,7 +695,7 @@
 
 <h1 id="hud">HUD</h1>
 
-<p>It had been weeks, I was postponing the work on the user interface. I rolled up my sleeves and made a basic HUD to display the target monster’s name and health.</p>
+<p>It had been weeks, I was postponing the work on the user interface. I rolled up my sleeves and made a basic HUD to display the target monster name and health.</p>
 
 <p>Moreover, I change the inputs. Now, everything is done with the mouse. Thus, I created a custom golden cursor you can see in the video below.</p>
 
@@ -429,7 +776,7 @@
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p>The door system receives collision messages from the physics engine. If a collision occurs between an entity that has a door component and another entity, it transports the other entity at the door’s destination. Nothing difficult, once all the other systems are in place.</p>
+<p>The door system receives collision messages from the physics engine. If a collision occurs between an entity that has a door component and another entity, it transports the other entity at the door destination. Nothing difficult, once all the other systems are in place.</p>
 
 <p>And it works well, even in multilayer mode where there are two players on different maps:</p>
 
@@ -566,236 +913,4 @@
 
 <p>The next goal is to be able to add pieces of equipment to the characters so that they are not naked anymore!</p>
 
-<p>See you next week for more!</p>]]></content><author><name>pierre</name></author><category term="vagabond" /><summary type="html"><![CDATA[Hi everyone! This is the first devlog since I stopped working on the game engine and really started working on the game. I did not publish a post last week, I started writing an article about the new implementation of my entity-component-system library but I did not find the time to finish it yet. The last two weeks were pretty busy.]]></summary></entry><entry><title type="html">Beginner’s Guide to Game Networking</title><link href="https://pvigier.github.io/2019/09/08/beginner-guide-game-networking.html" rel="alternate" type="text/html" title="Beginner’s Guide to Game Networking" /><published>2019-09-08T00:00:00+02:00</published><updated>2019-09-08T00:00:00+02:00</updated><id>https://pvigier.github.io/2019/09/08/beginner-guide-game-networking</id><content type="html" xml:base="https://pvigier.github.io/2019/09/08/beginner-guide-game-networking.html"><![CDATA[<p>During the last two weeks, I was working on the network engine of my game. And before that, I knew nothing about game networking. Thus, I read a lot of articles and did a lot of experiments to understand all the concepts and be able to code my own network engine.</p>
-
-<p>In this guide, I want to share with you the different concepts you must learn before to write your own game engine and the best resources and articles to learn them.</p>
-
-<p>There are mainly two possible network architectures: peer-to-peer and client-server. In the peer-to-peer architecture, data is exchanged between any pair of connected players while in the client-server architecture, data is only exchanged between players and the server.</p>
-
-<p>While the peer-to-peer architecture is still used in some games, client-server is the standard as it is easier to implement, it requires less bandwidth and it is easier to prevent cheating. Thus, in this guide, we will focus on client-server architecture.</p>
-
-<p>More precisely, we will be interested in authoritative servers, it means that the server is always right. For instance, if a player thinks it is at coordinates (10, 5) but the server tells him that it is at (5, 3), then the client should update its position to the server’s one, and not the opposite. Using an authoritative server enables us to detect cheating more easily.</p>
-
-<p>There are mainly three components in game networking:</p>
-
-<ul>
-  <li>Transport protocol: how to transport the data between clients and the server?</li>
-  <li>Application protocol: what to send from clients to the server and from the server to clients and in which format?</li>
-  <li>Application logic: how to use the exchanged data to update clients and the server?</li>
-</ul>
-
-<p>It is really important to understand the role of each part and its challenges.</p>
-
-<!--more-->
-
-<h1 id="transport-protocol">Transport Protocol</h1>
-
-<p>The first part is choosing a protocol to transport the data between the server and the clients. There are two Internet protocols available for that: <a href="https://en.wikipedia.org/wiki/Transmission_Control_Protocol">TCP</a> and <a href="https://en.wikipedia.org/wiki/User_Datagram_Protocol">UDP</a>. But you can also make your own custom transport protocol based on one of them or use a library that uses them.</p>
-
-<h2 id="tcp-vs-udp">TCP vs UDP</h2>
-
-<p>Both TCP and UDP are based on <a href="https://en.wikipedia.org/wiki/Internet_Protocol">IP</a>. IP allows to transmit a packet from a source to a destination but it provides no guarantee that the sent packet will eventually arrive at destination nor that it will arrive only once, nor that the data is not corrupted during the transfer, nor that a sequence of packets will arrive in order. Moreover, a packet can only contain a limited size of data which is given by the <a href="https://en.wikipedia.org/wiki/Maximum_transmission_unit">MTU</a>.</p>
-
-<p>UDP is only a thin layer above IP. Consequently, it has the same limitations. TCP, however, has a lot of features. It provides a reliable, ordered, and error-checked connection between two hosts. Thus TCP is really handy and is used in numerous other protocols such as <a href="https://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol">HTTP</a>, <a href="https://en.wikipedia.org/wiki/File_Transfer_Protocol">FTP</a> or <a href="https://en.wikipedia.org/wiki/Simple_Mail_Transfer_Protocol">SMTP</a>. But all these features come with a cost: <a href="https://en.wikipedia.org/wiki/Latency_(engineering)"><em>latency</em></a>.</p>
-
-<p>In order to understand why these features may cause latency. We must understand how TCP works. When a source host sends a packet to a destination host, it expects to receive an acknowledgement (ACK). If it does not receive any after some time (because its packet has been lost or the acknowledgement has been lost or any other reason), it sends again the packet. Moreover, TCP ensures the packets are arriving in order, so while the lost packet has not been received, the other packets cannot be processed even if they have already been received by the destination host.</p>
-
-<p>But as you may know, latency is important in multiplayer video games especially for action based games such as FPS. That is the reason why many games use UDP with a custom protocol.</p>
-
-<p>They are several ways a custom protocol using UDP may be more efficient than TCP. For example, it can mark some packets as reliable and some others as unreliable. Thus, it will not care if an unreliable packet arrives or not at its destination. Or it can manage several streams of data so that a lost packet in one stream will not slow down the other streams. For instance, there can be a stream for user inputs and another one for chat messages, thus if a chat message, which is nonurgent data, is lost, it will not slow down a trigger input, which is urgent. Or, the custom protocol can implement reliability in another way than TCP which is more efficient under video games assumption.</p>
-
-<p>So, if TCP is so shitty, let’s implement our custom transport protocol based on UDP?</p>
-
-<p>It is more complex than that. Even if TCP is almost always sub-optimal for video game networking. It may nevertheless work fine for your game and spare you precious time. For instance, latency may not be an issue for a turn-by-turn game or for a game that is only playable on LAN networks, where the latency and the packet loss rate is way smaller than on the Internet.</p>
-
-<p>Many successful games, such as World of Warcraft, Minecraft or Terraria, use TCP. However, most of FPS use a custom protocol based on UDP, we are going to talk more about that in the next sections.</p>
-
-<p>If you decide to use TCP, ensure that <a href="https://en.wikipedia.org/wiki/Nagle%27s_algorithm">Nagle’s algorithm</a> is disabled as it buffers packets before sending them and consequently increases the latency.</p>
-
-<p>To know more about the differences between UDP and TCP in a multiplayer game context, you can read the article <a href="https://web.archive.org/web/20180823015049/https://gafferongames.com/post/udp_vs_tcp/"><em>UDP vs. TCP</em></a> by Glenn Fiedler.</p>
-
-<h2 id="custom-protocol">Custom Protocol</h2>
-
-<p>So you want to create your own transport protocol but you are not sure where to start? You are lucky because Glenn Fielder wrote two great series of articles explaining a way to do that. You will find plenty of smart ideas there.</p>
-
-<p>The first one <a href="https://web.archive.org/web/20180823012240/https://gafferongames.com/categories/game-networking"><em>Networking for Game Programmers</em></a> from 2008 is simpler than the second one <a href="https://web.archive.org/web/20180823014904/https://gafferongames.com/categories/building-a-game-network-protocol"><em>Building A Game Network Protocol</em></a> from 2016. I advise you to start with the oldest one.</p>
-
-<p>Be aware that Glenn Fiedler is a strong advocate of using a custom UDP based protocol. And after having read his articles, you will surely share its point of view that TCP has major flaws for video games and you will want to implement your own protocol.</p>
-
-<p>But if you are new to networking, please do yourself a favor and use TCP or a library. You have surely many things to learn before being able to implement successfully a custom transport protocol.</p>
-
-<h2 id="network-libraries">Network Libraries</h2>
-
-<p>If you need something more efficient than TCP but do not want to bother implementing a custom protocol and dive into many issues, you can use a networking library. There are plenty available:</p>
-
-<ul>
-  <li><a href="https://github.com/networkprotocol/yojimbo">yojimbo</a> by Glenn Fiedler</li>
-  <li><a href="https://github.com/facebookarchive/RakNet">RakNet</a> which is not maintained anymore but a fork <a href="https://github.com/SLikeSoft/SLikeNet">SLikeNet</a> seems to be active.</li>
-  <li><a href="http://enet.bespin.org/">ENet</a> which is a library that has been made for the multiplayer FPS <a href="http://cubeengine.com/">Cube</a></li>
-  <li><a href="https://github.com/ValveSoftware/GameNetworkingSockets">GameNetworkingSockets</a> by Valve</li>
-</ul>
-
-<p>I have not tried them all but my preference goes to ENet as it is simple to use and robust. Moreover, it has clear documentation and a tutorial to get started.</p>
-
-<h2 id="transport-protocol--conclusion">Transport Protocol – Conclusion</h2>
-
-<p>To sum up, there exists two base transport protocols: TCP and UDP. TCP has a lot of useful features: reliability, preserving packet order, error detection, while UDP does not but due to its design TCP has higher latency which may be inadequate for certain games. Thus, to have lower latency, it is possible to create a custom transport protocol using UDP or to use a library that provides a transport protocol based on UDP adapted for multiplayer video games.</p>
-
-<p>Choosing between TCP, UDP or using a library depends on several factors. Firstly, the needs of your game: does it require a very low latency? Secondly, the needs of the application protocol: does it require a reliable protocol? As we will see in the next part, it is possible to design an application protocol that is fine with an unreliable protocol. Finally, the experience of the networking developer.</p>
-
-<p>I have two pieces of advice:</p>
-
-<ul>
-  <li>Abstract your transport protocol as much as possible from the rest of the application. So that you can easily change it without rewriting everything.</li>
-  <li>Do not optimize prematurely. If you are not a networking expert and you are not sure if you really need a custom transport protocol build on UDP, you may start using TCP or a library that provides reliability and, test and measure. If there are issues and you are sure it comes from the transport protocol, then it may be the time to create your own transport protocol.</li>
-</ul>
-
-<p>To finish, this part, I advise you to read <a href="https://web.archive.org/web/20190519135537/http://trac.bookofhook.com/bookofhook/trac.cgi/wiki/IntroductionToMultiplayerGameProgramming"><em>Introduction to Multiplayer Game Programming</em></a> by Brian Hook which covers a lot of topics we have discussed here.</p>
-
-<h1 id="application-protocol">Application Protocol</h1>
-
-<p>Now that you have a way to exchange data between clients and the server you must decide what data to exchange and with which format.</p>
-
-<p>The classic scheme is that clients send inputs or actions to the server and the server sends the current game state to the clients.</p>
-
-<p>The server does not send the whole state but a filtered state with the entities that are around a player. It does that for three reasons. Firstly, the whole state may be way too large to be transmitted at high frequency. Secondly, the clients are mainly interested in the visual and audio data as most of the game logic is only simulated on the game server. Finally, in some games, the player must not know some data such as the position of an opponent at the other end of the map, otherwise, he can sniff the packets and know exactly where to go to kill him.</p>
-
-<!--image-->
-
-<h2 id="serialization">Serialization</h2>
-
-<p>The first step is to convert the data we want to send (the inputs or the game state) in a format suitable for transmission. This process is called <a href="https://en.wikipedia.org/wiki/Serialization"><em>serialization</em></a>.</p>
-
-<p>A first idea may be to use a human readable-format such as JSON or XML. But it would not be efficient at all and takes a lot of bandwidth needlessly.</p>
-
-<p>Instead, it is advisable to use a binary format which is much more compact. Thus, the packets will just contain a bunch of bytes. One issue you should be careful about is <a href="https://en.wikipedia.org/wiki/Endianness"><em>endianness</em></a>, the order of bytes may vary from one computer to another.</p>
-
-<p>You can use a library to help you serialize your data such as:</p>
-
-<ul>
-  <li><a href="https://google.github.io/flatbuffers/">FlatBuffers</a> by Google</li>
-  <li><a href="https://capnproto.org/">Cap’n Proto</a> by Sandstorm</li>
-  <li><a href="http://uscilab.github.io/cereal/serialization_archives.html">cereal</a> by Shane Grant and Randolph Voorhies</li>
-</ul>
-
-<p>Just be careful that the library makes portable archives and takes care of endianness.</p>
-
-<p>The alternative is to handle everything yourself, it is not really difficult, especially if you have a data-oriented approach in your code. It may also allow you to do certain optimization that is not always possible to achieve with a library.</p>
-
-<p>Glenn Fiedler wrote two articles about serialization: <a href="https://web.archive.org/web/20180823004533/https://gafferongames.com/post/reading_and_writing_packets/"><em>Reading and Writing Packets</em></a> and <a href="https://web.archive.org/web/20180823015044/https://gafferongames.com/post/serialization_strategies/"><em>Serialization Strategies</em></a>.</p>
-
-<h2 id="compression">Compression</h2>
-
-<p>The quantity of data that can be exchanged by clients and the server is limited by the bandwidth. Compressing your data may allow you to exchange more data in each snapshot, to have a faster refresh rate, or simply to have lower requirements on the bandwidth.</p>
-
-<h3 id="bit-packing">Bit packing</h3>
-
-<p>The first technique is bit packing. It consists in using exactly the number of bits you need to represent a given quantity. For instance, if you have an enumeration that can take 16 different values, you will use only 4 bits instead of a whole byte (8 bits).</p>
-
-<p>Glenn Fiedler explains how to achieve that in the second part of <a href="https://web.archive.org/web/20180823004533/https://gafferongames.com/post/reading_and_writing_packets/"><em>Reading and Writing Packets</em></a>.</p>
-
-<p>Bit packing works particularly well with quantization which is the next topic.</p>
-
-<h3 id="quantization">Quantization</h3>
-
-<p><a href="https://en.wikipedia.org/wiki/Quantization_(signal_processing)"><em>Quantization</em></a> is a lossy compression technique which consists in only using a subset of possible values to encode a quantity. The simplest way to achieve quantization is by truncating floating-point numbers.</p>
-
-<p>Glenn Fiedler (again!) shows how to use quantization in practice in his article <a href="https://web.archive.org/web/20180823021121/https://gafferongames.com/post/snapshot_compression/">Snapshot Compression</a>.</p>
-
-<p>Shawn Hargreaves also has some interesting articles on compression including quantization, you can find them all <a href="http://www.shawnhargreaves.com/blogindex.html#networking">here</a>.</p>
-
-<h3 id="compression-algorithms">Compression Algorithms</h3>
-
-<p>The next technique is using lossless compression algorithms.</p>
-
-<p>In my opinion, the three more interesting algorithms to know are:</p>
-<ul>
-  <li><a href="https://en.wikipedia.org/wiki/Huffman_coding">Huffman coding</a> with a precomputed code which is extremely fast and can give good results. It was used to compress the packets in the Quake3 network engine.</li>
-  <li>Using <a href="http://www.zlib.net/">zlib</a> which is a general-purpose compression algorithm and it never expands the data. It is used in numerous applications as you can see <a href="https://en.wikipedia.org/wiki/Zlib">here</a>. It may be overkill for state updates. But it may be interesting if you have to send assets, long texts or terrains from the server to clients.</li>
-  <li><a href="https://en.wikipedia.org/wiki/Run-length_encoding">Run-length encoding</a> is maybe the simplest compression algorithm but it is very efficient for certain types of data. It is specifically suitable for compressing terrains made of tiles or voxels where many adjacent elements are similar.</li>
-</ul>
-
-<p>There is also a paid library by Rad Game Tools called <a href="http://www.radgametools.com/oodlenetwork.htm">Oodle Network Compression</a>. On the page, they show an interesting graph where they compared the compression ratio of Huffman coding, zlib and their solution, very instructive.</p>
-
-<h3 id="delta-compression">Delta Compression</h3>
-
-<p>The last compression technique is delta compression. It consists in sending only the differences between the current game state and the last state received by a client.</p>
-
-<p>It was first used in Quake3 network engine, here are two articles explaining how it was used:</p>
-<ul>
-  <li><a href="https://web.archive.org/web/20190628180906/http://trac.bookofhook.com/bookofhook/trac.cgi/wiki/Quake3Networking"><em>The Quake3 Networking Model</em></a> by Brian Hook</li>
-  <li><a href="http://fabiensanglard.net/quake3/network.php"><em>Quake 3 Source Code Review: Network Model</em></a> by Fabien Sanglard</li>
-</ul>
-
-<p>Glenn Fiedler also used it in the second part of his article <a href="https://web.archive.org/web/20180823021121/https://gafferongames.com/post/snapshot_compression/"><em>Snapshot Compression</em></a>.</p>
-
-<h2 id="encryption">Encryption</h2>
-
-<p>Finally, you may want to encrypt the communication between clients and the server for several reasons:</p>
-
-<ul>
-  <li>privacy/confidentiality: the messages can only be read by its receiver, any other person who sniffs the network will not be able to read them.</li>
-  <li>authenticity: any person who wants to impersonate a player will have to know its key.</li>
-  <li>cheating prevention: it will be way harder for malicious players to craft custom packets to cheat, they will have to reproduce the encryption scheme and find the key (which changes at each connection).</li>
-</ul>
-
-<p>I strongly advise you to use a library to help you. I suggest <a href="https://download.libsodium.org/doc/">libsodium</a> as it is particularly simple to use and it provides great tutorials. You will be in particular interested by the <a href="https://download.libsodium.org/doc/key_exchange">key exchange</a> tutorial to generate new keys for each new connection.</p>
-
-<h2 id="application-protocol--conclusion">Application Protocol – Conclusion</h2>
-
-<p>That is all for this part. I think that compression is totally optional and it depends on your game and how much bandwidth is needed. Encryption is, in my opinion, not optional but it may be skipped in a first prototype.</p>
-
-<h1 id="application-logic">Application Logic</h1>
-
-<p>You are now able to update the state in the client but you may experience latency issues. Indeed, you have to wait for a game state update from the server after having triggered an input to see its effect in the world.</p>
-
-<p>Moreover, between two state updates, the world is completely static. Thus, movements will be completely chopped if the state update rate is low.</p>
-
-<p>There are several techniques to mitigate these issues that I will present in the next section.</p>
-
-<h2 id="latency-mitigation-techniques">Latency Mitigation Techniques</h2>
-
-<p>All the techniques presented in this section are presented in-depth in <a href="https://www.gabrielgambetta.com/client-server-game-architecture.html"><em>Fast-Paced Multiplayer</em></a> by Gabriel Gambetta. I strongly advise you to read this series of articles which is great. There is also a live demo to see how these techniques work in practice.</p>
-
-<p>The first technique is to apply the result of an input directly without waiting for the response from the server. It is called <em>client-side prediction</em>. However, when the client receives an update from the server, it has to check that its prediction was correct, otherwise, it must modify its state according to what it has received from the server as the server is the authority. This technique was first used in Quake, you can read more in the <a href="http://fabiensanglard.net/quakeSource/index.php"><em>Quake Engine code review</em></a> by Fabien Sanglard.</p>
-
-<p>The second set of techniques is for smoothing the movement of other entities between two state updates. There are two ways to achieve this: by doing interpolation or extrapolation. Interpolation is using the two last states and showing the transition from one to another. Its drawback is that it induces a bit of latency because the client always shows what happens in the past. Extrapolation consists in predicting where the entities would be now according to the last state the client received. Its drawback is that if an entity completely changes its direction, there would be a large error between the prediction and the real position.</p>
-
-<p>The last technique which is most advanced and only useful in FPS is <em>lag compensation</em>. With lag compensation, the server takes into account the latency of the client when they are shooting at a target. For instance, if the player did a headshot on its screen but in reality, its target is elsewhere due to latency, it would be unfair to the player to refuse him his kill due to latency. So the server will rewind in time, at the time the player shot to simulate what the player saw on its screen and check the collision between his shot and the target.</p>
-
-<p>Glenn Fiedler (always!) wrote <a href="https://web.archive.org/web/20180823005028/https://gafferongames.com/post/networked_physics_2004/"><em>Network Physics (2004)</em></a> in 2004 where he laid the foundations of synchronizing a physics simulation between a server and a client. In 2014, he wrote a new series of articles, <a href="https://web.archive.org/web/20180823004853/https://gafferongames.com/categories/networked-physics"><em>Networking Physics</em></a>, where he showed more techniques to synchronize a physics simulation.</p>
-
-<p>There are also two articles on Valve’s wiki, <a href="https://developer.valvesoftware.com/wiki/Source_Multiplayer_Networking"><em>Source Multiplayer Networking</em></a> and <a href="https://developer.valvesoftware.com/wiki/Latency_Compensating_Methods_in_Client/Server_In-game_Protocol_Design_and_Optimization"><em>Latency Compensating Methods in Client/Server In-game Protocol Design and Optimization</em></a>, which deal with latency compensation.</p>
-
-<h2 id="cheating-prevention">Cheating Prevention</h2>
-
-<p>There are mainly two ways to cheat in a mutliplayer game: by sending malicious packets to the server or by reading data coming from the server that give an unfair advantage to the cheater.</p>
-
-<p>A first technique is to make hard for cheaters to craft malicious packets and to read incoming packets. As we explained before, encryption is a good way to achieve that as it will <a href="https://en.wikipedia.org/wiki/Obfuscation">obfuscate</a> the incoming packets and the cheaters will have to get the keys and reproduce the encryption scheme to craft malicious packets.</p>
-
-<p>The second technique is to have an authoritative server that only receives commands/inputs/actions. The client should never be able to modify the server state by another way than sending inputs. Then, each time the server receives an input, it should check that this input is valid before to apply it.</p>
-
-<p>The best technique to prevent cheaters from accessing data they should not know about is simply by making sure the server does not send it in the first place. For instance, the server should not send to the players the position of opponents or monsters that are far from them. Otherwise, even if they are not visible in the game, the players can read the incoming packets and know exactly where to go to kill their targets. This kind of cheating is called <em>map hack</em> or <em>world hack</em>.</p>
-
-<p>If you want to know more about cheating you can read the article <a href="https://en.wikipedia.org/wiki/Cheating_in_online_games">Cheating in online games</a> on Wikipedia which contains a list of possible ways of cheating and solutions to detect and prevent them.</p>
-
-<h2 id="application-logic--conclusion">Application Logic – Conclusion</h2>
-
-<p>I advise you to implement a way to simulate high latency and low refresh rates in your game to be able to test your game in bad conditions even if both the client and the server are running on your computer. It will simplify greatly the implementation of latency mitigation techniques.</p>
-
-<h1 id="other-useful-resources">Other Useful Resources</h1>
-
-<p>If you are looking for more networking resources, you can find them there:</p>
-<ul>
-  <li><a href="https://web.archive.org/web/20190328001900/https://gafferongames.com/">Glenn Fielder’s blog</a>, you should read its entire blog, it contains lots of great articles. <a href="https://web.archive.org/web/20180823014743/https://gafferongames.com/tags/networking">Here</a> are all its articles concerning networking.</li>
-  <li><a href="https://github.com/MFatihMAR/Awesome-Game-Networking">Awesome Game Networking</a> by M. Fatih MAR is an extensive list of articles and videos on game networking.</li>
-  <li><a href="https://www.reddit.com/r/gamedev/wiki/index#wiki_networking">r/gamedev’s wiki</a> also contains many useful links.</li>
-</ul>
-
-<h1 id="conclusion">Conclusion</h1>
-
-<p>That is all for this guide. I hope you learned a few things and find interesting articles. Good luck with the creation of your network engine!</p>
-
-<p>See you next week for more!</p>
-
-<p>Edit: Thanks to the redditors for the <a href="https://www.reddit.com/r/gamedev/comments/d1oz18/beginners_guide_to_game_networking/">feedback</a>. I tried to take it into account.</p>]]></content><author><name>pierre</name></author><category term="vagabond" /><category term="game-engine" /><summary type="html"><![CDATA[During the last two weeks, I was working on the network engine of my game. And before that, I knew nothing about game networking. Thus, I read a lot of articles and did a lot of experiments to understand all the concepts and be able to code my own network engine. In this guide, I want to share with you the different concepts you must learn before to write your own game engine and the best resources and articles to learn them. There are mainly two possible network architectures: peer-to-peer and client-server. In the peer-to-peer architecture, data is exchanged between any pair of connected players while in the client-server architecture, data is only exchanged between players and the server. While the peer-to-peer architecture is still used in some games, client-server is the standard as it is easier to implement, it requires less bandwidth and it is easier to prevent cheating. Thus, in this guide, we will focus on client-server architecture. More precisely, we will be interested in authoritative servers, it means that the server is always right. For instance, if a player thinks it is at coordinates (10, 5) but the server tells him that it is at (5, 3), then the client should update its position to the server’s one, and not the opposite. Using an authoritative server enables us to detect cheating more easily. There are mainly three components in game networking: Transport protocol: how to transport the data between clients and the server? Application protocol: what to send from clients to the server and from the server to clients and in which format? Application logic: how to use the exchanged data to update clients and the server? It is really important to understand the role of each part and its challenges.]]></summary></entry></feed>
+<p>See you next week for more!</p>]]></content><author><name>pierre</name></author><category term="vagabond" /><summary type="html"><![CDATA[Hi everyone! This is the first devlog since I stopped working on the game engine and really started working on the game. I did not publish a post last week, I started writing an article about the new implementation of my entity-component-system library but I did not find the time to finish it yet. The last two weeks were pretty busy.]]></summary></entry></feed>

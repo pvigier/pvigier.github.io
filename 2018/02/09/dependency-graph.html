@@ -23,7 +23,7 @@
 <meta name="twitter:card" content="summary" />
 <meta property="twitter:title" content="Circular Dependencies in C++" />
 <script type="application/ld+json">
-{"mainEntityOfPage":{"@type":"WebPage","@id":"https://pvigier.github.io/2018/02/09/dependency-graph.html"},"description":"Hi guys, it has been a while since the last post. I write this short post to tell you about a small script I coded recently. You can find it here on my github account. Its goal is to draw the “include” dependencies between classes in a C++ project. In particular, it allows to detect circular dependencies very easily or to check the architecture of a project. You can see the output of the script on a project of mine: I really like this visual representation which allows to see how classes interact. However, the true reason why I created this tool is not because I like to see beautiful graphs but because I hate circular dependencies (note that there is none in the graph above). I consider circular dependencies as design flaws. But sometimes in a large project, it could happen that accidentally I create circular dependencies …","url":"https://pvigier.github.io/2018/02/09/dependency-graph.html","author":{"@type":"Person","name":"pierre"},"@type":"BlogPosting","headline":"Circular Dependencies in C++","dateModified":"2018-02-09T00:00:00+01:00","datePublished":"2018-02-09T00:00:00+01:00","@context":"https://schema.org"}</script>
+{"@type":"BlogPosting","headline":"Circular Dependencies in C++","dateModified":"2018-02-09T00:00:00+01:00","datePublished":"2018-02-09T00:00:00+01:00","description":"Hi guys, it has been a while since the last post. I write this short post to tell you about a small script I coded recently. You can find it here on my github account. Its goal is to draw the “include” dependencies between classes in a C++ project. In particular, it allows to detect circular dependencies very easily or to check the architecture of a project. You can see the output of the script on a project of mine: I really like this visual representation which allows to see how classes interact. However, the true reason why I created this tool is not because I like to see beautiful graphs but because I hate circular dependencies (note that there is none in the graph above). I consider circular dependencies as design flaws. But sometimes in a large project, it could happen that accidentally I create circular dependencies …","url":"https://pvigier.github.io/2018/02/09/dependency-graph.html","mainEntityOfPage":{"@type":"WebPage","@id":"https://pvigier.github.io/2018/02/09/dependency-graph.html"},"author":{"@type":"Person","name":"pierre"},"@context":"https://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 
         <!-- Bootstrap -->
@@ -138,7 +138,7 @@
 
 <h1 id="some-details-on-the-code">Some Details on the Code</h1>
 
-<p>The script is pretty simple. I use the <code class="language-plaintext highlighter-rouge">re</code> module of Python to find the <code class="language-plaintext highlighter-rouge">#include</code>’s in source files.</p>
+<p>The script is pretty simple. I use the <code class="language-plaintext highlighter-rouge">re</code> module of Python to find the <code class="language-plaintext highlighter-rouge">#include</code>s in source files.</p>
 
 <p>Then the scripts creates a graph and uses a port to Python of <a href="https://www.graphviz.org/">graphviz</a> to draw the graph. Graphviz creates very beautiful, this amazing tool is also used, for instance, by Doxygen to generate its diagram.</p>
 
@@ -149,27 +149,9 @@
 	<p>Tags: <span class="label label-primary"><a href="/tag/cpp">cpp</a></span> <span class="label label-primary"><a href="/tag/python">python</a></span> </p>
 	
 </div><!-- /.blog-post -->
+<!-- Steam -->
 <hr/>
-<p>Subscribe to the newsletter if you do not want to miss any new article:</p>
-<!-- Begin Mailchimp Signup Form -->
-<link href="//cdn-images.mailchimp.com/embedcode/horizontal-slim-10_7.css" rel="stylesheet" type="text/css">
-<style type="text/css">
-	#mc_embed_signup{background:#fff; clear:left; font:14px Helvetica,Arial,sans-serif; width:100%;}
-	/* Add your own Mailchimp form style overrides in your site stylesheet or in this style block.
-	   We recommend moving this block and the preceding CSS link to the HEAD of your HTML file. */
-</style>
-<div id="mc_embed_signup">
-<form action="https://ymail.us20.list-manage.com/subscribe/post?u=7bb3b720a12ef1d8e0b48d8da&amp;id=7516dd4562" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate" target="_blank" novalidate>
-    <div id="mc_embed_signup_scroll">
-
-	<input type="email" value="" name="EMAIL" class="email" id="mce-EMAIL" placeholder="email address" required>
-    <!-- real people should not fill this in and expect good things - do not remove this or risk form bot signups-->
-    <div style="position: absolute; left: -5000px;" aria-hidden="true"><input type="text" name="b_7bb3b720a12ef1d8e0b48d8da_7516dd4562" tabindex="-1" value=""></div>
-    <div class="clear"><input type="submit" value="Subscribe" name="subscribe" id="mc-embedded-subscribe" class="button"></div>
-    </div>
-</form>
-</div>
-<!--End mc_embed_signup-->
+<iframe src="https://store.steampowered.com/widget/1673090/" frameborder="0" width="646" height="190"></iframe>
 <!-- Disqus -->
 <hr/>
 <div id="disqus_thread"></div>
@@ -195,6 +177,7 @@ s.setAttribute('data-timestamp', +new Date());
                 </div>
                 <div class="col-sm-3 col-sm-offset-1 blog-sidebar">
     <p><strong><a href="https://store.steampowered.com/app/1673090/Vagabond/">Wishlist Vagabond on Steam!</a></strong></p>
+    <a href="https://store.steampowered.com/app/1673090/Vagabond/"><img src="/media/img/wishlist_vagabond.png" alt="Wishlist Vagabond on Steam" /></a>
 	<div class="sidebar-module">
         <h4>Tags</h4>
         <ol class="list-unstyled">
@@ -205,7 +188,7 @@ s.setAttribute('data-timestamp', +new Date());
 		
 			<li><a href="/tag/cpp">cpp (8)</a></li>
 		
-			<li><a href="/tag/pcg">pcg (15)</a></li>
+			<li><a href="/tag/pcg">pcg (16)</a></li>
 		
 			<li><a href="/tag/simulopolis">simulopolis (5)</a></li>
 		
@@ -217,7 +200,7 @@ s.setAttribute('data-timestamp', +new Date());
 		
 			<li><a href="/tag/git">git (1)</a></li>
 		
-			<li><a href="/tag/vagabond">vagabond (26)</a></li>
+			<li><a href="/tag/vagabond">vagabond (27)</a></li>
 		
 			<li><a href="/tag/ecs">ecs (2)</a></li>
 		
@@ -229,6 +212,14 @@ s.setAttribute('data-timestamp', +new Date());
         <h4>Archives</h4>
         <ol class="list-unstyled">
 		
+        
+            
+            
+            
+            
+			<li id="yNovember 2022"><a href="/2022/11">November 2022 (1)</a></li>
+				
+            
         
             
             

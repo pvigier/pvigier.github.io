@@ -23,7 +23,7 @@
 <meta name="twitter:card" content="summary" />
 <meta property="twitter:title" content="Distributing a C++ Program on Linux" />
 <script type="application/ld+json">
-{"mainEntityOfPage":{"@type":"WebPage","@id":"https://pvigier.github.io/2018/10/07/distributing-c++-program-linux.html"},"description":"Hi! Today I will tackle a problem I faced when I wanted to distribute the alpha version of Simulopolis two weeks ago: distributing a C++ binary on different Linux distributions. So, two weeks ago, I was happy as I had a version of Simulopolis which ran smoothly on my laptop. And I thought it was time to share it with people to have some feedback. Very naively, I took the binary and the assets, put them on a new folder and uploaded the whole thing on itch.io. Then, I sent a message to my big brother telling him that he can try my game. He downloaded the game and when he tried to run the game, he obtained this error message: ./Simulopolis: error while loading shared libraries: libboost_serialization.so.1.65.1: cannot open shared object file: No such file or directory Uhh, this was not expected! We read the error message, it tells that a dependency I use to build the game is missing on my brother’s system. So he tried to install Boost Serialization, SFML and TinyXML the three libraries I use in Simulopolis. But that did not solve the problem because the program is looking for a specific version of the dependency (here the version 1.65.1 of Boost serialization). And as he was on a different Linux distribution, Fedora, than me, Ubuntu, it was not the same version of Boost Serialization that was available in its package manager.","url":"https://pvigier.github.io/2018/10/07/distributing-c++-program-linux.html","author":{"@type":"Person","name":"pierre"},"@type":"BlogPosting","headline":"Distributing a C++ Program on Linux","dateModified":"2018-10-07T00:00:00+02:00","datePublished":"2018-10-07T00:00:00+02:00","@context":"https://schema.org"}</script>
+{"@type":"BlogPosting","headline":"Distributing a C++ Program on Linux","dateModified":"2018-10-07T00:00:00+02:00","datePublished":"2018-10-07T00:00:00+02:00","description":"Hi! Today I will tackle a problem I faced when I wanted to distribute the alpha version of Simulopolis two weeks ago: distributing a C++ binary on different Linux distributions. So, two weeks ago, I was happy as I had a version of Simulopolis which ran smoothly on my laptop. And I thought it was time to share it with people to have some feedback. Very naively, I took the binary and the assets, put them on a new folder and uploaded the whole thing on itch.io. Then, I sent a message to my big brother telling him that he can try my game. He downloaded the game and when he tried to run the game, he obtained this error message: ./Simulopolis: error while loading shared libraries: libboost_serialization.so.1.65.1: cannot open shared object file: No such file or directory Uhh, this was not expected! We read the error message, it tells that a dependency I use to build the game is missing on my brother’s system. So he tried to install Boost Serialization, SFML and TinyXML the three libraries I use in Simulopolis. But that did not solve the problem because the program is looking for a specific version of the dependency (here the version 1.65.1 of Boost serialization). And as he was on a different Linux distribution, Fedora, than me, Ubuntu, it was not the same version of Boost Serialization that was available in its package manager.","url":"https://pvigier.github.io/2018/10/07/distributing-c++-program-linux.html","mainEntityOfPage":{"@type":"WebPage","@id":"https://pvigier.github.io/2018/10/07/distributing-c++-program-linux.html"},"author":{"@type":"Person","name":"pierre"},"@context":"https://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 
         <!-- Bootstrap -->
@@ -86,11 +86,11 @@
 
 <p>I search over the Internet to see how people usually tackle this problem. I mainly found three methods.</p>
 
-<p>The first one is to use the package managers of the different distributions to manage the dependencies. This method requires to write a little manifest for each package manager and to compile the game for each system. Then instead of distributing a zip, I would distribute a .deb or a .rpm depending of the package manager. I think this is the recommended method because you use the system’s libraries that are shared by all the applications. However, I thought this requires too much work for a first version. Maybe, I will investigate that later.</p>
+<p>The first one is to use the package managers of the different distributions to manage the dependencies. This method requires to write a little manifest for each package manager and to compile the game for each system. Then instead of distributing a zip, I would distribute a .deb or a .rpm depending of the package manager. I think this is the recommended method because you use the system libraries that are shared by all the applications. However, I thought this requires too much work for a first version. Maybe, I will investigate that later.</p>
 
 <p>The second one is to use static linking i.e. to embed the dependencies in the binary. What bothers me with static linking is that if you want to link a library licensed under the GPL then the whole app becomes licensed under the GPL. In the case of Simulopolis, it was not a problem as the game is already open-source and distributed under the GPL. But I could not reuse the method for a future project not distributed under the GPL.</p>
 
-<p>The third one is to use dynamic linking and to distribute the dependencies with the binary. Exactly as we do on Windows when we distribute DLLs alongside the binary. The difference between Linux and Windows is that by default on Linux a binary only looks for libraries on the system’s folder like <code class="language-plaintext highlighter-rouge">/usr/local/lib</code> while on Windows the executable looks first in the current folder. But there is a way to tell the executable to look for the dependencies in the current folder, this is called run-time search path (rpath).</p>
+<p>The third one is to use dynamic linking and to distribute the dependencies with the binary. Exactly as we do on Windows when we distribute DLLs alongside the binary. The difference between Linux and Windows is that by default on Linux a binary only looks for libraries on the system folder like <code class="language-plaintext highlighter-rouge">/usr/local/lib</code> while on Windows the executable looks first in the current folder. But there is a way to tell the executable to look for the dependencies in the current folder, this is called run-time search path (rpath).</p>
 
 <h1 id="setting-the-rpath">Setting the Rpath</h1>
 
@@ -154,27 +154,9 @@
 	<p>Tags: <span class="label label-primary"><a href="/tag/cpp">cpp</a></span> <span class="label label-primary"><a href="/tag/linux">linux</a></span> <span class="label label-primary"><a href="/tag/simulopolis">simulopolis</a></span> </p>
 	
 </div><!-- /.blog-post -->
+<!-- Steam -->
 <hr/>
-<p>Subscribe to the newsletter if you do not want to miss any new article:</p>
-<!-- Begin Mailchimp Signup Form -->
-<link href="//cdn-images.mailchimp.com/embedcode/horizontal-slim-10_7.css" rel="stylesheet" type="text/css">
-<style type="text/css">
-	#mc_embed_signup{background:#fff; clear:left; font:14px Helvetica,Arial,sans-serif; width:100%;}
-	/* Add your own Mailchimp form style overrides in your site stylesheet or in this style block.
-	   We recommend moving this block and the preceding CSS link to the HEAD of your HTML file. */
-</style>
-<div id="mc_embed_signup">
-<form action="https://ymail.us20.list-manage.com/subscribe/post?u=7bb3b720a12ef1d8e0b48d8da&amp;id=7516dd4562" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate" target="_blank" novalidate>
-    <div id="mc_embed_signup_scroll">
-
-	<input type="email" value="" name="EMAIL" class="email" id="mce-EMAIL" placeholder="email address" required>
-    <!-- real people should not fill this in and expect good things - do not remove this or risk form bot signups-->
-    <div style="position: absolute; left: -5000px;" aria-hidden="true"><input type="text" name="b_7bb3b720a12ef1d8e0b48d8da_7516dd4562" tabindex="-1" value=""></div>
-    <div class="clear"><input type="submit" value="Subscribe" name="subscribe" id="mc-embedded-subscribe" class="button"></div>
-    </div>
-</form>
-</div>
-<!--End mc_embed_signup-->
+<iframe src="https://store.steampowered.com/widget/1673090/" frameborder="0" width="646" height="190"></iframe>
 <!-- Disqus -->
 <hr/>
 <div id="disqus_thread"></div>
@@ -200,6 +182,7 @@ s.setAttribute('data-timestamp', +new Date());
                 </div>
                 <div class="col-sm-3 col-sm-offset-1 blog-sidebar">
     <p><strong><a href="https://store.steampowered.com/app/1673090/Vagabond/">Wishlist Vagabond on Steam!</a></strong></p>
+    <a href="https://store.steampowered.com/app/1673090/Vagabond/"><img src="/media/img/wishlist_vagabond.png" alt="Wishlist Vagabond on Steam" /></a>
 	<div class="sidebar-module">
         <h4>Tags</h4>
         <ol class="list-unstyled">
@@ -210,7 +193,7 @@ s.setAttribute('data-timestamp', +new Date());
 		
 			<li><a href="/tag/cpp">cpp (8)</a></li>
 		
-			<li><a href="/tag/pcg">pcg (15)</a></li>
+			<li><a href="/tag/pcg">pcg (16)</a></li>
 		
 			<li><a href="/tag/simulopolis">simulopolis (5)</a></li>
 		
@@ -222,7 +205,7 @@ s.setAttribute('data-timestamp', +new Date());
 		
 			<li><a href="/tag/git">git (1)</a></li>
 		
-			<li><a href="/tag/vagabond">vagabond (26)</a></li>
+			<li><a href="/tag/vagabond">vagabond (27)</a></li>
 		
 			<li><a href="/tag/ecs">ecs (2)</a></li>
 		
@@ -234,6 +217,14 @@ s.setAttribute('data-timestamp', +new Date());
         <h4>Archives</h4>
         <ol class="list-unstyled">
 		
+        
+            
+            
+            
+            
+			<li id="yNovember 2022"><a href="/2022/11">November 2022 (1)</a></li>
+				
+            
         
             
             

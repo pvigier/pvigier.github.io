@@ -23,7 +23,7 @@
 <meta name="twitter:card" content="summary" />
 <meta property="twitter:title" content="Perlin Noise With Numpy" />
 <script type="application/ld+json">
-{"mainEntityOfPage":{"@type":"WebPage","@id":"https://pvigier.github.io/2018/06/13/perlin-noise-numpy.html"},"description":"Hi everyone, I have written an implementation of Perlin noise with numpy that is pretty fast, and I want to share it with you. The code is available here. Perlin Noise My code looks like the original implementation. The only difference is that I tried to use the vectorized operations of numpy as much as possible instead of for loops. Because as you may know, loops are really slow in Python. Here is the code: def generate_perlin_noise_2d(shape, res): def f(t): return 6*t**5 - 15*t**4 + 10*t**3 delta = (res[0] / shape[0], res[1] / shape[1]) d = (shape[0] // res[0], shape[1] // res[1]) grid = np.mgrid[0:res[0]:delta[0],0:res[1]:delta[1]].transpose(1, 2, 0) % 1 # Gradients angles = 2*np.pi*np.random.rand(res[0]+1, res[1]+1) gradients = np.dstack((np.cos(angles), np.sin(angles))) g00 = gradients[0:-1,0:-1].repeat(d[0], 0).repeat(d[1], 1) g10 = gradients[1:,0:-1].repeat(d[0], 0).repeat(d[1], 1) g01 = gradients[0:-1,1:].repeat(d[0], 0).repeat(d[1], 1) g11 = gradients[1:,1:].repeat(d[0], 0).repeat(d[1], 1) # Ramps n00 = np.sum(grid * g00, 2) n10 = np.sum(np.dstack((grid[:,:,0]-1, grid[:,:,1])) * g10, 2) n01 = np.sum(np.dstack((grid[:,:,0], grid[:,:,1]-1)) * g01, 2) n11 = np.sum(np.dstack((grid[:,:,0]-1, grid[:,:,1]-1)) * g11, 2) # Interpolation t = f(grid) n0 = n00*(1-t[:,:,0]) + t[:,:,0]*n10 n1 = n01*(1-t[:,:,0]) + t[:,:,0]*n11 return np.sqrt(2)*((1-t[:,:,1])*n0 + t[:,:,1]*n1) If you are familiar with Perlin noise, nothing should surprise you. Otherwise, I can suggest you to read the first pages of this article which explains Perlin noise very well in my opinion. An example of what the function generates: I normalized the gradients so that the noise is always between -1 and 1.","url":"https://pvigier.github.io/2018/06/13/perlin-noise-numpy.html","author":{"@type":"Person","name":"pierre"},"@type":"BlogPosting","headline":"Perlin Noise With Numpy","dateModified":"2018-06-13T00:00:00+02:00","datePublished":"2018-06-13T00:00:00+02:00","@context":"https://schema.org"}</script>
+{"@type":"BlogPosting","headline":"Perlin Noise With Numpy","dateModified":"2018-06-13T00:00:00+02:00","datePublished":"2018-06-13T00:00:00+02:00","description":"Hi everyone, I have written an implementation of Perlin noise with numpy that is pretty fast, and I want to share it with you. The code is available here. Perlin Noise My code looks like the original implementation. The only difference is that I tried to use the vectorized operations of numpy as much as possible instead of for loops. Because as you may know, loops are really slow in Python. Here is the code: def generate_perlin_noise_2d(shape, res): def f(t): return 6*t**5 - 15*t**4 + 10*t**3 delta = (res[0] / shape[0], res[1] / shape[1]) d = (shape[0] // res[0], shape[1] // res[1]) grid = np.mgrid[0:res[0]:delta[0],0:res[1]:delta[1]].transpose(1, 2, 0) % 1 # Gradients angles = 2*np.pi*np.random.rand(res[0]+1, res[1]+1) gradients = np.dstack((np.cos(angles), np.sin(angles))) g00 = gradients[0:-1,0:-1].repeat(d[0], 0).repeat(d[1], 1) g10 = gradients[1:,0:-1].repeat(d[0], 0).repeat(d[1], 1) g01 = gradients[0:-1,1:].repeat(d[0], 0).repeat(d[1], 1) g11 = gradients[1:,1:].repeat(d[0], 0).repeat(d[1], 1) # Ramps n00 = np.sum(grid * g00, 2) n10 = np.sum(np.dstack((grid[:,:,0]-1, grid[:,:,1])) * g10, 2) n01 = np.sum(np.dstack((grid[:,:,0], grid[:,:,1]-1)) * g01, 2) n11 = np.sum(np.dstack((grid[:,:,0]-1, grid[:,:,1]-1)) * g11, 2) # Interpolation t = f(grid) n0 = n00*(1-t[:,:,0]) + t[:,:,0]*n10 n1 = n01*(1-t[:,:,0]) + t[:,:,0]*n11 return np.sqrt(2)*((1-t[:,:,1])*n0 + t[:,:,1]*n1) If you are familiar with Perlin noise, nothing should surprise you. Otherwise, I can suggest you to read the first pages of this article which explains Perlin noise very well in my opinion. An example of what the function generates: I normalized the gradients so that the noise is always between -1 and 1.","url":"https://pvigier.github.io/2018/06/13/perlin-noise-numpy.html","mainEntityOfPage":{"@type":"WebPage","@id":"https://pvigier.github.io/2018/06/13/perlin-noise-numpy.html"},"author":{"@type":"Person","name":"pierre"},"@context":"https://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 
         <!-- Bootstrap -->
@@ -135,27 +135,9 @@
 	<p>Tags: <span class="label label-primary"><a href="/tag/pcg">pcg</a></span> <span class="label label-primary"><a href="/tag/python">python</a></span> </p>
 	
 </div><!-- /.blog-post -->
+<!-- Steam -->
 <hr/>
-<p>Subscribe to the newsletter if you do not want to miss any new article:</p>
-<!-- Begin Mailchimp Signup Form -->
-<link href="//cdn-images.mailchimp.com/embedcode/horizontal-slim-10_7.css" rel="stylesheet" type="text/css">
-<style type="text/css">
-	#mc_embed_signup{background:#fff; clear:left; font:14px Helvetica,Arial,sans-serif; width:100%;}
-	/* Add your own Mailchimp form style overrides in your site stylesheet or in this style block.
-	   We recommend moving this block and the preceding CSS link to the HEAD of your HTML file. */
-</style>
-<div id="mc_embed_signup">
-<form action="https://ymail.us20.list-manage.com/subscribe/post?u=7bb3b720a12ef1d8e0b48d8da&amp;id=7516dd4562" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate" target="_blank" novalidate>
-    <div id="mc_embed_signup_scroll">
-
-	<input type="email" value="" name="EMAIL" class="email" id="mce-EMAIL" placeholder="email address" required>
-    <!-- real people should not fill this in and expect good things - do not remove this or risk form bot signups-->
-    <div style="position: absolute; left: -5000px;" aria-hidden="true"><input type="text" name="b_7bb3b720a12ef1d8e0b48d8da_7516dd4562" tabindex="-1" value=""></div>
-    <div class="clear"><input type="submit" value="Subscribe" name="subscribe" id="mc-embedded-subscribe" class="button"></div>
-    </div>
-</form>
-</div>
-<!--End mc_embed_signup-->
+<iframe src="https://store.steampowered.com/widget/1673090/" frameborder="0" width="646" height="190"></iframe>
 <!-- Disqus -->
 <hr/>
 <div id="disqus_thread"></div>
@@ -181,6 +163,7 @@ s.setAttribute('data-timestamp', +new Date());
                 </div>
                 <div class="col-sm-3 col-sm-offset-1 blog-sidebar">
     <p><strong><a href="https://store.steampowered.com/app/1673090/Vagabond/">Wishlist Vagabond on Steam!</a></strong></p>
+    <a href="https://store.steampowered.com/app/1673090/Vagabond/"><img src="/media/img/wishlist_vagabond.png" alt="Wishlist Vagabond on Steam" /></a>
 	<div class="sidebar-module">
         <h4>Tags</h4>
         <ol class="list-unstyled">
@@ -191,7 +174,7 @@ s.setAttribute('data-timestamp', +new Date());
 		
 			<li><a href="/tag/cpp">cpp (8)</a></li>
 		
-			<li><a href="/tag/pcg">pcg (15)</a></li>
+			<li><a href="/tag/pcg">pcg (16)</a></li>
 		
 			<li><a href="/tag/simulopolis">simulopolis (5)</a></li>
 		
@@ -203,7 +186,7 @@ s.setAttribute('data-timestamp', +new Date());
 		
 			<li><a href="/tag/git">git (1)</a></li>
 		
-			<li><a href="/tag/vagabond">vagabond (26)</a></li>
+			<li><a href="/tag/vagabond">vagabond (27)</a></li>
 		
 			<li><a href="/tag/ecs">ecs (2)</a></li>
 		
@@ -215,6 +198,14 @@ s.setAttribute('data-timestamp', +new Date());
         <h4>Archives</h4>
         <ol class="list-unstyled">
 		
+        
+            
+            
+            
+            
+			<li id="yNovember 2022"><a href="/2022/11">November 2022 (1)</a></li>
+				
+            
         
             
             

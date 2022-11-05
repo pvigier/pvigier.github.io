@@ -13,8 +13,8 @@
 <meta property="og:title" content="Non Empty Destructors in C++" />
 <meta name="author" content="pierre" />
 <meta property="og:locale" content="en_US" />
-<meta name="description" content="Have you already faced problems with nontrivial destructors? I face one recently which was really annoying. In this article, I want to share with you my knowledge of this problem and the solutions I use to address it. The Problem The problem is not really that the destructor is non empty but that the destructor is nontrivial: there is a release of memory or some states are changed in another part of the app. Let us take a very simple example with a class that does dynamic allocation to explain the problem: class A { public: A() : mPointer(new int(0)) { } ~A() { delete mPointer; } private: int* mPointer; } As we allocate an integer in the constructor, the natural solution for memory management is to free it in the destructor. However, this will have terrible consequences. For instance, if we do this: int main() { A a; A anotherA(a); return 0; } A segmentation fault will occur. Why? Because when the main function ends, the destructor of A is called to delete a and anotherA. When a is destroyed the memory cell to which a’s mPointer points to is freed. Then, when anotherA is destroyed, we try to free the memory to which anotherA’s mPointer points to. But as anotherA is a copy of a, its mPointer points to the same memory cell as a’s mPointer. Thus, we try to free twice the same memory cell which causes the Segmentation fault. So, the problem is that because of the copy the destructor is called twice on the same attributes. Note that the copy or move constructors are often called when we use containers. For instance, there is a copy or a move when the std::vector’s push_back is called." />
-<meta property="og:description" content="Have you already faced problems with nontrivial destructors? I face one recently which was really annoying. In this article, I want to share with you my knowledge of this problem and the solutions I use to address it. The Problem The problem is not really that the destructor is non empty but that the destructor is nontrivial: there is a release of memory or some states are changed in another part of the app. Let us take a very simple example with a class that does dynamic allocation to explain the problem: class A { public: A() : mPointer(new int(0)) { } ~A() { delete mPointer; } private: int* mPointer; } As we allocate an integer in the constructor, the natural solution for memory management is to free it in the destructor. However, this will have terrible consequences. For instance, if we do this: int main() { A a; A anotherA(a); return 0; } A segmentation fault will occur. Why? Because when the main function ends, the destructor of A is called to delete a and anotherA. When a is destroyed the memory cell to which a’s mPointer points to is freed. Then, when anotherA is destroyed, we try to free the memory to which anotherA’s mPointer points to. But as anotherA is a copy of a, its mPointer points to the same memory cell as a’s mPointer. Thus, we try to free twice the same memory cell which causes the Segmentation fault. So, the problem is that because of the copy the destructor is called twice on the same attributes. Note that the copy or move constructors are often called when we use containers. For instance, there is a copy or a move when the std::vector’s push_back is called." />
+<meta name="description" content="Have you already faced problems with nontrivial destructors? I face one recently which was really annoying. In this article, I want to share with you my knowledge of this problem and the solutions I use to address it. The Problem The problem is not really that the destructor is non empty but that the destructor is nontrivial: there is a release of memory or some states are changed in another part of the app. Let us take a very simple example with a class that does dynamic allocation to explain the problem: class A { public: A() : mPointer(new int(0)) { } ~A() { delete mPointer; } private: int* mPointer; } As we allocate an integer in the constructor, the natural solution for memory management is to free it in the destructor. However, this will have terrible consequences. For instance, if we do this: int main() { A a; A anotherA(a); return 0; } A segmentation fault will occur. Why? Because when the main function ends, the destructor of A is called to delete a and anotherA. When a is destroyed the memory cell to which the mPointer of a points to is freed. Then, when anotherA is destroyed, we try to free the memory to which the mPointer of anotherA points to. But as anotherA is a copy of a, its mPointer points to the same memory cell as that of a. Thus, we try to free twice the same memory cell which causes the Segmentation fault. So, the problem is that because of the copy the destructor is called twice on the same attributes. Note that the copy or move constructors are often called when we use containers. For instance, there is a copy or a move when the std::vector push_back is called." />
+<meta property="og:description" content="Have you already faced problems with nontrivial destructors? I face one recently which was really annoying. In this article, I want to share with you my knowledge of this problem and the solutions I use to address it. The Problem The problem is not really that the destructor is non empty but that the destructor is nontrivial: there is a release of memory or some states are changed in another part of the app. Let us take a very simple example with a class that does dynamic allocation to explain the problem: class A { public: A() : mPointer(new int(0)) { } ~A() { delete mPointer; } private: int* mPointer; } As we allocate an integer in the constructor, the natural solution for memory management is to free it in the destructor. However, this will have terrible consequences. For instance, if we do this: int main() { A a; A anotherA(a); return 0; } A segmentation fault will occur. Why? Because when the main function ends, the destructor of A is called to delete a and anotherA. When a is destroyed the memory cell to which the mPointer of a points to is freed. Then, when anotherA is destroyed, we try to free the memory to which the mPointer of anotherA points to. But as anotherA is a copy of a, its mPointer points to the same memory cell as that of a. Thus, we try to free twice the same memory cell which causes the Segmentation fault. So, the problem is that because of the copy the destructor is called twice on the same attributes. Note that the copy or move constructors are often called when we use containers. For instance, there is a copy or a move when the std::vector push_back is called." />
 <link rel="canonical" href="https://pvigier.github.io/2018/02/15/non-empty-destructors.html" />
 <meta property="og:url" content="https://pvigier.github.io/2018/02/15/non-empty-destructors.html" />
 <meta property="og:site_name" content="pvigier’s blog" />
@@ -23,7 +23,7 @@
 <meta name="twitter:card" content="summary" />
 <meta property="twitter:title" content="Non Empty Destructors in C++" />
 <script type="application/ld+json">
-{"mainEntityOfPage":{"@type":"WebPage","@id":"https://pvigier.github.io/2018/02/15/non-empty-destructors.html"},"description":"Have you already faced problems with nontrivial destructors? I face one recently which was really annoying. In this article, I want to share with you my knowledge of this problem and the solutions I use to address it. The Problem The problem is not really that the destructor is non empty but that the destructor is nontrivial: there is a release of memory or some states are changed in another part of the app. Let us take a very simple example with a class that does dynamic allocation to explain the problem: class A { public: A() : mPointer(new int(0)) { } ~A() { delete mPointer; } private: int* mPointer; } As we allocate an integer in the constructor, the natural solution for memory management is to free it in the destructor. However, this will have terrible consequences. For instance, if we do this: int main() { A a; A anotherA(a); return 0; } A segmentation fault will occur. Why? Because when the main function ends, the destructor of A is called to delete a and anotherA. When a is destroyed the memory cell to which a’s mPointer points to is freed. Then, when anotherA is destroyed, we try to free the memory to which anotherA’s mPointer points to. But as anotherA is a copy of a, its mPointer points to the same memory cell as a’s mPointer. Thus, we try to free twice the same memory cell which causes the Segmentation fault. So, the problem is that because of the copy the destructor is called twice on the same attributes. Note that the copy or move constructors are often called when we use containers. For instance, there is a copy or a move when the std::vector’s push_back is called.","url":"https://pvigier.github.io/2018/02/15/non-empty-destructors.html","author":{"@type":"Person","name":"pierre"},"@type":"BlogPosting","headline":"Non Empty Destructors in C++","dateModified":"2018-02-15T00:00:00+01:00","datePublished":"2018-02-15T00:00:00+01:00","@context":"https://schema.org"}</script>
+{"@type":"BlogPosting","headline":"Non Empty Destructors in C++","dateModified":"2018-02-15T00:00:00+01:00","datePublished":"2018-02-15T00:00:00+01:00","description":"Have you already faced problems with nontrivial destructors? I face one recently which was really annoying. In this article, I want to share with you my knowledge of this problem and the solutions I use to address it. The Problem The problem is not really that the destructor is non empty but that the destructor is nontrivial: there is a release of memory or some states are changed in another part of the app. Let us take a very simple example with a class that does dynamic allocation to explain the problem: class A { public: A() : mPointer(new int(0)) { } ~A() { delete mPointer; } private: int* mPointer; } As we allocate an integer in the constructor, the natural solution for memory management is to free it in the destructor. However, this will have terrible consequences. For instance, if we do this: int main() { A a; A anotherA(a); return 0; } A segmentation fault will occur. Why? Because when the main function ends, the destructor of A is called to delete a and anotherA. When a is destroyed the memory cell to which the mPointer of a points to is freed. Then, when anotherA is destroyed, we try to free the memory to which the mPointer of anotherA points to. But as anotherA is a copy of a, its mPointer points to the same memory cell as that of a. Thus, we try to free twice the same memory cell which causes the Segmentation fault. So, the problem is that because of the copy the destructor is called twice on the same attributes. Note that the copy or move constructors are often called when we use containers. For instance, there is a copy or a move when the std::vector push_back is called.","url":"https://pvigier.github.io/2018/02/15/non-empty-destructors.html","mainEntityOfPage":{"@type":"WebPage","@id":"https://pvigier.github.io/2018/02/15/non-empty-destructors.html"},"author":{"@type":"Person","name":"pierre"},"@context":"https://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 
         <!-- Bootstrap -->
@@ -108,11 +108,11 @@
 
 <p>Why?</p>
 
-<p>Because when the <code class="language-plaintext highlighter-rouge">main</code> function ends, the destructor of <code class="language-plaintext highlighter-rouge">A</code> is called to delete <code class="language-plaintext highlighter-rouge">a</code> and <code class="language-plaintext highlighter-rouge">anotherA</code>. When <code class="language-plaintext highlighter-rouge">a</code> is destroyed the memory cell to which <code class="language-plaintext highlighter-rouge">a</code>’s <code class="language-plaintext highlighter-rouge">mPointer</code> points to is freed. Then, when <code class="language-plaintext highlighter-rouge">anotherA</code> is destroyed, we try to free the memory to which <code class="language-plaintext highlighter-rouge">anotherA</code>’s <code class="language-plaintext highlighter-rouge">mPointer</code> points to. But as <code class="language-plaintext highlighter-rouge">anotherA</code> is a copy of <code class="language-plaintext highlighter-rouge">a</code>, its <code class="language-plaintext highlighter-rouge">mPointer</code> points to the same memory cell as <code class="language-plaintext highlighter-rouge">a</code>’s <code class="language-plaintext highlighter-rouge">mPointer</code>. Thus, we try to free twice the same memory cell which causes the <code class="language-plaintext highlighter-rouge">Segmentation fault</code>.</p>
+<p>Because when the <code class="language-plaintext highlighter-rouge">main</code> function ends, the destructor of <code class="language-plaintext highlighter-rouge">A</code> is called to delete <code class="language-plaintext highlighter-rouge">a</code> and <code class="language-plaintext highlighter-rouge">anotherA</code>. When <code class="language-plaintext highlighter-rouge">a</code> is destroyed the memory cell to which the <code class="language-plaintext highlighter-rouge">mPointer</code> of <code class="language-plaintext highlighter-rouge">a</code> points to is freed. Then, when <code class="language-plaintext highlighter-rouge">anotherA</code> is destroyed, we try to free the memory to which the <code class="language-plaintext highlighter-rouge">mPointer</code> of <code class="language-plaintext highlighter-rouge">anotherA</code> points to. But as <code class="language-plaintext highlighter-rouge">anotherA</code> is a copy of <code class="language-plaintext highlighter-rouge">a</code>, its <code class="language-plaintext highlighter-rouge">mPointer</code> points to the same memory cell as that of <code class="language-plaintext highlighter-rouge">a</code>. Thus, we try to free twice the same memory cell which causes the <code class="language-plaintext highlighter-rouge">Segmentation fault</code>.</p>
 
 <p>So, the problem is that because of the copy the destructor is called twice on the same attributes.</p>
 
-<p>Note that the copy or move constructors are often called when we use containers. For instance, there is a copy or a move when the <code class="language-plaintext highlighter-rouge">std::vector</code>’s <code class="language-plaintext highlighter-rouge">push_back</code> is called.</p>
+<p>Note that the copy or move constructors are often called when we use containers. For instance, there is a copy or a move when the <code class="language-plaintext highlighter-rouge">std::vector</code> <code class="language-plaintext highlighter-rouge">push_back</code> is called.</p>
 
 <!--more-->
 
@@ -300,27 +300,9 @@
 	<p>Tags: <span class="label label-primary"><a href="/tag/cpp">cpp</a></span> </p>
 	
 </div><!-- /.blog-post -->
+<!-- Steam -->
 <hr/>
-<p>Subscribe to the newsletter if you do not want to miss any new article:</p>
-<!-- Begin Mailchimp Signup Form -->
-<link href="//cdn-images.mailchimp.com/embedcode/horizontal-slim-10_7.css" rel="stylesheet" type="text/css">
-<style type="text/css">
-	#mc_embed_signup{background:#fff; clear:left; font:14px Helvetica,Arial,sans-serif; width:100%;}
-	/* Add your own Mailchimp form style overrides in your site stylesheet or in this style block.
-	   We recommend moving this block and the preceding CSS link to the HEAD of your HTML file. */
-</style>
-<div id="mc_embed_signup">
-<form action="https://ymail.us20.list-manage.com/subscribe/post?u=7bb3b720a12ef1d8e0b48d8da&amp;id=7516dd4562" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate" target="_blank" novalidate>
-    <div id="mc_embed_signup_scroll">
-
-	<input type="email" value="" name="EMAIL" class="email" id="mce-EMAIL" placeholder="email address" required>
-    <!-- real people should not fill this in and expect good things - do not remove this or risk form bot signups-->
-    <div style="position: absolute; left: -5000px;" aria-hidden="true"><input type="text" name="b_7bb3b720a12ef1d8e0b48d8da_7516dd4562" tabindex="-1" value=""></div>
-    <div class="clear"><input type="submit" value="Subscribe" name="subscribe" id="mc-embedded-subscribe" class="button"></div>
-    </div>
-</form>
-</div>
-<!--End mc_embed_signup-->
+<iframe src="https://store.steampowered.com/widget/1673090/" frameborder="0" width="646" height="190"></iframe>
 <!-- Disqus -->
 <hr/>
 <div id="disqus_thread"></div>
@@ -346,6 +328,7 @@ s.setAttribute('data-timestamp', +new Date());
                 </div>
                 <div class="col-sm-3 col-sm-offset-1 blog-sidebar">
     <p><strong><a href="https://store.steampowered.com/app/1673090/Vagabond/">Wishlist Vagabond on Steam!</a></strong></p>
+    <a href="https://store.steampowered.com/app/1673090/Vagabond/"><img src="/media/img/wishlist_vagabond.png" alt="Wishlist Vagabond on Steam" /></a>
 	<div class="sidebar-module">
         <h4>Tags</h4>
         <ol class="list-unstyled">
@@ -356,7 +339,7 @@ s.setAttribute('data-timestamp', +new Date());
 		
 			<li><a href="/tag/cpp">cpp (8)</a></li>
 		
-			<li><a href="/tag/pcg">pcg (15)</a></li>
+			<li><a href="/tag/pcg">pcg (16)</a></li>
 		
 			<li><a href="/tag/simulopolis">simulopolis (5)</a></li>
 		
@@ -368,7 +351,7 @@ s.setAttribute('data-timestamp', +new Date());
 		
 			<li><a href="/tag/git">git (1)</a></li>
 		
-			<li><a href="/tag/vagabond">vagabond (26)</a></li>
+			<li><a href="/tag/vagabond">vagabond (27)</a></li>
 		
 			<li><a href="/tag/ecs">ecs (2)</a></li>
 		
@@ -380,6 +363,14 @@ s.setAttribute('data-timestamp', +new Date());
         <h4>Archives</h4>
         <ol class="list-unstyled">
 		
+        
+            
+            
+            
+            
+			<li id="yNovember 2022"><a href="/2022/11">November 2022 (1)</a></li>
+				
+            
         
             
             
